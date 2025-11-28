@@ -570,15 +570,28 @@ class LeadListView(ListView):
     template_name = "manager/lead/list.html"
     context_object_name = "objects"
     paginate_by = 10
+
     def get_queryset(self):
         queryset = models.Lead.objects.all().order_by("id")
-        search = self.request.GET.get("search", None)
-        
+
+        # --- Search ---
+        search = self.request.GET.get("search")
         if search:
             queryset = queryset.filter(
                 Q(full_name__icontains=search)
             )
+
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context = {
+        "Request": models.Lead.objects.filter(status="Request"),
+        "Trial": models.Lead.objects.filter(status="Trial"),
+        "Ingroup": models.Lead.objects.filter(status="In group"),
+    }
+        return context
+
 
 class LeadCreateView(CreateView):
     model = models.Lead

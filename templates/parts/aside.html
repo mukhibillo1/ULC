@@ -281,9 +281,9 @@
 												</div>
 											</li>
 											<!-- LEAD -->
-											<li class="menu-item menu-item-submenu {% if menu_parent == 'lead' %} menu-item-open{% endif %}" 
-												aria-haspopup="true" data-menu-toggle="hover">
-												<a href="javascript:;" class="menu-link menu-toggle">
+											<li class="menu-item menu-item-submenu {% if menu_parent == 'group-all' %}{% endif %}" 
+											aria-haspopup="true" data-menu-toggle="hover">
+												<a href="{% url 'manager:lead-list' %}" class="menu-link menu-toggle">
 													<span class="svg-icon menu-icon">
 														<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
 															fill="currentColor" class="bi bi-person-fill-add" viewBox="0 0 16 16">
@@ -296,22 +296,6 @@
 													<span class="menu-text">Lead</span>
 													<i class="menu-arrow"></i>
 												</a>
-												<div class="menu-submenu">
-													<ul class="menu-subnav">
-														<li class="menu-item {% if menu_child == 'lead-create' %} menu-item-active{% endif %}" aria-haspopup="true">
-															<a href="{% url 'manager:lead-create' %}" class="menu-link">
-																<i class="menu-bullet menu-bullet-line"><span></span></i>
-																<span class="menu-text">Create lead</span>
-															</a>
-														</li>
-														<li class="menu-item {% if menu_child == 'lead-list' %} menu-item-active{% endif %}" aria-haspopup="true">
-															<a href="{% url 'manager:lead-list' %}" class="menu-link">
-																<i class="menu-bullet menu-bullet-line"><span></span></i>
-																<span class="menu-text">All Lead</span>
-															</a>
-														</li>
-													</ul>
-												</div>
 											</li>
 											<!-- ARCHIVE -->
 											<li class="menu-item menu-item-submenu {% if menu_parent == 'group-all' %}{% endif %}" 

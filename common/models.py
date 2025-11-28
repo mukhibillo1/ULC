@@ -217,9 +217,9 @@ class Attendance(models.Model):
 
 class Lead(BaseModel):
     status_choices = [
-        (_("ACTIVE"), _("ACTIVE")),
-        (_("TRIAL"), _("TRIAL")),
-        (_("FROZEN"), _("FROZEN")),
+        (_("Request"), _("Request")),
+        (_("Trial"), _("Trial")),
+        (_("In group"), _("In group")),
     ]
     full_name = models.CharField(_("full name"), max_length=256)
     birth_date = models.DateField(_("birth date"))
@@ -234,7 +234,7 @@ class Lead(BaseModel):
         verbose_name_plural = _("leads")
 
     def __str__(self):
-        return self.phone
+        return self.full_name
 
 
 
