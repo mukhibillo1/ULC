@@ -1,9 +1,85 @@
 {% extends "base/base.html" %}
 {% load static %}
 {% block content %}
+{% load humanize %}
 <!--begin::Head-->
 <!--end::Head-->
 <!--begin::Body-->
+<style>
+.subheader {
+    background-color: white;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 15px;
+}
+
+.subheader .container-fluid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+}
+
+.subheader .nav-tabs {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.subheader .nav-tabs .nav-link {
+    color: #6b7280;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+    background-color: #e5e7eb20;
+}
+
+.subheader .nav-tabs .nav-link:hover {
+    background-color: #e5e7eb;
+    color: #3b82f6;
+}
+
+.subheader .nav-tabs .active {
+    background-color: #3b82f6;
+    color: white;
+    font-weight: 600;
+}
+
+@media (max-width: 576px) {
+    .subheader .nav-tabs {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .subheader .nav-tabs .nav-link {
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .subheader .container-fluid {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 16px;
+    }
+
+    .nav-tabs {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-tabs .nav-link {
+        white-space: nowrap;
+        padding: 12px 16px;
+    }
+}
+</style>
+
+
 <body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
   <!--begin::Main-->
   <!--begin::Header Mobile-->
@@ -13,7 +89,7 @@
     <!--begin::Page-->
     <div class="d-flex flex-row flex-column-fluid page">
       <!--begin::Aside-->
-      {% include "parts/aside.html" with menu_parent='lead-all' menu_child='lead-list' %}
+      {% include "parts/aside.html" with menu_parent='debtors-all' menu_child='teacher-list' %}
       <!--end::Aside-->
       <!--begin::Wrapper-->
       <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
@@ -24,9 +100,30 @@
         <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
           <div class="d-flex flex-column-fluid">
             <div class="container">
-
+                <!--begin::Subheader-->
+                <div class="subheader py-2 py-lg-4 subheader-solid" id="kt_subheader">
+                    <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_tab == 'all' %}active{% endif %}" href="{% url 'manager:group-settings' group.pk %}">All</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_tab == 'attendance' %}active{% endif %}" href="{% url 'manager:attendance-list' group.pk %}">Davomat</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_tab == 'baholash' %}active{% endif %}" href="#">Baholash</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_tab == 'rating' %}active{% endif %}" href="#">Rating</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_tab == 'debtors' %}active{% endif %}" href="{% url 'manager:group-debtors' group.pk %}">Debtors</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!--end::Subheader-->
               <div class="row">
-
                 <div class="col-md-12">
                   <!--begin::Advance Table Widget 4-->
                   <div class="card card-custom card-stretch gutter-b">
@@ -34,58 +131,56 @@
                     <div class="card-header border-0 py-5">
 
                       <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label font-weight-bolder text-dark">Lead</span>
+                        <span class="card-label font-weight-bolder text-dark">Debtors</span>
                         <small class='mt-2'>Total: {{objects | length}}</small>
-                        
                       </h3>
                     </div>
+                    <form method="get">
+                      <div class="form-group row">
+                          <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6  ml-10 ">
+                              <input type="text" class="form-control datatable-input" placeholder="Search" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                          </div>
+
+                          <button type="submit" class="btn btn-primary font-weight-bolder  ml-7 mb-1">
+                              <span class="nav-icon">
+                                  <i class="fas fa-search"></i>
+                              </span>
+                              <span class="nav-text">Search</span>
+                          </button>
+                      </div>
+                    </form>
                     <!--end::Header-->
                     <!--begin::Body-->
                     <div class="card-body pt-0 pb-3">
                       <div class="tab-content">
                         <!--begin::Table-->
                         <div class="table-responsive">
-                          {% if objects %}
+                          {% if debts %}
                           <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
                             <thead>
                               <tr class="text-left text-uppercase">
-                                <th style="min-width: 100px">Full_name</th>
-                                <th style="min-width: 100px">Birth_day</th>
+                                <th style="min-width: 100px">Full name</th>
                                 <th style="min-width: 100px">Phone</th>
-                                <th style="min-width: 100px">Intersted_Course</th>
-                                <th style="min-width: 100px">Address</th>
-                                <th style="min-width: 100px">Status</th>
+                                <th style="min-width: 100px">Debt amount</th>
                                 <th style="min-width: 100px">Actions</th>
                               </tr>
                             </thead>
                             <tbody>
-                              {% for object in objects %}
-                              {% url 'manager:lead-update' object.id as u %}
-                              {% url 'manager:lead-delete' object.id as d %}
+                              {% for object in debts %}
                               <tr>
                                 <td class="pl-0 py-6">
                                   <div class="d-flex align-items-center">
                                     <div class="mr-4 symbol symbol-40 symbol-light-success">
-                                      <span class="symbol-label">{{ object.full_name|slice:':1' }}</span>
+                                      <span class="symbol-label">{{ object.student.full_name|slice:':1' }}</span>
                                     </div>
-                                    <span href="{% url 'reception:group-create' %}" class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.full_name}}</span>      
+                                    <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.student}}</span>      
                                   </div>
-                                </td>
-                                
-                                <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.birth_date}}</span>
                                 </td>
                                 <td>
                                   <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.phone}}</span>
                                 </td>
                                 <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.interested_course}}</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.address}}</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.status}}</span>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">-{{object.remaining_debt| intcomma}} UZS</span>
                                 </td>
                                 <td nowrap="nowrap">
                                   {% include "parts/actions.html" with update_url=u delete_url=d %}

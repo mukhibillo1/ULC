@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from common.models import Attendance, Student , Grade
-from common.models import Attendance, Student
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -8,11 +7,11 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = ["id", "full_name", "phone", "group"]
 
-
 class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendance
         fields = ["id", "student", "group", "date_time", "is_present"]
+
 
 class GradeSerializer(serializers.ModelSerializer):
     class Meta:

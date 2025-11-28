@@ -8,6 +8,89 @@
 .card-toolbar{
   padding-left: 10px;
 }
+/* Select styling */
+select.form-select {
+    min-width: 180px;
+    max-width: 250px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 14px;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+select.form-select:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-color: #0d6efd;
+}
+
+select.form-select:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 5px rgba(13,110,253,0.5);
+}
+
+/* Reset button styling */
+.reset-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #dc3545;
+    background-color: #dc3545;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.reset-btn:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
+}
+
+.reset-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 992px) {
+    .filter-row {
+        justify-content: flex-start !important;
+    }
+    
+    select.form-select {
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-row {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+    
+    select.form-select {
+        width: 100% !important;
+        max-width: 100%;
+    }
+    
+    .reset-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
 </style>
 
 <body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
@@ -40,9 +123,48 @@
                     <div class="card-header border-0 py-5">
 
                       <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label font-weight-bolder text-dark">Courses</span>
+                        <span class="card-label font-weight-bolder text-dark">Groups</span>
                         <small class='mt-2'>Total: {{objects | length}}</small>
                       </h3>
+                      <form method="get" id="filterForm">
+                          <div class="filter-row" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: center; justify-content: flex-end;">
+                              
+                              <select name="day" class="form-select selectpicker" onchange="this.form.submit()" style="width: auto; flex: 0 0 auto;">
+                                  <option value="">Lesson Days</option>
+                                  <option value="odd" {% if request.GET.day == 'odd' %}selected{% endif %}>Mo We Fri</option>
+                                  <option value="even" {% if request.GET.day == 'even' %}selected{% endif %}>Tu Thu Sat</option>
+                              </select>
+
+                              <select name="teacher" class="form-select selectpicker" onchange="this.form.submit()" style="width: auto; flex: 0 0 auto;">
+                                  <option value="">All Teachers</option>
+                                  {% for teacher in teachers %}
+                                      <option value="{{ teacher.id }}" {% if request.GET.teacher == teacher.id|stringformat:"s" %}selected{% endif %}>
+                                          {{ teacher }}
+                                      </option>
+                                  {% endfor %}
+                              </select>
+
+                              <select name="course" class="form-select selectpicker" onchange="this.form.submit()" style="width: auto; flex: 0 0 auto;">
+                                  <option value="">All Courses</option>
+                                  {% for course in courses %}
+                                      <option value="{{ course.id }}" {% if request.GET.course == course.id|stringformat:"s" %}selected{% endif %}>
+                                          {{ course.title }}
+                                      </option>
+                                  {% endfor %}
+                              </select>
+
+                              {% if request.GET.search %}
+                                  <input type="hidden" name="search" value="{{ request.GET.search }}">
+                              {% endif %}
+                              
+                              <!-- Reset button -->
+                              {% if request.GET.day or request.GET.teacher or request.GET.course %}
+                                  <button type="button" class="reset-btn" onclick="window.location.href='{% url 'manager:group-list' %}'" style="flex: 0 0 auto;">
+                                      <i class="fas fa-redo"></i> Reset All
+                                  </button>
+                              {% endif %}
+                          </div>
+                      </form>
                     </div>
                     <form method="get">
                       <div class="form-group row">
@@ -75,6 +197,7 @@
                                 <th style="min-width: 100px">Teacher</th>
                                 <th style="min-width: 100px">course</th>
                                 <th style="min-width: 100px">Room</th>
+                                <th style="min-width: 100px">Lesson Days</th>
                                 <th style="min-width: 100px">time</th>
                                 <th style="min-width: 100px">price</th>
                                 <th style="min-width: 100px">Actions</th>
@@ -102,6 +225,9 @@
                                 </td>
                                 <td>
                                   <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.room}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.lesson_days}}</span>
                                 </td>
                                 <td>
                                   <span class="t/ext-dark-75 font-weight-bolder d-block font-size-lg">{{ object.start_time|time:"H:i" }} - {{ object.end_time|time:"H:i" }}</span>
@@ -174,7 +300,32 @@
   <!--begin::Demo Panel-->
   <!--end::Demo Panel-->
 
+<script>
+// Sahifa refresh bo'lganda filterni reset qilish
+window.addEventListener('load', function() {
+    // Agar URL'da filter parametrlari bo'lmasa, selectlarni reset qilish
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (!urlParams.has('day') && !urlParams.has('teacher') && !urlParams.has('course')) {
+        document.getElementById('dayFilter').selectedIndex = 0;
+        document.getElementById('teacherFilter').selectedIndex = 0;
+        document.getElementById('courseFilter').selectedIndex = 0;
+    }
+});
 
+// Select o'zgarganda avtomatik submit
+document.getElementById('dayFilter').addEventListener('change', function() {
+    document.getElementById('filterForm').submit();
+});
+
+document.getElementById('teacherFilter').addEventListener('change', function() {
+    document.getElementById('filterForm').submit();
+});
+
+document.getElementById('courseFilter').addEventListener('change', function() {
+    document.getElementById('filterForm').submit();
+});
+</script>
 </body>
 <!--end::Body-->
 {% endblock %}

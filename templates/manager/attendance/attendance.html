@@ -78,6 +78,37 @@
             border-bottom-color: #3b82f6;
         }
 
+        /* O'tgan kunlar uchun maxsus stil */
+        .attendance-cell.past-date {
+            position: relative;
+        }
+
+        /* O'tgan kunlarni yopish uchun overlay */
+        .attendance-cell.past-date::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(240,240,240,0.6) 100%);
+            pointer-events: none;
+            z-index: 1;
+            border-radius: 8px;
+        }
+
+        /* O'tgan kunlar uchun opacity kamayadi */
+        .attendance-cell.past-date .attendance-button {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        /* O'tgan kunlarda hover buttons ko'rinmasin */
+        .attendance-cell.past-date .hover-buttons {
+            display: none !important;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .subheader .container-fluid {
@@ -199,8 +230,24 @@
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
 
+        // Bugungi sanani olish (faqat sana, vaqtsiz)
+        function getTodayDateString() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Sanani solishtirish - o'tgan kun yoki yo'q
+        function isPastDate(dateString) {
+            const today = getTodayDateString();
+            return dateString < today;
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Bugungi sana:', getTodayDateString());
             initializeYearSelect();
             setCurrentDate();
             loadStudentsFromAPI();
@@ -328,12 +375,14 @@
                 const dayOfWeek = date.getDay();
                 
                 if (allowedDays.includes(dayOfWeek)) {
+                    const dateString = date.toISOString().split('T')[0];
                     dates.push({
-                        date: date.toISOString().split('T')[0],
+                        date: dateString,
                         display: `${day.toString().padStart(2, '0')}.${(month + 1).toString().padStart(2, '0')}`,
                         dayOfMonth: day,
                         dayOfWeek: dayOfWeek,
-                        fullDate: date
+                        fullDate: date,
+                        isPast: isPastDate(dateString)
                     });
                 }
             }
@@ -361,6 +410,13 @@
         }
 
         function markAttendance(studentId, date, status) {
+            // O'tgan kunlarni tahrirlashni oldini olish
+            if (isPastDate(date)) {
+                console.log('⛔ O\'tgan kunlarni tahrirlash mumkin emas:', date);
+                alert('O\'tgan kunlarni tahrirlash mumkin emas!');
+                return;
+            }
+            
             const key = `${studentId}-${date}`;
             attendance[key] = status;
             renderTable();
@@ -392,6 +448,12 @@
                     console.log(`✅ Saqlandi: Student ${studentId}, ${date}, ${status ? 'Bor' : 'Yo\'q'}`);
                 } else {
                     console.error("❌ Xatolik:", result);
+                    if (result.error && result.error.includes('O\'tgan kunlarni')) {
+                        alert('O\'tgan kunlarni tahrirlash mumkin emas!');
+                        // Ma'lumotlarni qayta yuklash
+                        await loadExistingAttendance();
+                        renderTable();
+                    }
                 }
             } catch (error) {
                 console.error("❌ Serverga ulanishda xatolik:", error);
@@ -472,6 +534,7 @@
                                             const studentJoinDate = new Date(student.joinDate);
                                             const lessonDate = new Date(dateObj.date);
                                             const isBeforeJoinDate = lessonDate < studentJoinDate;
+                                            const isPast = dateObj.isPast;
                                             
                                             if (isBeforeJoinDate) {
                                                 return `
@@ -484,7 +547,7 @@
                                             }
                                             
                                             return `
-                                                <td class="attendance-cell" style="position: relative;">
+                                                <td class="attendance-cell ${isPast ? 'past-date' : ''}" style="position: relative;" data-date="${dateObj.date}" data-ispast="${isPast}">
                                                     <div class="attendance-button ${status === true ? 'present' : status === false ? 'absent' : 'empty'}">
                                                         ${status === true ? `
                                                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -496,6 +559,7 @@
                                                             </svg>
                                                         ` : ''}
                                                     </div>
+                                                    ${!isPast ? `
                                                     <div class="hover-buttons" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); gap: 4px; z-index: 10;">
                                                         <button class="hover-btn present" onclick="markAttendance(${student.id}, '${dateObj.date}', true)" title="Bor" style="padding: 4px;">
                                                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
@@ -508,6 +572,7 @@
                                                             </svg>
                                                         </button>
                                                     </div>
+                                                    ` : ''}
                                                 </td>
                                             `;
                                         }).join('')}
@@ -554,34 +619,45 @@
         let touchTimeout;
         
         function handleTouchStart(element) {
-            touchTimeout = setTimeout(() => {
-                element.querySelector('.hover-buttons').style.display = 'flex';
-            }, 300);
+            const isPast = element.dataset.ispast === 'true';
+            if (!isPast) {
+                touchTimeout = setTimeout(() => {
+                    const buttons = element.querySelector('.hover-buttons');
+                    if (buttons) {
+                        buttons.style.display = 'flex';
+                    }
+                }, 300);
+            }
         }
         
         function handleTouchEnd(element) {
             clearTimeout(touchTimeout);
             setTimeout(() => {
-                element.querySelector('.hover-buttons').style.display = 'none';
+                const buttons = element.querySelector('.hover-buttons');
+                if (buttons) {
+                    buttons.style.display = 'none';
+                }
             }, 2000);
         }
 
         document.addEventListener('touchstart', function(e) {
-            if (e.target.closest('.attendance-cell')) {
-                handleTouchStart(e.target.closest('.attendance-cell'));
+            const cell = e.target.closest('.attendance-cell');
+            if (cell && !cell.classList.contains('past-date')) {
+                handleTouchStart(cell);
             }
         });
 
         document.addEventListener('touchend', function(e) {
-            if (e.target.closest('.attendance-cell')) {
-                handleTouchEnd(e.target.closest('.attendance-cell'));
+            const cell = e.target.closest('.attendance-cell');
+            if (cell && !cell.classList.contains('past-date')) {
+                handleTouchEnd(cell);
             }
         });
 
-        // Hover orqali tugmalarni ko'rsatish
+        // Hover orqali tugmalarni ko'rsatish (faqat bugungi va kelajak kunlar uchun)
         document.addEventListener('mouseover', function(e) {
             const cell = e.target.closest('.attendance-cell');
-            if (cell && !cell.querySelector('.disabled')) {
+            if (cell && !cell.querySelector('.disabled') && !cell.classList.contains('past-date')) {
                 const buttons = cell.querySelector('.hover-buttons');
                 if (buttons) {
                     buttons.style.display = 'flex';
@@ -591,7 +667,7 @@
 
         document.addEventListener('mouseout', function(e) {
             const cell = e.target.closest('.attendance-cell');
-            if (cell) {
+            if (cell && !cell.classList.contains('past-date')) {
                 const buttons = cell.querySelector('.hover-buttons');
                 if (buttons && !e.relatedTarget?.closest('.attendance-cell')) {
                     buttons.style.display = 'none';

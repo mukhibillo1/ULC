@@ -73,7 +73,6 @@
                               <tr class="text-left text-uppercase">
                                 <th style="min-width: 100px">Title</th>
                                 <th style="min-width: 100px">Duration</th>
-                                <th style="min-width: 100px">Price</th>
                                 <th style="min-width: 100px">Actions</th>
                               </tr>
                             </thead>
@@ -93,10 +92,6 @@
                                 
                                 <td>
                                   <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.duration}}</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.price}}</span>
-                                </td>
                                 <td nowrap="nowrap">
                                   {% include "parts/actions.html" with update_url=u delete_url=d %}
                                 </td>

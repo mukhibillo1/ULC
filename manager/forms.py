@@ -3,6 +3,8 @@ from helpers import widgets as widget
 from common import models
 from common.models import Student,Employee
 from django.forms import DateInput
+from django.utils import timezone
+from datetime import date
 from django.contrib.auth.forms import UserCreationForm
 
 class UserForm(UserCreationForm):
@@ -39,6 +41,9 @@ class TeacherForm(forms.ModelForm):
             "full_name",
             "birth_date",
             "phone",
+            "course",
+            "type",
+            "salary",
             "address",
             "status",
         ]
@@ -46,6 +51,9 @@ class TeacherForm(forms.ModelForm):
             "full_name" : forms.TextInput(attrs={"class" : "form-control", "placeholder" : "Full name"}),
             "birth_date" : widget.DateWidget(attrs={"class" : "form-control", "id": "kt_datetimepicker_3"}),
             "phone" : forms.TelInput(attrs={"class" : "form-control", "placeholder" : "Phone"}),
+            "course" : forms.Select(attrs={"class" : "form-control", "id": "kt_select2_2"}),
+            "type" : forms.Select(attrs={"class" : "form-control", "id" : "kt_select2_2"}),
+            "salary" : forms.TextInput(attrs={"class" : "form-control", "placeholder" : "Price"}),
             "address" : forms.TextInput(attrs={"class" : "form-control", "placeholder" : "Address"}),
             "status" : forms.Select(attrs={"class" : "form-control", "id": "kt_select2_2"}),
 
@@ -200,34 +208,43 @@ class EmployeeForm(forms.ModelForm):
             "date_joined" : widget.DateWidget(attrs={"class" : "form-control", "id": "kt_datetimepicker_2"}),
         }
 
-
 class WagesForm(forms.ModelForm):
     class Meta:
         model = models.Wages
-        fields = ['role', 'employee', 'amount', 'date']
+        fields = ['role', 'employee', 'amount', 'method', 'date']
+
         widgets = {
             'role': forms.Select(attrs={'class': 'form-control', 'id': 'id_role'}),
             'employee': forms.Select(attrs={'class': 'form-control', 'id': 'id_employee'}),
-            'amount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Enter amount...', 'min': 0}),
-            'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'amount': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter amount...',
+                'min': 0
+            }),
+            'method': forms.Select(attrs={'class': 'form-control'}),
+            'date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Employee boshdan bo'sh
-        self.fields['employee'].queryset = Employee.objects.none()
-        self.fields['employee'].widget.attrs.update({'disabled': 'disabled'})
+        self.fields['date'].initial = date.today()
 
-        # POST bo'lsa
+
+        self.fields['employee'].queryset = Employee.objects.none()
+        self.fields['employee'].widget.attrs['disabled'] = True
+
+
         if 'role' in self.data:
             role_value = self.data.get('role')
             if role_value:
-                self.fields['employee'].queryset = Employee.objects.filter(role__iexact=role_value)
+                self.fields['employee'].queryset = Employee.objects.filter(role=role_value)
                 self.fields['employee'].widget.attrs.pop('disabled', None)
 
-        # Edit holatda
         elif self.instance.pk:
             role_value = self.instance.role
-            self.fields['employee'].queryset = Employee.objects.filter(role__iexact=role_value)
-            self.fields['employee'].widget.attrs.pop('disabled', None)  # Employee selectni ochish
+            self.fields['employee'].queryset = Employee.objects.filter(role=role_value)
+            self.fields['employee'].widget.attrs.pop('disabled', None)

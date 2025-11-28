@@ -22,7 +22,7 @@ class HomeView(ReceptionPassesTestMixin,View):
 
 class CourseListView(ListView):
     model = models.Course
-    template_name = "reception/course/list.html"
+    template_name = "manager/course/list.html"
     context_object_name = "courses"
     def get_queryset(self):
         queryset = models.Course.objects.all().order_by("id")
@@ -35,7 +35,7 @@ class CourseListView(ListView):
 
 class CourseGroupListView(ListView):
     model = Group
-    template_name = "reception/course/course_groups.html"
+    template_name = "manager/course/course_groups.html"
     context_object_name = "groups"
 
     def get_queryset(self):
@@ -51,7 +51,7 @@ class CourseCreateView(CreateView):
     model = models.Course
     form_class = forms.CourseForm
     context_object_name = "object"
-    template_name = "reception/course/create.html"
+    template_name = "manager/course/create.html"
     success_url ="reception:course-list"
     success_create_url ="reception:course-list"
 
@@ -60,7 +60,7 @@ class CourseUpdateView(UpdateView):
     model = models.Course
     form_class = forms.CourseForm
     context_object_name = "object"
-    template_name = "reception/course/update.html"
+    template_name = "manager/course/update.html"
     success_url = "reception:course-list"
     success_update_url = "reception:course-update"
 
@@ -72,7 +72,7 @@ class CourseDeleteView(DeleteView):
 
 class GroupListView(ListView):
     model = models.Group
-    template_name = "reception/group/list.html"
+    template_name = "manager/group/list.html"
     context_object_name = "objects"
     paginate_by = 10
     def get_queryset(self):

@@ -5,36 +5,60 @@
 <!--end::Head-->
 <!--begin::Body-->
 <style>
-.nav-tabs {
-  border: none;
-  display: flex;
-  gap: 8px;
-  background: #f9fafb;
-  padding: 6px;
-  border-radius: 14px;
+.archive-tabs-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 15px; /* Pastdagi container bilan bir xil padding */
 }
 
-.nav-tabs .nav-link {
-  border: none;
-  background: #fff;
-  color: #6b7280;
+.custom-tabs {
+    border: none;
+    background: white;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    gap: 8px;
+    display: flex;
+    width: 100%; /* To'liq kenglik */
+}
+
+.custom-tabs .nav-item {
+    flex: 1; /* Barcha tugmalar teng bo'ladi */
+}
+
+.text{
+  text-align: center;
+  font-size: 22px;
   font-weight: 500;
-  padding: 10px 20px;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
-.nav-tabs .nav-link:hover {
-  color: #009ef7;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.07);
-  transform: translateY(-1px);
+.custom-tabs .nav-link {
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Yozuvni to'liq markazga */
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%; /* Tugma to'liq kenglikni egallaydi */
 }
 
-.nav-tabs .nav-link.active {
-  background: #009ef7;
-  color: #fff;
-  box-shadow: 0 6px 12px rgba(0,158,247,0.25);
+.custom-tabs .nav-link:hover {
+    background: #f8f9fa;
+    color: #495057;
+}
+
+.custom-tabs .nav-link.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transform: scale(1.02);
 }
 </style>
 
@@ -59,13 +83,21 @@
           <div class="d-flex flex-column-fluid">
             <div class="container">
                 <!-- Tabs nav -->
-                <ul class="nav nav-tabs mb-4 mt-1" id="archiveTabs" role="tablist">
-                    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#teachers">Teachers</a></li>
-                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#students">Students</a></li>
-                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#groups">Groups</a></li>
-                </ul>
+                  <div class="archive-tabs-container">
+                      <ul class="nav nav-tabs custom-tabs" id="archiveTabs" role="tablist">
+                          <li class="nav-item">
+                              <a class="nav-link active" data-bs-toggle="tab" href="#teachers">Teachers</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link" data-bs-toggle="tab" href="#students">Students</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link" data-bs-toggle="tab" href="#groups">Groups</a>
+                          </li>
+                      </ul>
+                  </div>
                 <!-- Tabs content -->
-              <div class="row">
+              <div class="row mt-5">
 
                 <div class="col-md-12">
                   <!--begin::Advance Table Widget 4-->
@@ -77,7 +109,7 @@
 
                             <!-- TEACHERS -->
                             <div class="tab-pane fade show active mt-2" id="teachers">
-                            <h5 class="mb-3">Archived Teachers</h5>
+                            <h5 class="text mb-3">Archived Teachers</h5>
                                   <table class="table table-head-custom table-head-bg table-borderless table-vertical-center mt-4">
                                     <thead>
                                     <tr class="text-left text-uppercase">
@@ -121,7 +153,7 @@
 
                             <!-- STUDENTS -->
                             <div class="tab-pane fade mt-2" id="students">
-                                <h5 class="mb-3">Archive Student</h5>
+                                <h5 class="text mb-3">Archive Student</h5>
                                 <table class="table table-head-custom table-head-bg table-borderless table-vertical-center mt-4">
                                     <thead>
                                     <tr class="text-left text-uppercase">
@@ -165,7 +197,7 @@
 
                             <!-- GROUPS -->
                             <div class="tab-pane fade mt-2" id="groups">
-                                <h5 class="mb-3">Finished Groups</h5>
+                                <h5 class="text mb-3">Finished Groups</h5>
                                 <table class="table table-head-custom table-head-bg table-borderless table-vertical-center mt-4">
                                     <thead>
                                     <tr class="text-left text-uppercase">

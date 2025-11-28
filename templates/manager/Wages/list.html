@@ -1,172 +1,225 @@
-{% extends "base/base.html" %}
+{% extends 'base/base.html' %}
 {% load static %}
 {% block content %}
-<!--begin::Head-->
-<!--end::Head-->
-<!--begin::Body-->
+{% load humanize %}
 <style>
-.card-toolbar{
-  padding-left: 10px;
-}
-.tugma{
-  background-color: green;
-  padding: 5px 15px;
-  border-radius: 5px;
-}
+    .card-toolbar{
+        padding-left: 15px;
+    }
 </style>
-
-
 <body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
-  <!--begin::Main-->
-  <!--begin::Header Mobile-->
-  {% include "parts/header-mobile.html" %}
-  <!--end::Header Mobile-->
-  <div class="d-flex flex-column flex-root">
-    <!--begin::Page-->
-    <div class="d-flex flex-row flex-column-fluid page">
-      <!--begin::Aside-->
-      {% include "parts/aside.html" with menu_parent='teacher-all' menu_child='teacher-list' %}
-      <!--end::Aside-->
-      <!--begin::Wrapper-->
-      <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
-        <!--begin::Header-->
-        {% include "parts/header.html" %}
-        <!--end::Header-->
-        <!--begin::Content-->
-        <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-          <div class="d-flex flex-column-fluid">
-            <div class="container">
+    {% include 'parts/header-mobile.html' %}
 
-              <div class="row">
+    <div class="d-flex flex-column flex-root">
+        <div class="d-flex flex-row flex-column-fluid page">
+            {% include 'parts/aside.html' %}
+            <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
 
-                <div class="col-md-12">
-                  <!--begin::Advance Table Widget 4-->
-                  <div class="card card-custom card-stretch gutter-b">
-                    <!--begin::Header-->
-                    <div class="card-header border-0 py-5">
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <div class="d-flex flex-column-fluid">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card card-custom card-stretch gutter-b">
+                                        <div class="card-header border-0 py-5">
+                                            <h3 class="card-title align-items-start flex-column">
+                                                <span class="card-label font-weight-bolder text-dark">Salaries</span>
+                                                <small class='mt-2'>Total: <span id="total-count">{{objects | length}}</span></small>   
+                                            </h3>
+                                            <div class="controls">
+                                                <div class="controls-grid">
+                                                    <div class="mb-3">
+                                                        <div class="input-group" style="gap:10px; flex-wrap: wrap;">
+                                                            <!-- Month select -->
+                                                            <select id="month-select" name="month" class="form-select form-control">
+                                                                <option value="">Barcha oylar</option>
+                                                                <option value="0">Yanvar</option>
+                                                                <option value="1">Fevral</option>
+                                                                <option value="2">Mart</option>
+                                                                <option value="3">Aprel</option>
+                                                                <option value="4">May</option>
+                                                                <option value="5">Iyun</option>
+                                                                <option value="6">Iyul</option>
+                                                                <option value="7">Avgust</option>
+                                                                <option value="8">Sentabr</option>
+                                                                <option value="9">Oktabr</option>
+                                                                <option value="10">Noyabr</option>
+                                                                <option value="11">Dekabr</option>
+                                                            </select>
 
-                      <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label font-weight-bolder text-dark">Wages for staffs</span>
-                        <small class='mt-2'>Total: {{objects | length}}</small>
-                      </h3>
-                    </div>
-                    <form method="get">
-                      <div class="form-group row">
-                          <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6  ml-10 ">
-                              <input type="text" class="form-control datatable-input" placeholder="Search" value="{{request.GET.search}}" name="search" data-col-index="0"/>
-                          </div>
+                                                            <!-- Year select -->
+                                                            <select id="year-select" name="year" class="form-select form-control">
+                                                                <option value="">Barcha yillar</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
-                          <button type="submit" class="btn btn-primary font-weight-bolder  ml-7 mb-1">
-                              <span class="nav-icon">
-                                  <i class="fas fa-search"></i>
-                              </span>
-                              <span class="nav-text">Search</span>
-                          </button>
-                          <div class="card-toolbar">
-                          <a href="{% url 'manager:wages-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">Create new teacher</a>
-                          </div>
-                      </div>
-                    </form>
-                    <!--end::Header-->
-                    <!--begin::Body-->
-                    <div class="card-body pt-0 pb-3">
-                      <div class="tab-content">
-                        <!--begin::Table-->
-                        <div class="table-responsive">
-                          {% if objects %}
-                          <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
-                            <thead>
-                              <tr class="text-left text-uppercase">
-                                <th style="min-width: 100px">Role</th>
-                                <th style="min-width: 100px">Full name</th>
-                                <th style="min-width: 100px">Amount</th>
-                                <th style="min-width: 100px">With</th>
-                                <th style="min-width: 100px">Date</th>
-                                <th style="min-width: 100px">Status</th>
-                                <th style="min-width: 100px">Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {% for object in objects %}
-                              {% url 'manager:wages-update' object.id as u %}
-                              {% url 'manager:wages-delete' object.id as d %}
-                              <tr>
-                                <td class="pl-0 py-6">
-                                  <div class="d-flex align-items-center">
-                                    <div class="mr-4 symbol symbol-40 symbol-light-success">
-                                      <span class="symbol-label">{{ object.full_name|slice:':1' }}</span>
+                                        </div>
+                                        
+                                        <form method="get" id="search-form">
+                                            <div class="form-group row">
+                                                <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6 ml-10">
+                                                    <input type="text" class="form-control datatable-input" placeholder="Search" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary font-weight-bolder ml-7 mb-1">
+                                                    <span class="nav-icon">
+                                                        <i class="fas fa-search"></i>
+                                                    </span>
+                                                    <span class="nav-text">Search</span>
+                                                </button>
+                                                <div class="card-toolbar">
+                                                    <a href="{% url 'manager:wages-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">Create new salary</a>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        <div class="card-body pt-0 pb-3">
+                                            <div class="tab-content">
+                                                <div class="table-responsive">
+                                                    
+                                                    <table class="table table-head-custom table-head-bg table-borderless table-vertical-center" id="payments-table">
+                                                        <thead>
+                                                            <tr class="text-left text-uppercase">
+                                                                <th style="min-width: 100px">Role</th>
+                                                                <th style="min-width: 100px">Employee</th>
+                                                                <th style="min-width: 100px">method</th>
+                                                                <th style="min-width: 100px">Amount</th>
+                                                                <th style="min-width: 100px">Date</th>
+                                                                <th style="min-width: 100px">Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="wages-table-body">
+                                                            {% url 'manager:wages-update' object.id as u %}
+                                                            {% url 'manager:wages-delete' object.id as d %}                                                   
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                
+                                                {% if page_obj.paginator.num_pages > 1 %}
+                                                {%include 'parts/pagination.html' %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
                                     </div>
-                                    <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.role}}</span>      
-                                  </div>
-                                </td>
-                                <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.employee}}</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.amount}}</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.with}}</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.date}}</span>
-                                </td>
-                                <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg"><span class="tugma text-white">Paid</span></span>
-                                </td>
-                                <td nowrap="nowrap">
-                                  {% include "parts/actions.html" with update_url=u delete_url=d %}
-                                </td>
-                              </tr>
-                              {% endfor %}
-                          </table>
+                                </div>
+                            </div>
                         </div>
-                        <!--end::Table-->
-                        {% else %}
-                        {% include "parts/nothing-found.html" %}
-                        {% endif %}
-                      </div>
-                      {% if page_obj.paginator.num_pages > 1 %}
-                      {%include 'parts/pagination.html' %}
-                      {% endif %}
                     </div>
-                    <!--end::Body-->
-                  </div>
-                  <!--end::Advance Table Widget 4-->
                 </div>
-              </div>
 
+                {% include 'parts/footer.html' %}
             </div>
-            <!-- .container -->
-          </div> <!-- .d-flex.flex-column-fluid -->
         </div>
-        <!--end::Content--> <!--begin::Footer-->
-        {% include "parts/footer.html" %}
-        <!--end::Footer-->
-      </div>
-      <!--end::Wrapper-->
     </div>
-    <!--end::Page-->
-  </div>
-  <!--end::Main-->
-  <!-- begin::User Panel-->
-  {% include "parts/user-panel.html" %}
-  <!--begin::Quick Cart-->
-  <!--end::Quick Cart-->
-  <!--begin::Quick Panel-->
-  <!--end::Quick Panel-->
-  <!--begin::Chat Panel-->
-  <!--end::Chat Panel-->
-  <!--begin::Scrolltop-->
-  {% include "parts/scrolltop.html" %}
-  <!--end::Scrolltop-->
-  <!--begin::Sticky Toolbar-->
-  <!--end::Sticky Toolbar-->
-  <!--begin::Demo Panel-->
-  <!--end::Demo Panel-->
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script>
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeYearSelect();
+        setCurrentDate();
+        loadWages(); // sahifa ochilganda yuklanadi
+    });
+
+    function initializeYearSelect() {
+        const yearSelect = document.getElementById('year-select');
+        for (let year = 2020; year <= 2030; year++) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        }
+    }
+
+    function setCurrentDate() {
+        document.getElementById('month-select').value = currentMonth;
+        document.getElementById('year-select').value = currentYear;
+    }
+
+    // 🔥 AJAX filter
+    function loadWages() {
+        $.ajax({
+            url: "{% url 'manager:wages_list' %}",
+            method: "GET",
+            data: {
+                month: currentMonth + 1,
+                year: currentYear
+            },
+            success: function(response) {
+
+                const tbody = $("#wages-table-body");
+                tbody.empty();
+
+                // ❗ wages bo'sh bo'lsa
+                if (!response.wages || response.wages.length === 0) {
+                    tbody.append(`
+                        <tr>
+                            <td colspan="6" class="text-center">
+                                {% include "parts/nothing-found.html" %}
+                            </td>
+                        </tr>
+                    `);
+                    return;
+                }
+
+                // ❗ wages bor bo'lsa
+                response.wages.forEach(function(w) {
+                    tbody.append(`
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                        <span class="symbol-label">${w.employee_initial}</span>
+                                    </div>
+                                    <span class="text-dark-75 font-weight-bolder d-block font-size-lg">${w.role}</span>
+                                </div>
+                            </td>
+                            <td>${w.employee_name}</td>
+                            <td>${w.method}</td>
+                            <td>${w.amount} UZS</td>
+                            <td>${w.date}</td>
+                            <td nowrap="nowrap">
+                                <a href="${w.update_url}" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" title="Edit details">
+                                    <span class="svg-icon svg-icon-md">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                                        </svg>
+                                    </span>
+                                </a>
+
+                                <a href="${w.delete_url}" data-toggle="modal" data-target="#deleteModal" class="btn btn-sm btn-clean btn-icon removeButton" title="Delete">
+                                    <span class="svg-icon svg-icon-md">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                        </svg>
+                                    </span>
+                                </a>
+                            </td>
+                        </tr>
+                    `);
+                });
+
+                $("#total-count").text(response.total);
+            }
+        });
+    }
+
+    // Oyni o'zgartirish
+    document.getElementById('month-select').addEventListener('change', function() {
+        currentMonth = parseInt(this.value);
+        loadWages();
+    });
+
+    // Yilni o'zgartirish
+    document.getElementById('year-select').addEventListener('change', function() {
+        currentYear = parseInt(this.value);
+        loadWages();
+    });
+</script>
 
 
 </body>
-<!--end::Body-->
 {% endblock %}
-
