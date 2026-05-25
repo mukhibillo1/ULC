@@ -1,5 +1,6 @@
 {% extends "base/base.html" %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 <!--begin::Head-->
 <!--end::Head-->
@@ -40,24 +41,24 @@
                     <div class="card-header border-0 py-5">
 
                       <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label font-weight-bolder text-dark">Courses</span>
-                        <small class='mt-2'>Total: {{objects | length}}</small>
+                        <span class="card-label font-weight-bolder text-dark">{% trans "Course" %}</span>
+                        <small class='mt-2'>{% trans "Total" %}: {{objects | length}}</small>
                       </h3>
                     </div>
                     <form method="get">
                       <div class="form-group row">
                           <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6  ml-10 ">
-                              <input type="text" class="form-control datatable-input" placeholder="Search" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                              <input type="text" class="form-control datatable-input" placeholder="{% trans 'Search' %}" value="{{request.GET.search}}" name="search" data-col-index="0"/>
                           </div>
 
                           <button type="submit" class="btn btn-primary font-weight-bolder  ml-7 mb-1">
                               <span class="nav-icon">
                                   <i class="fas fa-search"></i>
                               </span>
-                              <span class="nav-text">Search</span>
+                              <span class="nav-text">{% trans "Search" %}</span>
                           </button>
                           <div class="card-toolbar">
-                          <a href="{% url 'manager:course-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">Add new course</a>
+                          <a href="{% url 'manager:course-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">{% trans "Add new course" %}</a>
                           </div>
                       </div>
                     </form>
@@ -71,9 +72,10 @@
                           <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
                             <thead>
                               <tr class="text-left text-uppercase">
-                                <th style="min-width: 100px">Title</th>
-                                <th style="min-width: 100px">Duration</th>
-                                <th style="min-width: 100px">Actions</th>
+                                <th style="min-width: 100px">{% trans "title" %}</th>
+                                <th style="min-width: 100px">{% trans "Duration" %}</th>
+                                <th style="min-width: 100px">{% trans "price" %}</th>
+                                <th style="min-width: 100px">{% trans "Actions" %}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -92,6 +94,10 @@
                                 
                                 <td>
                                   <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.duration}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.price}}</span>
+                                </td>  
                                 <td nowrap="nowrap">
                                   {% include "parts/actions.html" with update_url=u delete_url=d %}
                                 </td>
@@ -147,4 +153,3 @@
 </body>
 <!--end::Body-->
 {% endblock %}
-

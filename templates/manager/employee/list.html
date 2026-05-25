@@ -1,17 +1,12 @@
 {% extends "base/base.html" %}
 {% load static %}
 {% block content %}
-{% load humanize %}
-<!--begin::Head-->
-<!--end::Head-->
-<!--begin::Body-->
+{% load humanize i18n %}
 <style>
 .card-toolbar{
   padding-left: 10px;
-
 }
 </style>
-
 
 <body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
   <!--begin::Main-->
@@ -22,7 +17,7 @@
     <!--begin::Page-->
     <div class="d-flex flex-row flex-column-fluid page">
       <!--begin::Aside-->
-      {% include "parts/aside.html" with menu_parent='employee-all' menu_child='employee-list' %}
+      {% include "parts/aside.html" with menu_parent='workers-all' menu_child='employee-list' %}
       <!--end::Aside-->
       <!--begin::Wrapper-->
       <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
@@ -35,32 +30,30 @@
             <div class="container">
 
               <div class="row">
-
                 <div class="col-md-12">
                   <!--begin::Advance Table Widget 4-->
                   <div class="card card-custom card-stretch gutter-b">
                     <!--begin::Header-->
                     <div class="card-header border-0 py-5">
-
                       <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label font-weight-bolder text-dark">Staffs</span>
-                        <small class='mt-2'>Total: {{objects | length}}</small>
+                        <span class="card-label font-weight-bolder text-dark">{% trans "Staffs" %}</span>
+                        <small class='mt-2'>{% trans "Total" %}: {{objects | length}}</small>
                       </h3>
                     </div>
                     <form method="get">
                       <div class="form-group row">
                           <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6  ml-10 ">
-                              <input type="text" class="form-control datatable-input" placeholder="Search" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                              <input type="text" class="form-control datatable-input" placeholder="{% trans 'Search' %}" value="{{request.GET.search}}" name="search" data-col-index="0"/>
                           </div>
 
                           <button type="submit" class="btn btn-primary font-weight-bolder  ml-7 mb-1">
                               <span class="nav-icon">
                                   <i class="fas fa-search"></i>
                               </span>
-                              <span class="nav-text">Search</span>
+                              <span class="nav-text">{% trans "Search" %}</span>
                           </button>
                           <div class="card-toolbar">
-                          <a href="{% url 'manager:employee-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">Create new staffs</a>
+                          <a href="{% url 'manager:employee-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">{% trans "Create new staff" %}</a>
                           </div>
                       </div>
                     </form>
@@ -74,12 +67,12 @@
                           <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
                             <thead>
                               <tr class="text-left text-uppercase">
-                                <th style="min-width: 100px">Full name</th>
-                                <th style="min-width: 100px">Role</th>
-                                <th style="min-width: 100px">Phone</th>
-                                <th style="min-width: 100px">Salary</th>
-                                <th style="min-width: 100px">Date Joined</th>
-                                <th style="min-width: 100px">Actions</th>
+                                <th style="min-width: 100px">{% trans "Full name" %}</th>
+                                <th style="min-width: 100px">{% trans "Role" %}</th>
+                                <th style="min-width: 100px">{% trans "Phone" %}</th>
+                                <th style="min-width: 100px">{% trans "Salary" %}</th>
+                                <th style="min-width: 100px">{% trans "date" %}</th>
+                                <th style="min-width: 100px">{% trans "Actions" %}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -120,7 +113,7 @@
                         {% endif %}
                       </div>
                       {% if page_obj.paginator.num_pages > 1 %}
-                      {%include 'parts/pagination.html' %}
+                      {% include 'parts/pagination.html' %}
                       {% endif %}
                     </div>
                     <!--end::Body-->
@@ -133,7 +126,8 @@
             <!-- .container -->
           </div> <!-- .d-flex.flex-column-fluid -->
         </div>
-        <!--end::Content--> <!--begin::Footer-->
+        <!--end::Content--> 
+        <!--begin::Footer-->
         {% include "parts/footer.html" %}
         <!--end::Footer-->
       </div>
@@ -144,22 +138,9 @@
   <!--end::Main-->
   <!-- begin::User Panel-->
   {% include "parts/user-panel.html" %}
-  <!--begin::Quick Cart-->
-  <!--end::Quick Cart-->
-  <!--begin::Quick Panel-->
-  <!--end::Quick Panel-->
-  <!--begin::Chat Panel-->
-  <!--end::Chat Panel-->
   <!--begin::Scrolltop-->
   {% include "parts/scrolltop.html" %}
   <!--end::Scrolltop-->
-  <!--begin::Sticky Toolbar-->
-  <!--end::Sticky Toolbar-->
-  <!--begin::Demo Panel-->
-  <!--end::Demo Panel-->
-
 
 </body>
-<!--end::Body-->
 {% endblock %}
-

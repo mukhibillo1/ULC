@@ -5,6 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from helpers.models import BaseModel
 from django.db.models import CASCADE
 from datetime import date 
+from django.conf import settings
 from datetime import timedelta
 from django.utils import timezone
 
@@ -21,6 +22,37 @@ class BaseUser(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.role})"
+    
+class Informations(models.Model):
+    VILOYAT_CHOICES = [
+        ('tashkent', 'Toshkent'),
+        ('andijon', 'Andijon'),
+        ('buxoro', 'Buxoro'),
+        ('fargona', 'Farg‘ona'),
+        ('jizzax', 'Jizzax'),
+        ('namangan', 'Namangan'),
+        ('navoiy', 'Navoiy'),
+        ('qashqadaryo', 'Qashqadaryo'),
+        ('samarqand', 'Samarqand'),
+        ('sirdaryo', 'Sirdaryo'),
+        ('surxondaryo', 'Surxondaryo'),
+        ('xorazm', 'Xorazm'),
+    ]
+
+    tg_admin = models.CharField(_("Admin"), max_length=100)
+    tg_channel = models.CharField(_("Telegram Kanal"), max_length=100)
+    instagram = models.CharField(_("Instagram"), max_length=100)
+    phone = models.CharField(_("Phone"), max_length=100)
+    logo = models.FileField(_("logos"), upload_to='logos/', null=True, blank=True)
+    regions = models.CharField(_("Region"), max_length=100, choices=VILOYAT_CHOICES)
+
+    class Meta:
+        db_table = "Informations"
+        verbose_name = _("Informations")
+        verbose_name_plural = _("Informations")
+
+    def __str__(self):
+        return self.tg_admin
 
 
 class Teacher(BaseModel):
@@ -32,7 +64,7 @@ class Teacher(BaseModel):
         ("Precent", "Precent"),
         ("Group by", "Group by")
     ]
-    
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     full_name = models.CharField(_("full name"), max_length=256)
     birth_date = models.DateField(_("birth date"))
     course = models.ForeignKey("common.Course", on_delete=models.SET_NULL, verbose_name="course", related_name="teachers", null=True, blank=False)
@@ -119,6 +151,7 @@ class Teacher(BaseModel):
 class Course(BaseModel):
     title = models.CharField(_("title"), max_length=256)
     description = models.TextField(_("description"), null=True, blank=True)
+    price = models.CharField(_("price"), max_length=100)
     duration = models.CharField(_("duration"), max_length=256)
 
     class Meta:
@@ -206,10 +239,10 @@ class Attendance(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name="attendances", null=True, blank=True)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="attendances", null=True, blank=True)
     date_time = models.DateField()
-    is_present = models.BooleanField(default=False)
+    is_present = models.BooleanField(blank=True , null=True)
 
     class Meta:
-        unique_together = ("student", "date_time") 
+        unique_together = ("student","group","date_time") 
         ordering = ["-date_time"]
 
     def __str__(self):
@@ -227,6 +260,7 @@ class Lead(BaseModel):
     address = models.CharField(_("address"), max_length=256)
     interested_course = models.ForeignKey("common.Course", on_delete=models.SET_NULL, verbose_name="interested course", related_name="leads", null=True) 
     status = models.CharField(_("status"), max_length=256, choices=status_choices)
+    date_joined = models.DateField(_("joined"), null=True, blank=True,  default=date.today)
 
     class Meta:
         db_table = "leads"
@@ -308,7 +342,6 @@ class Employee(BaseModel):
     ROLE_CHOICES = [
         ('Administrator', 'Administrator'),
         ('Accountant', 'Accountant'),
-        ('Support', 'Support'),
         ('Receptionist', 'Receptionist'),
     ]
     full_name = models.CharField(_("full name"), max_length=256)
@@ -341,6 +374,27 @@ class Wages(models.Model):
     def __str__(self):
         return f"{self.employee.full_name} - {self.amount}"
     
+class TeacherSalary(models.Model):
+    PAYMENT_TYPE_CHOICES = [
+        ('Cash', 'Cash (Naqd)'),
+        ('Bank Card', 'Bank Card'),
+    ]
+    
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="Kurs", related_name="teacher_salaries")
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, verbose_name="O'qituvchi", related_name="salaries")
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, verbose_name="Guruh", related_name="teacher_salaries", null=True, blank=True)  # <-- Bu qo'shish kerak
+    amount = models.DecimalField(_("To'lov miqdori"), max_digits=15, decimal_places=2, help_text="So'mda")
+    type = models.CharField(_("To'lov turi"), max_length=20, choices=PAYMENT_TYPE_CHOICES, default='cash')
+    date = models.DateField(_("To'lov sanasi"),default=date.today)
+    
+    class Meta:
+        db_table = "teacher_salaries"
+        verbose_name = _("Teacher Salary")
+        verbose_name_plural = _("Teacher Salaries")
+        ordering = ['-date']
+    
+    def __str__(self):
+        return f"{self.teacher.full_name} - {self.date} - {self.amount:,} so'm" 
 
 class Debt(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
@@ -349,3 +403,45 @@ class Debt(models.Model):
 
     def __str__(self):
         return f"{self.student.name} - {self.amount}"
+    
+
+class Notification(models.Model):
+    
+    ROLE_CHOICES = [('manager', 'Manager'), ('teacher', 'Teacher'), ('reception', 'Reception'),('accountant', 'Accountant'),]
+    MESSAGE_TYPE_CHOICES = [('attendance', 'Attendance (Davomat)'), ('baholash', 'Baholash'), ('payment', 'Payment (To\'lov)')]
+    STATUS_CHOICES = [('pending', 'Pending'), ('sent', 'Sent'), ('failed', 'Failed')]
+    
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, 
+                              related_name='sent_notifications')
+    recipient = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, 
+                                 related_name='received_notifications')
+    recipient_role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    course = models.ForeignKey('Course', on_delete=models.SET_NULL, null=True, blank=True)
+    message_type = models.CharField(max_length=20, choices=MESSAGE_TYPE_CHOICES, 
+                                   null=True, blank=True)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'notifications'
+        verbose_name = 'Notification'
+        verbose_name_plural = 'Notifications'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['recipient', 'is_read']),
+            models.Index(fields=['status', 'created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.sender.username} → {self.recipient.username}"
+    
+    def mark_as_read(self):
+        self.is_read = True
+        self.save()
+    
+    def mark_as_sent(self):
+        self.status = 'sent'
+        self.save()

@@ -1,5 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 {% load humanize %}
 <style>
@@ -29,16 +30,16 @@ select.form-select:focus {
     border-color: #0d6efd;
     box-shadow: 0 0 5px rgba(13,110,253,0.5);
 }
-
 </style>
+
 <body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
     {% include 'parts/header-mobile.html' %}
 
     <div class="d-flex flex-column flex-root">
         <div class="d-flex flex-row flex-column-fluid page">
-            {% include 'parts/aside.html' %}
+            {% include 'parts/aside.html' with menu_parent='finance-all' menu_child='employee-list' %}
             <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
-
+                {% include "parts/header.html" %}
                 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
                     <div class="d-flex flex-column-fluid">
                         <div class="container">
@@ -47,8 +48,8 @@ select.form-select:focus {
                                     <div class="card card-custom card-stretch gutter-b">
                                         <div class="card-header border-0 py-5">
                                             <h3 class="card-title align-items-start flex-column">
-                                                <span class="card-label font-weight-bolder text-dark">Payment</span>
-                                                <small class='mt-2'>Total: <span id="total-count">{{objects | length}}</span></small>   
+                                                <span class="card-label font-weight-bolder text-dark">{% trans "Payment" %}</span>
+                                                <small class='mt-2'>{% trans "Total" %}: <span id="total-count">{{objects | length}}</span></small>   
                                             </h3>
                                             <div class="controls">
                                                 <div class="controls-grid">
@@ -57,26 +58,26 @@ select.form-select:focus {
                                                             <!-- Month -->
                                                             <div style="flex: 1;">
                                                                 <select id="month-select" class="form-select form-control">
-                                                                    <option value="">Barcha oylar</option>
-                                                                    <option value="0">Yanvar</option>
-                                                                    <option value="1">Fevral</option>
-                                                                    <option value="2">Mart</option>
-                                                                    <option value="3">Aprel</option>
-                                                                    <option value="4">May</option>
-                                                                    <option value="5">Iyun</option>
-                                                                    <option value="6">Iyul</option>
-                                                                    <option value="7">Avgust</option>
-                                                                    <option value="8">Sentabr</option>
-                                                                    <option value="9">Oktabr</option>
-                                                                    <option value="10">Noyabr</option>
-                                                                    <option value="11">Dekabr</option>
+                                                                    <option value="">{% trans "All Months" %}</option>
+                                                                    <option value="0">{% trans "January" %}</option>
+                                                                    <option value="1">{% trans "February" %}</option>
+                                                                    <option value="2">{% trans "March" %}</option>
+                                                                    <option value="3">{% trans "April" %}</option>
+                                                                    <option value="4">{% trans "May" %}</option>
+                                                                    <option value="5">{% trans "June" %}</option>
+                                                                    <option value="6">{% trans "July" %}</option>
+                                                                    <option value="7">{% trans "August" %}</option>
+                                                                    <option value="8">{% trans "September" %}</option>
+                                                                    <option value="9">{% trans "October" %}</option>
+                                                                    <option value="10">{% trans "November" %}</option>
+                                                                    <option value="11">{% trans "December" %}</option>
                                                                 </select>
                                                             </div>
 
                                                             <!-- Year -->
                                                             <div style="flex: 1;">
                                                                 <select id="year-select" class="form-select form-control">
-                                                                    <option value="">Barcha yillar</option>
+                                                                    <option value="">{% trans "All Years" %}</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -85,7 +86,7 @@ select.form-select:focus {
                                                         <div class="filter-row" style="display: flex; gap: 10px; margin-bottom: 15px;">
                                                             <div style="flex: 1;">
                                                                 <select id="group-select" class="form-select form-control">
-                                                                    <option value="">All Groups</option>
+                                                                    <option value="">{% trans "All Groups" %}</option>
                                                                     {% for group in groups %}
                                                                         <option value="{{ group.id }}">{{ group.title }}</option>
                                                                     {% endfor %}
@@ -100,16 +101,16 @@ select.form-select:focus {
                                         <form method="get" id="search-form">
                                             <div class="form-group row">
                                                 <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6 ml-10">
-                                                    <input type="text" class="form-control datatable-input" placeholder="Search" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                                                    <input type="text" class="form-control datatable-input" placeholder="{% trans 'Search' %}" value="{{request.GET.search}}" name="search" data-col-index="0"/>
                                                 </div>
                                                 <button type="submit" class="btn btn-primary font-weight-bolder ml-7 mb-1">
                                                     <span class="nav-icon">
                                                         <i class="fas fa-search"></i>
                                                     </span>
-                                                    <span class="nav-text">Search</span>
+                                                    <span class="nav-text">{% trans "Search" %}</span>
                                                 </button>
                                                 <div class="card-toolbar">
-                                                    <a href="{% url 'manager:payment-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">Create new payment</a>
+                                                    <a href="{% url 'manager:payment-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">{% trans "Create new payment" %}</a>
                                                 </div>
                                             </div>
                                         </form>
@@ -121,12 +122,12 @@ select.form-select:focus {
                                                     <table class="table table-head-custom table-head-bg table-borderless table-vertical-center" id="payments-table">
                                                         <thead>
                                                             <tr class="text-left text-uppercase">
-                                                                <th style="min-width: 100px">Student</th>
-                                                                <th style="min-width: 100px">Group</th>
-                                                                <th style="min-width: 100px">Amount</th>
-                                                                <th style="min-width: 100px">Date</th>
-                                                                <th style="min-width: 100px">Debt</th>
-                                                                <th style="min-width: 100px">Actions</th>
+                                                                <th style="min-width: 100px">{% trans "student" %}</th>
+                                                                <th style="min-width: 100px">{% trans "group" %}</th>
+                                                                <th style="min-width: 100px">{% trans "amount" %}</th>
+                                                                <th style="min-width: 100px">{% trans "date" %}</th>
+                                                                <th style="min-width: 100px">{% trans "debt" %}</th>
+                                                                <th style="min-width: 100px">{% trans "Actions" %}</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody id="payments-table-body">
@@ -214,7 +215,7 @@ select.form-select:focus {
                                 <td><span class="font-weight-bolder">${p.date}</span></td>
                                 <td><span class="font-weight-bolder">-${p.debt}</span></td>
                                 <td nowrap="nowrap">
-                                    <a href="${p.update_url}" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" title="Edit details">
+                                    <a href="${p.update_url}" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" title="{% trans 'Edit details' %}">
                                         <span class="svg-icon svg-icon-md">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
                                             <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
@@ -222,7 +223,7 @@ select.form-select:focus {
                                         </span>
                                     </a>
 
-                                    <a href="${p.delete_url}" data-toggle="modal" data-target="#deleteModal" class="btn btn-sm btn-clean btn-icon removeButton" title="Delete">
+                                    <a href="${p.delete_url}" data-toggle="modal" data-target="#deleteModal" class="btn btn-sm btn-clean btn-icon removeButton" title="{% trans 'Delete' %}">
                                         <span class="svg-icon svg-icon-md">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                                             <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>

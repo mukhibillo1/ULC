@@ -1,5 +1,6 @@
 {% extends "base/base.html" %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 <!--begin::Head-->
 <!--end::Head-->
@@ -7,10 +8,8 @@
 <style>
 .card-toolbar{
   padding-left: 10px;
-
 }
 </style>
-
 
 <body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
   <!--begin::Main-->
@@ -34,7 +33,6 @@
             <div class="container">
 
               <div class="row">
-
                 <div class="col-md-12">
                   <!--begin::Advance Table Widget 4-->
                   <div class="card card-custom card-stretch gutter-b">
@@ -42,31 +40,31 @@
                     <div class="card-header border-0 py-5">
 
                       <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label font-weight-bolder text-dark">Classrooms</span>
-                        <small class='mt-2'>Total: {{objects | length}}</small>
+                        <span class="card-label font-weight-bolder text-dark">{% trans "Classroom" %}</span>
+                        <small class='mt-2'>{% trans "Total" %}: {{objects | length}}</small>
                       </h3>
                     </div>
                     <form method="get">
                       <div class="form-group row">
                           <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6  ml-10 ">
-                              <input type="text" class="form-control datatable-input" placeholder="Search" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                              <input type="text" class="form-control datatable-input" placeholder="{% trans "Search" %}" value="{{request.GET.search}}" name="search" data-col-index="0"/>
                           </div>
 
                           <button type="submit" class="btn btn-primary font-weight-bolder  ml-7 mb-1">
                               <span class="nav-icon">
                                   <i class="fas fa-search"></i>
                               </span>
-                              <span class="nav-text">Search</span>
+                              <span class="nav-text">{% trans "Search" %}</span>
                           </button>
                           <div class="card-toolbar">
-                          <a href="{% url 'manager:classroom-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">Create new classroom</a>
+                            <a href="{% url 'manager:classroom-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">{% trans "Create new classroom" %}</a>
                           </div>
                           <div class="card-toolbar">
-                          <a href="{% url 'manager:schedule' %}" class="btn btn-primary font-weight-bolder font-size-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-table" viewBox="0 0 16 16">
-                            <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 2h-4v3h4zm0 4h-4v3h4zm0 4h-4v3h3a1 1 0 0 0 1-1zm-5 3v-3H6v3zm-5 0v-3H1v2a1 1 0 0 0 1 1zm-4-4h4V8H1zm0-4h4V4H1zm5-3v3h4V4zm4 4H6v3h4z"/>
-                          </svg>
-                          </a>
+                            <a href="{% url 'manager:schedule' %}" class="btn btn-primary font-weight-bolder font-size-sm">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-table" viewBox="0 0 16 16">
+                              <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm15 2h-4v3h4zm0 4h-4v3h4zm0 4h-4v3h3a1 1 0 0 0 1-1zm-5 3v-3H6v3zm-5 0v-3H1v2a1 1 0 0 0 1 1zm-4-4h4V8H1zm0-4h4V4H1zm5-3v3h4V4zm4 4H6v3h4z"/>
+                              </svg>
+                            </a>
                           </div>
                       </div>
                     </form>
@@ -80,10 +78,9 @@
                           <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
                             <thead>
                               <tr class="text-left text-uppercase">
-                                <th style="min-width: 100px">name</th>
-                                <th style="min-width: 100px">capacity</th>
-                                <th style="min-width: 100px">actions</th>
-
+                                <th style="min-width: 100px">{% trans "name" %}</th>
+                                <th style="min-width: 100px">{% trans "capacity" %}</th>
+                                <th style="min-width: 100px">{% trans "Actions" %}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -102,7 +99,7 @@
                                 <td>
                                   <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.capacity}}</span>
                                 </td>
-                                                                <td nowrap="nowrap">
+                                <td nowrap="nowrap">
                                   {% include "parts/actions.html" with update_url=u delete_url=d %}
                                 </td>
                               </tr>
@@ -115,7 +112,7 @@
                         {% endif %}
                       </div>
                       {% if page_obj.paginator.num_pages > 1 %}
-                      {%include 'parts/pagination.html' %}
+                      {% include 'parts/pagination.html' %}
                       {% endif %}
                     </div>
                     <!--end::Body-->
@@ -128,7 +125,8 @@
             <!-- .container -->
           </div> <!-- .d-flex.flex-column-fluid -->
         </div>
-        <!--end::Content--> <!--begin::Footer-->
+        <!--end::Content--> 
+        <!--begin::Footer-->
         {% include "parts/footer.html" %}
         <!--end::Footer-->
       </div>
@@ -153,8 +151,6 @@
   <!--begin::Demo Panel-->
   <!--end::Demo Panel-->
 
-
 </body>
 <!--end::Body-->
 {% endblock %}
-

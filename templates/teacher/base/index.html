@@ -5,6 +5,442 @@
 	<!--begin::Body-->
 	<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
 		<!--begin::Main-->
+<style>
+    body, #kt_body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #f5f7fa !important;
+    }
+
+    .content {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+
+    .d-flex.flex-column-fluid {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+
+    .container {
+        padding-top: 20px !important;
+        max-width: 1400px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    /* Stat Card */
+    .stat-card {
+        background: white;
+        padding: 30px 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--card-color);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        border-color: var(--card-color);
+    }
+
+    .stat-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .stat-card.purple { --card-color: #7c3aed; }
+    .stat-card.blue { --card-color: #3b82f6; }
+    .stat-card.green { --card-color: #10b981; }
+
+    /* Stat Icon */
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        font-size: 22px;
+        transition: transform 0.3s;
+    }
+
+    .stat-icon.purple { 
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        color: #7c3aed;
+    }
+    .stat-icon.blue { 
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: #3b82f6;
+    }
+    .stat-icon.green { 
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        color: #10b981;
+    }
+    .stat-icon.orange { 
+        background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+        color: #f59e0b;
+    }
+    .stat-icon.red { 
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #ef4444;
+    }
+    .stat-icon.yellow { 
+        background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+        color: #eab308;
+    }
+
+    /* Stat Content */
+    .stat-content {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Stat Title */
+    .stat-title {
+        font-size: 10px;
+        color: #6b7280;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    /* Stat Value */
+    .stat-value {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1f2937;
+        margin-bottom: 8px;
+        line-height: 1;
+        text-align: center;
+    }
+
+    /* Stat Change */
+    .stat-change {
+        font-size: 11px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        margin: 0 auto;
+    }
+
+    .stat-change.positive { 
+        color: #10b981;
+        background: #d1fae5;
+    }
+    
+    .stat-change.negative { 
+        color: #ef4444;
+        background: #fee2e2;
+    }
+
+    /* Dropdown */
+    .stat-dropdown {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 100;
+    }
+
+    .dropdown-btn {
+        background: #f3f4f6;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s;
+    }
+
+    .dropdown-btn:hover {
+        background: #e5e7eb;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 35px;
+        right: 0;
+        background: white;
+        min-width: 200px;
+        max-width: 300px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 8px;
+        z-index: 1000;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .dropdown-content a, .dropdown-content .group-item {
+        display: block;
+        padding: 10px 15px;
+        text-decoration: none;
+        color: #1f2937;
+        border-bottom: 1px solid #f3f4f6;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .dropdown-content a:hover, .dropdown-content .group-item:hover {
+        background: #f9fafb;
+    }
+
+    .dropdown-content a:last-child, .dropdown-content .group-item:last-child {
+        border-bottom: none;
+    }
+
+    /* Group Lessons Dropdown */
+    .group-item {
+        font-weight: 600;
+        background: #f9fafb;
+    }
+
+    .lessons-list {
+        padding-left: 0;
+        margin: 0;
+    }
+
+    .lesson-item {
+        padding: 8px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .lesson-date {
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .lesson-status {
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .status-completed {
+        background: #d1fae5;
+        color: #10b981;
+    }
+
+    .status-missed {
+        background: #fee2e2;
+        color: #ef4444;
+    }
+
+    .status-upcoming {
+        background: #e5e7eb;
+        color: #6b7280;
+    }
+
+    .status-today {
+        background: #dbeafe;
+        color: #3b82f6;
+    }
+
+    /* Month Filter */
+    .month-filter {
+        display: flex;
+        gap: 10px;
+        padding: 10px 15px;
+        background: #f9fafb;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .month-filter select {
+        padding: 6px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 13px;
+        background: white;
+        cursor: pointer;
+        flex: 1;
+    }
+
+    /* Teacher Info Containers */
+    .info-containers {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .info-box {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .info-box h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 14px 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-size: 14px;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .info-value {
+        font-size: 14px;
+        color: #2c3e50;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .salary-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .salary-box h2 {
+        color: white;
+        border-bottom-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .salary-box .info-label {
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .salary-box .info-value {
+        color: white;
+    }
+
+    .salary-type-badge {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.25);
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .monthly-salary {
+        margin-top: 25px;
+        padding-top: 25px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .monthly-salary-label {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 8px;
+    }
+
+    .monthly-salary-value {
+        font-size: 42px;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 12px;
+    }
+
+    .salary-calculation {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.8);
+        line-height: 1.6;
+    }
+
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-badge.active {
+        background: #d4f4dd;
+        color: #27ae60;
+    }
+
+    .status-badge.archive {
+        background: #fee;
+        color: #e74c3c;
+    }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 992px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .info-containers {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .info-containers {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>    
+
 		<!--begin::Header Mobile-->
 	     {% include 'parts/header-mobile.html' %}
 	
@@ -22,16 +458,159 @@
           {% include 'teacher/parts/header.html' %}
 					<!--end::Header-->
 					<!--begin::Content-->
-					<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-						<!--begin::Subheader-->
-
-						<!--end::Subheader-->
+					<div class="content d-flex flex-column flex-column-fluid" id="kt_content" style="padding-top: 0 !important;">
 						<!--begin::Entry-->
-						<div class="d-flex flex-column-fluid">
+						<div class="d-flex flex-column-fluid" style="padding-top: 0 !important;">
 							<!--begin::Container-->
 							<div class="container">
+								<!-- Stats Cards -->
+								<div class="stats-grid">
+									<!-- My Groups -->
+									<div class="stat-card">
+										<div class="stat-icon purple">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512" fill="currentColor">
+												<path d="M40 48C26.7 48 16 58.7 16 72l0 48c0 13.3 10.7 24 24 24l48 0c13.3 0 24-10.7 24-24l0-48c0-13.3-10.7-24-24-24L40 48zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32l288 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L192 64zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l288 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-288 0zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l288 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-288 0zM16 232l0 48c0 13.3 10.7 24 24 24l48 0c13.3 0 24-10.7 24-24l0-48c0-13.3-10.7-24-24-24l-48 0c-13.3 0-24 10.7-24 24zM40 368c-13.3 0-24 10.7-24 24l0 48c0 13.3 10.7 24 24 24l48 0c13.3 0 24-10.7 24-24l0-48c0-13.3-10.7-24-24-24l-48 0z"/>
+											</svg>
+										</div>
+										<div class="stat-content">
+											<div class="stat-title">My Groups</div>
+											<div class="stat-value">{{ groups_count }}</div>
+										</div>
+										<div class="stat-dropdown">
+											<button class="dropdown-btn">☰</button>
+											<div class="dropdown-content">
+												<a href="{% url 'teacher:tgroup-list' %}">All Groups</a>
+											</div>
+										</div>
+									</div>
 
+									<!-- My Students -->
+									<div class="stat-card">
+										<div class="stat-icon purple">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 640 512" fill="currentColor">
+												<path d="M320 16a104 104 0 1 1 0 208 104 104 0 1 1 0-208zM96 88a72 72 0 1 1 0 144 72 72 0 1 1 0-144zM0 416c0-70.7 57.3-128 128-128 12.8 0 25.2 1.9 36.9 5.4-32.9 36.8-52.9 85.4-52.9 138.6l0 16c0 11.4 2.4 22.2 6.7 32L32 480c-17.7 0-32-14.3-32-32l0-32zm521.3 64c4.3-9.8 6.7-20.6 6.7-32l0-16c0-53.2-20-101.8-52.9-138.6 11.7-3.5 24.1-5.4 36.9-5.4 70.7 0 128 57.3 128 128l0 32c0 17.7-14.3 32-32 32l-86.7 0zM472 160a72 72 0 1 1 144 0 72 72 0 1 1 -144 0zM160 432c0-88.4 71.6-160 160-160s160 71.6 160 160l0 16c0 17.7-14.3 32-32 32l-256 0c-17.7 0-32-14.3-32-32l0-16z"/>
+											</svg>
+										</div>
+										<div class="stat-content">
+											<div class="stat-title">My Students</div>
+											<div class="stat-value">{{ students_count }}</div>
+										</div>
+										<div class="stat-dropdown">
+											<button class="dropdown-btn">☰</button>
+											<div class="dropdown-content">
+												<a href="{% url 'teacher:tstudent-list' %}">All Students</a>
+											</div>
+										</div>
+									</div>
 
+									<!-- Monthly Income -->
+									<div class="stat-card">
+										<div class="stat-icon green">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 576 512" fill="currentColor">
+												<path d="M64 64C28.7 64 0 92.7 0 128l0 256c0 35.3 28.7 64 64 64l448 0c35.3 0 64-28.7 64-64l0-256c0-35.3-28.7-64-64-64L64 64zm48 160l160 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-160 0c-8.8 0-16-7.2-16-16s7.2-16 16-16zM96 336c0-8.8 7.2-16 16-16l352 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-352 0c-8.8 0-16-7.2-16-16zM376 160l80 0c13.3 0 24 10.7 24 24l0 48c0 13.3-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24l0-48c0-13.3 10.7-24 24-24z"/>
+											</svg>
+										</div>
+										<div class="stat-content">
+											<div class="stat-title">Monthly Income</div>
+											<div class="stat-value" id="monthlyIncomeValue">{{ monthly_income|floatformat:0 }}</div>
+											<div class="stat-change positive">UZS</div>
+										</div>
+									</div>
+
+									<!-- Filter Card -->
+									<div class="stat-card">
+										<div class="stat-icon red">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512" fill="currentColor">
+												<path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40L64 64C28.7 64 0 92.7 0 128l0 16 0 48L0 448c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-256 0-48 0-16c0-35.3-28.7-64-64-64l-40 0 0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40L152 64l0-40zM48 192l416 0 0 256c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256z"/>
+											</svg>
+										</div>
+										<div class="stat-content" style="width: 100%;">
+											<div class="stat-title">DATE FILTER</div>
+											<select id="filterMonth" onchange="applyFilter()" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; background: white; cursor: pointer; margin-bottom: 10px; font-weight: 600; color: #1f2937;">
+												<option value="1" {% if selected_month == 1 %}selected{% endif %}>Yanvar</option>
+												<option value="2" {% if selected_month == 2 %}selected{% endif %}>Fevral</option>
+												<option value="3" {% if selected_month == 3 %}selected{% endif %}>Mart</option>
+												<option value="4" {% if selected_month == 4 %}selected{% endif %}>Aprel</option>
+												<option value="5" {% if selected_month == 5 %}selected{% endif %}>May</option>
+												<option value="6" {% if selected_month == 6 %}selected{% endif %}>Iyun</option>
+												<option value="7" {% if selected_month == 7 %}selected{% endif %}>Iyul</option>
+												<option value="8" {% if selected_month == 8 %}selected{% endif %}>Avgust</option>
+												<option value="9" {% if selected_month == 9 %}selected{% endif %}>Sentabr</option>
+												<option value="10" {% if selected_month == 10 %}selected{% endif %}>Oktabr</option>
+												<option value="11" {% if selected_month == 11 %}selected{% endif %}>Noyabr</option>
+												<option value="12" {% if selected_month == 12 %}selected{% endif %}>Dekabr</option>
+											</select>
+											<select id="filterYear" onchange="applyFilter()" style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 13px; background: white; cursor: pointer; font-weight: 600; color: #1f2937;">
+												<option value="2024" {% if selected_year == 2024 %}selected{% endif %}>2024</option>
+												<option value="2025" {% if selected_year == 2025 %}selected{% endif %}>2025</option>
+												<option value="2026" {% if selected_year == 2026 %}selected{% endif %}>2026</option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<!-- Teacher Info Containers -->
+								<div class="info-containers">
+									<!-- Teacher Profile -->
+									<div class="info-box">
+										<h2>👨‍🏫 Teacher Profile</h2>
+										<div class="info-item">
+											<span class="info-label">Full Name:</span>
+											<span class="info-value">{{ teacher.full_name }}</span>
+										</div>
+										<div class="info-item">
+											<span class="info-label">Phone:</span>
+											<span class="info-value">{{ teacher.phone }}</span>
+										</div>
+										<div class="info-item">
+											<span class="info-label">Birth Date:</span>
+											<span class="info-value">{{ teacher.birth_date|date:"d M, Y" }}</span>
+										</div>
+										<div class="info-item">
+											<span class="info-label">Course:</span>
+											<span class="info-value">{{ teacher.course.title|default:"N/A" }}</span>
+										</div>
+										<div class="info-item">
+											<span class="info-label">Address:</span>
+											<span class="info-value">{{ teacher.address }}</span>
+										</div>
+										<div class="info-item">
+											<span class="info-label">Status:</span>
+											<span class="info-value">
+												<span class="status-badge {% if teacher.status == 'Active' %}active{% else %}archive{% endif %}">
+													{{ teacher.status }}
+												</span>
+											</span>
+										</div>
+									</div>
+
+									<!-- Teacher Salary -->
+									<div class="info-box">
+										<h2>💰 Teacher Salary</h2>
+										<div class="info-item">
+											<span class="info-label">Full Name:</span>
+											<span class="info-value">{{ teacher.full_name }}</span>
+										</div>
+										<div class="info-item">
+											<span class="info-label">Salary Type:</span>
+											<span class="info-value">
+												<span style="display: inline-block; padding: 6px 16px; border-radius: 20px; background: #e9d5ff; color: #7c3aed; font-size: 13px; font-weight: 600;">{{ teacher.type }}</span>
+											</span>
+										</div>
+										<div class="info-item">
+											<span class="info-label">Salary Rate:</span>
+											<span class="info-value">{{ teacher.salary }}</span>
+										</div>
+
+										<div style="margin-top: 25px; padding-top: 25px; border-top: 2px solid #f0f0f0;">
+											<div style="font-size: 14px; color: #666; margin-bottom: 8px; font-weight: 500;">Monthly Salary</div>
+											<div style="font-size: 42px; font-weight: 700; color: #2c3e50; margin-bottom: 12px;">{{ monthly_salary|floatformat:0 }} UZS</div>
+											<div style="font-size: 12px; color: #888; line-height: 1.6;">
+												💡 {{ calculation }}
+											</div>
+										</div>
+									</div>
+								</div>
 
 							</div>
 							<!--end::Container-->
@@ -41,7 +620,6 @@
 					<!--end::Content-->
 					<!--begin::Footer-->
           {% include 'parts/footer.html' %}
-
 					<!--end::Footer-->
 				</div>
 				<!--end::Wrapper-->
@@ -57,8 +635,84 @@
     {% include 'parts/scrolltop.html' %}
 		<!--end::Scrolltop-->
 
+<script>
+    let currentDropdown = null;
 
+    // ========================================
+    // APPLY FILTER - Oy va Yil o'zgarganda
+    // ========================================
+    function applyFilter() {
+        const year = document.getElementById('filterYear').value;
+        const month = document.getElementById('filterMonth').value;
+        
+        console.log('Filter applied:', year, month); // Debug uchun
+        
+        // Hozirgi URLni saqlagan holda faqat parametrlarni o'zgartirish
+        const url = new URL(window.location.href);
+        url.searchParams.set('year', year);
+        url.searchParams.set('month', month);
+        
+        window.location.href = url.toString();
+    }
 
+    // ========================================
+    // DROPDOWN TOGGLE (select bosilganda yopilmasin)
+    // ========================================
+    function toggleDropdown(event, dropdownId) {
+        event.stopPropagation();
+        const dropdown = document.getElementById(dropdownId);
+        
+        // Boshqa dropdownlarni yopish
+        document.querySelectorAll('.dropdown-content').forEach(dc => {
+            if (dc.id !== dropdownId) {
+                dc.style.display = 'none';
+            }
+        });
+        
+        // Hozirgi dropdownni ochish/yopish
+        if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+            currentDropdown = null;
+        } else {
+            dropdown.style.display = 'block';
+            currentDropdown = dropdown;
+        }
+    }
+
+    // ========================================
+    // GLOBAL DROPDOWN HANDLER
+    // ========================================
+    const dropdownBtns = document.querySelectorAll('.dropdown-btn');
+    dropdownBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = this.nextElementSibling;
+
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                document.querySelectorAll('.dropdown-content').forEach(dc => dc.style.display = 'none');
+                dropdown.style.display = 'block';
+                currentDropdown = dropdown;
+            }
+        });
+    });
+
+    // Dropdown ichida bosilganda yopilmasin
+    document.querySelectorAll('.dropdown-content').forEach(dropdown => {
+        dropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+
+    // Tashqarida bosilganda yopilsin
+    document.addEventListener('click', function(e) {
+        if (currentDropdown && !currentDropdown.contains(e.target)) {
+            document.querySelectorAll('.dropdown-content').forEach(dc => dc.style.display = 'none');
+            currentDropdown = null;
+        }
+    });
+</script>
 	</body>
 	<!--end::Body-->
 </html>

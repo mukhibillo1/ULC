@@ -1,0 +1,394 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-09 10:56+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\common\models.py:42
+msgid "Admin"
+msgstr "Admin"
+
+#: .\common\models.py:43
+msgid "Telegram Kanal"
+msgstr "Telegram Channel"
+
+#: .\common\models.py:44
+msgid "Instagram"
+msgstr "Instagram"
+
+#: .\common\models.py:45 .\templates\manager\teacher\list.html:181
+msgid "Phone"
+msgstr "Phone"
+
+#: .\common\models.py:46
+msgid "logos"
+msgstr "Logos"
+
+#: .\common\models.py:47
+msgid "Region"
+msgstr "Region"
+
+#: .\common\models.py:51 .\common\models.py:52
+msgid "Informations"
+msgstr "Information"
+
+#: .\common\models.py:68 .\common\models.py:219 .\common\models.py:256
+#: .\common\models.py:346
+msgid "full name"
+msgstr "Full name"
+
+#: .\common\models.py:69 .\common\models.py:221 .\common\models.py:257
+#: .\common\models.py:347
+msgid "birth date"
+msgstr "Birth date"
+
+#: .\common\models.py:71 .\common\models.py:222 .\common\models.py:258
+#: .\common\models.py:348 .\common\models.py:400
+msgid "phone"
+msgstr "Phone"
+
+#: .\common\models.py:72
+msgid "type"
+msgstr "Type"
+
+#: .\common\models.py:73
+msgid "salary"
+msgstr "Salary"
+
+#: .\common\models.py:74 .\common\models.py:223 .\common\models.py:259
+msgid "address"
+msgstr "Address"
+
+#: .\common\models.py:75 .\common\models.py:183 .\common\models.py:226
+#: .\common\models.py:261 .\common\models.py:351 .\common\models.py:369
+msgid "status"
+msgstr "Status"
+
+#: .\common\models.py:79
+msgid "teacher"
+msgstr "Teacher"
+
+#: .\common\models.py:80
+msgid "teachers"
+msgstr "Teachers"
+
+#: .\common\models.py:152 .\common\models.py:174
+msgid "title"
+msgstr "Title"
+
+#: .\common\models.py:153
+msgid "description"
+msgstr "Description"
+
+#: .\common\models.py:154
+msgid "duration"
+msgstr "Duration"
+
+#: .\common\models.py:158
+msgid "course"
+msgstr "Course"
+
+#: .\common\models.py:159
+msgid "courses"
+msgstr "Courses"
+
+#: .\common\models.py:176
+msgid "price"
+msgstr "Price"
+
+#: .\common\models.py:179
+msgid "lesson days"
+msgstr "Lesson days"
+
+#: .\common\models.py:180
+msgid "start_time"
+msgstr "Start time"
+
+#: .\common\models.py:181
+msgid "end_time"
+msgstr "End time"
+
+#: .\common\models.py:187
+msgid "group"
+msgstr "Group"
+
+#: .\common\models.py:188
+msgid "groups"
+msgstr "Groups"
+
+#: .\common\models.py:215
+msgid "Active"
+msgstr "Active"
+
+#: .\common\models.py:216
+msgid "Archive"
+msgstr "Archive"
+
+#: .\common\models.py:224
+msgid "balance"
+msgstr "Balance"
+
+#: .\common\models.py:225 .\common\models.py:262 .\common\models.py:349
+msgid "joined"
+msgstr "Joined"
+
+#: .\common\models.py:230
+msgid "student"
+msgstr "Student"
+
+#: .\common\models.py:231
+msgid "students"
+msgstr "Students"
+
+#: .\common\models.py:252
+msgid "Request"
+msgstr "Request"
+
+#: .\common\models.py:253
+msgid "Trial"
+msgstr "Trial"
+
+#: .\common\models.py:254
+msgid "In group"
+msgstr "In group"
+
+#: .\common\models.py:266
+msgid "lead"
+msgstr "Lead"
+
+#: .\common\models.py:267
+msgid "leads"
+msgstr "Leads"
+
+#: .\common\models.py:277
+msgid "amount"
+msgstr "Amount"
+
+#: .\common\models.py:278 .\common\models.py:371
+msgid "date"
+msgstr "Date"
+
+#: .\common\models.py:279
+msgid "debt"
+msgstr "Debt"
+
+#: .\common\models.py:333
+msgid "name"
+msgstr "Name"
+
+#: .\common\models.py:334
+msgid "capacity"
+msgstr "Capacity"
+
+#: .\common\models.py:350
+msgid "Monthly Salary"
+msgstr "Monthly Salary"
+
+#: .\common\models.py:355 .\common\models.py:356
+msgid "Employee"
+msgstr "Employee"
+
+#: .\common\models.py:385
+msgid "To'lov miqdori"
+msgstr "Payment amount"
+
+#: .\common\models.py:386
+msgid "To'lov turi"
+msgstr "Payment type"
+
+#: .\common\models.py:387
+msgid "To'lov sanasi"
+msgstr "Payment date"
+
+#: .\common\models.py:391
+msgid "Teacher Salary"
+msgstr "Teacher Salary"
+
+#: .\common\models.py:392
+msgid "Teacher Salaries"
+msgstr "Teacher Salaries"
+
+#: .\helpers\models.py:9
+msgid "Created at"
+msgstr "Created at"
+
+#: .\helpers\models.py:10
+msgid "Updated at"
+msgstr "Updated at"
+
+#: .\templates\manager\teacher\list.html:128
+msgid "Teachers"
+msgstr "Teachers"
+
+#: .\templates\manager\teacher\list.html:129
+msgid "Total"
+msgstr "Total"
+
+#: .\templates\manager\teacher\list.html:135
+msgid "All Courses"
+msgstr "All Courses"
+
+#: .\templates\manager\teacher\list.html:146
+msgid "Reset All"
+msgstr "Reset All"
+
+#: .\templates\manager\teacher\list.html:155
+#: .\templates\manager\teacher\list.html:162
+msgid "Search"
+msgstr "Search"
+
+#: .\templates\manager\teacher\list.html:165
+msgid "Create new teacher"
+msgstr "Create new teacher"
+
+#: .\templates\manager\teacher\list.html:179
+msgid "Full name"
+msgstr "Full name"
+
+#: .\templates\manager\teacher\list.html:180
+msgid "Birthday"
+msgstr "Birthday"
+
+#: .\templates\manager\teacher\list.html:182
+msgid "Course"
+msgstr "Course"
+
+#: .\templates\manager\teacher\list.html:183
+msgid "Salary Type"
+msgstr "Salary Type"
+
+#: .\templates\manager\teacher\list.html:184
+msgid "Salary"
+msgstr "Salary"
+
+#: .\templates\manager\teacher\list.html:185
+msgid "Address"
+msgstr "Address"
+
+#: .\templates\manager\teacher\list.html:186
+msgid "Actions"
+msgstr "Actions"
+
+# NEW TRANSLATIONS
+msgid "Groups"
+msgstr "Groups"
+
+msgid "Courses"
+msgstr "Courses"
+
+msgid "Classrooms"
+msgstr "Classrooms"
+
+msgid "Payment"
+msgstr "Payments"
+
+msgid "Salaries"
+msgstr "Salaries"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "MAIN"
+msgstr "MAIN"
+
+msgid "Classroom"
+msgstr "Classroom"
+
+msgid "Student"
+msgstr "Student"
+
+msgid "Finance"
+msgstr "Finance"
+
+msgid "Payments"
+msgstr "Payments"
+
+msgid "Workers"
+msgstr "Workers"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Lesson Days"
+msgstr "Lesson Days"
+
+msgid "All Teachers"
+msgstr "All Teachers"
+
+msgid "Add new group"
+msgstr "Add new group"
+
+msgid "Add new course"
+msgstr "Add new course"
+
+msgid "Create new classroom"
+msgstr "Create new classroom"
+
+msgid "Create new payment"
+msgstr "Create new payment"
+
+msgid "Create new salary"
+msgstr "Create new salary"
+
+msgid "All Groups"
+msgstr "All Groups"
+
+msgid "Mo We Fri"
+msgstr "Mo We Fri"
+
+msgid "Tu Thu Sat"
+msgstr "Tu Thu Sat"
+
+msgid "Room"
+msgstr "Room"
+
+msgid "Time"
+msgstr "Time"
+
+msgid "Price"
+msgstr "Price"
+
+msgid "Title"
+msgstr "Title"
+
+msgid "Duration"
+msgstr "Duration"
+
+msgid "Teacher"
+msgstr "Teacher"
+
+msgid "STUDENT"
+msgstr "STUDENT"
+
+msgid "GROUP"
+msgstr "GROUP"
+
+msgid "AMOUNT"
+msgstr "AMOUNT"
+
+msgid "DATE"
+msgstr "DATE"
+
+msgid "DEBT"
+msgstr "DEBT"
+
+msgid "ROLE"
+msgstr "ROLE"
+
+msgid "Administrator"
+msgstr "Administrator"
+
+msgid "Cash"
+msgstr "Cash"

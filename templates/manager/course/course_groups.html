@@ -1,61 +1,51 @@
 {% extends "base/base.html" %}
 {% load static %}
+{% load i18n %}
+{% load humanize %}
 {% block content %}
-<!--begin::Head-->
-<!--end::Head-->
-<!--begin::Body-->
+
 <body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
-  <!--begin::Main-->
-  <!--begin::Header Mobile-->
+
   {% include "parts/header-mobile.html" %}
-  <!--end::Header Mobile-->
+
   <div class="d-flex flex-column flex-root">
-    <!--begin::Page-->
     <div class="d-flex flex-row flex-column-fluid page">
-      <!--begin::Aside-->
+
       {% include "parts/aside.html" with menu_parent='course-all' menu_child='group-list' %}
-      <!--end::Aside-->
-      <!--begin::Wrapper-->
+
       <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
-        <!--begin::Header-->
+
         {% include "parts/header.html" %}
-        <!--end::Header-->
-        <!--begin::Content-->
+
         <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
           <div class="d-flex flex-column-fluid">
             <div class="container">
-
               <div class="row">
-
                 <div class="col-md-12">
-                  <!--begin::Advance Table Widget 4-->
-                  <div class="card card-custom card-stretch gutter-b">
-                    <!--begin::Header-->
-                    <div class="card-header border-0 py-5">
 
+                  <div class="card card-custom card-stretch gutter-b">
+
+                    <div class="card-header border-0 py-5">
                       <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label font-weight-bolder text-dark">Groups</span>
-                        <small class='mt-2'>Total: {{objects | length}}</small>
-                        
+                        <span class="card-label font-weight-bolder text-dark">{% trans "Groups" %}</span>
+                        <small class='mt-2'>{% trans "Total" %}: {{groups | length}}</small>
                       </h3>
                     </div>
-                    <!--end::Header-->
-                    <!--begin::Body-->
+
                     <div class="card-body pt-0 pb-3">
                       <div class="tab-content">
-                        <!--begin::Table-->
                         <div class="table-responsive">
                           {% if groups %}
                           <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
                             <thead>
                               <tr class="text-left text-uppercase">
-                                <th style="min-width: 100px">Title</th>
-                                <th style="min-width: 100px">Teacher</th>
-                                <th style="min-width: 100px">Date started</th>
-                                <th style="min-width: 100px">Lesson days</th>
-                                <th style="min-width: 100px">Time</th>
-                                <th style="min-width: 100px">Status</th>
-                                <th style="min-width: 100px">Actions</th>
+                                <th style="min-width: 100px">{% trans "Title" %}</th>
+                                <th style="min-width: 100px">{% trans "Teacher" %}</th>
+                                <th style="min-width: 100px">{% trans "Lesson Days" %}</th>
+                                <th style="min-width: 100px">{% trans "Time" %}</th>
+                                <th style="min-width: 100px">{% trans "Price" %}</th>
+                                <th style="min-width: 100px">{% trans "Date started" %}</th>
+                                <th style="min-width: 100px">{% trans "Actions" %}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -68,96 +58,72 @@
                                     <div class="mr-4 symbol symbol-40 symbol-light-success">
                                       <span class="symbol-label">{{ object.full_name|slice:':1' }}</span>
                                     </div>
-                                    <a href="{% url 'manager:group-students' object.pk %}"><span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.title}}</span></a>
+                                    <a href="#"><span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.title}}</span></a>
                                   </div>
                                 </td>
                                 <td>
                                   <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.teacher}}</span>
                                 </td>
                                 <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.date_started}}</span>
-                                </td>
-                                <td>
                                   <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.lesson_days}}</span>
                                 </td>
                                 <td>
-                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.time}}</span>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ object.start_time|time:"H:i" }} - {{ object.end_time|time:"H:i" }}</span>
                                 </td>
-                                 <td>
-                                  <span class="badge bg-warning text-dark">{{object.status}}</span>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.price|intcomma}} UZS</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.date_started}}</span>
                                 </td>
                                 <td nowrap="nowrap">
-                                  {% include "parts/actions.html" with update_url=u delete_url=d %}
-                                <span style="overflow: visible; position: relative; width: 125px">
-                                <a href="{% url 'manager:attendance-list' object.id %}" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" title="Edit details">
-                                    <span class="svg-icon svg-icon-md">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-check" viewBox="0 0 16 16">
-                                          <path d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0"/>
-                                          <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
-                                        </svg>
-                                    </span>
-                                </a>
-                                <span style="overflow: visible; position: relative; width: 125px">
-                                <a href="{% url 'manager:grade-list' object.id %}" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" title="Edit details">
-                                    <span class="svg-icon svg-icon-md">
-                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list-stars" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5"/>
-                                        <path d="M2.242 2.194a.27.27 0 0 1 .516 0l.162.53c.035.115.14.194.258.194h.551c.259 0 .37.333.164.493l-.468.363a.28.28 0 0 0-.094.3l.173.569c.078.256-.213.462-.423.3l-.417-.324a.27.27 0 0 0-.328 0l-.417.323c-.21.163-.5-.043-.423-.299l.173-.57a.28.28 0 0 0-.094-.299l-.468-.363c-.206-.16-.095-.493.164-.493h.55a.27.27 0 0 0 .259-.194zm0 4a.27.27 0 0 1 .516 0l.162.53c.035.115.14.194.258.194h.551c.259 0 .37.333.164.493l-.468.363a.28.28 0 0 0-.094.3l.173.569c.078.255-.213.462-.423.3l-.417-.324a.27.27 0 0 0-.328 0l-.417.323c-.21.163-.5-.043-.423-.299l.173-.57a.28.28 0 0 0-.094-.299l-.468-.363c-.206-.16-.095-.493.164-.493h.55a.27.27 0 0 0 .259-.194zm0 4a.27.27 0 0 1 .516 0l.162.53c.035.115.14.194.258.194h.551c.259 0 .37.333.164.493l-.468.363a.28.28 0 0 0-.094.3l.173.569c.078.255-.213.462-.423.3l-.417-.324a.27.27 0 0 0-.328 0l-.417.323c-.21.163-.5-.043-.423-.299l.173-.57a.28.28 0 0 0-.094-.299l-.468-.363c-.206-.16-.095-.493.164-.493h.55a.27.27 0 0 0 .259-.194z"/>
-                                      </svg>
-                                    </span>
-                                </a>
-                                </td>
+                                  <a href="{% url 'manager:group-settings' object.pk %}">
+                                      <span class="svg-icon svg-icon-md">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                                          <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
+                                          <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
+                                          </svg>
+                                      </span>
+                                  </a>
+                                  <a href="{% url 'manager:group-delete' object.id %}" data-toggle="modal" data-target="#deleteModal" class="btn btn-sm btn-clean btn-icon removeButton" title="Delete">
+                                      <span class="svg-icon svg-icon-md">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                          </svg>
+                                      </span>
+                                  </a>
                                 </td>
                               </tr>
                               {% endfor %}
+                            </tbody>
                           </table>
+                          {% else %}
+                            {% include "parts/nothing-found.html" %}
+                          {% endif %}
                         </div>
-                        <!--end::Table-->
-                        {% else %}
-                        {% include "parts/nothing-found.html" %}
+
+                        {% if page_obj.paginator.num_pages > 1 %}
+                          {% include 'parts/pagination.html' %}
                         {% endif %}
                       </div>
-                      {% if page_obj.paginator.num_pages > 1 %}
-                      {%include 'parts/pagination.html' %}
-                      {% endif %}
                     </div>
-                    <!--end::Body-->
+
                   </div>
-                  <!--end::Advance Table Widget 4-->
+
                 </div>
               </div>
-
             </div>
-            <!-- .container -->
-          </div> <!-- .d-flex.flex-column-fluid -->
+          </div>
         </div>
-        <!--end::Content--> <!--begin::Footer-->
-        {% include "parts/footer.html" %}
-        <!--end::Footer-->
-      </div>
-      <!--end::Wrapper-->
-    </div>
-    <!--end::Page-->
-  </div>
-  <!--end::Main-->
-  <!-- begin::User Panel-->
-  {% include "parts/user-panel.html" %}
-  <!--begin::Quick Cart-->
-  <!--end::Quick Cart-->
-  <!--begin::Quick Panel-->
-  <!--end::Quick Panel-->
-  <!--begin::Chat Panel-->
-  <!--end::Chat Panel-->
-  <!--begin::Scrolltop-->
-  {% include "parts/scrolltop.html" %}
-  <!--end::Scrolltop-->
-  <!--begin::Sticky Toolbar-->
-  <!--end::Sticky Toolbar-->
-  <!--begin::Demo Panel-->
-  <!--end::Demo Panel-->
 
+        {% include "parts/footer.html" %}
+
+      </div>
+    </div>
+  </div>
+
+  {% include "parts/user-panel.html" %}
+  {% include "parts/scrolltop.html" %}
 
 </body>
-<!--end::Body-->
 {% endblock %}
-

@@ -1,0 +1,242 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+    <div class="container">
+        
+        <!-- Header with Exit Button -->
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h3 class="font-weight-bolder text-dark">Messages</h3>
+            <a href="{% url 'accountant:home' %}" class="btn btn-light-danger font-weight-bold">
+                <i class="fas fa-sign-out-alt mr-2"></i>Exit
+            </a>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <div class="card card-custom" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                    <div class="card-body text-center py-8">
+                        <h2 class="font-weight-bolder text-white mb-2">{{ total_count }}</h2>
+                        <p class="text-white mb-0" style="opacity: 0.9;">Jami xabarlar</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none;">
+                    <div class="card-body text-center py-8">
+                        <h2 class="font-weight-bolder text-white mb-2">{{ unread_count }}</h2>
+                        <p class="text-white mb-0" style="opacity: 0.9;">O'qilmagan</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none;">
+                    <div class="card-body text-center py-8">
+                        <h2 class="font-weight-bolder text-white mb-2">{{ read_count }}</h2>
+                        <p class="text-white mb-0" style="opacity: 0.9;">O'qilgan</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="card card-custom mb-5" style="border-radius: 12px;">
+            <div class="card-body py-4">
+                <div class="btn-group btn-group-lg w-100">
+                    <a href="?status=all" class="btn {% if status_filter == 'all' %}btn-primary{% else %}btn-light-primary{% endif %} font-weight-bold">
+                        Barchasi ({{ total_count }})
+                    </a>
+                    <a href="?status=unread" class="btn {% if status_filter == 'unread' %}btn-danger{% else %}btn-light-danger{% endif %} font-weight-bold">
+                        O'qilmagan ({{ unread_count }})
+                    </a>
+                    <a href="?status=read" class="btn {% if status_filter == 'read' %}btn-success{% else %}btn-light-success{% endif %} font-weight-bold">
+                        O'qilgan ({{ read_count }})
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notifications List (LC-UP style) -->
+        <div class="card card-custom" style="border-radius: 12px;">
+            <div class="card-body p-5">
+                {% if notifications %}
+                    <div class="notif-list">
+                        {% for notif in notifications %}
+                        <div class="notif-item {% if not notif.is_read %}unread{% endif %}" onclick="showNotifDetail({{ notif.id }})">
+                            <div class="notif-item-header">
+                                <div class="notif-item-sender">
+                                    {{ notif.sender.get_full_name|default:notif.sender.username }}
+                                    {% if not notif.is_read %}
+                                    <span class="new-badge">NEW</span>
+                                    {% endif %}
+                                </div>
+                                <div class="notif-item-time">{{ notif.created_at|date:"H:i" }}</div>
+                            </div>
+                            <div class="notif-item-about">
+                                <span>About: {{ notif.get_message_type_display|default:"Message" }}</span>
+                                <span class="notif-item-date">{{ notif.created_at|date:"d M" }} / {{ notif.created_at|date:"y" }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-20">
+                        <i class="fas fa-inbox fa-5x text-muted mb-5" style="opacity: 0.3;"></i>
+                        <h4 class="text-muted">Xabarlar yo'q</h4>
+                        <p class="text-muted">Sizga hali hech qanday xabar kelmagan</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<!-- Detail Modal -->
+<div id="notifDetailModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+        <div class="modal-content" style="border-radius: 12px;">
+            <div class="modal-header" style="background: #f8f9fa; border-bottom: 1px solid #e5e7eb;">
+                <h6 class="modal-title font-weight-bold">Xabar detali</h6>
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="ki ki-close"></i>
+                </button>
+            </div>
+            <div class="modal-body p-0" id="notifDetailContent">
+                <div class="text-center py-10">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Notification List (LC-UP style) */
+.notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notif-item {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.notif-item:hover {
+    background: #f9fafb;
+    transform: translateX(-3px);
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+.notif-item.unread {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+}
+
+.notif-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.notif-item-sender {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.new-badge {
+    background: #ef4444;
+    color: white;
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.notif-item-time {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.notif-item-about {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #3b82f6;
+}
+
+.notif-item-date {
+    font-size: 12px;
+    color: #9ca3af;
+}
+</style>
+
+<script>
+const detailModal = new bootstrap.Modal(document.getElementById('notifDetailModal'));
+const detailContent = document.getElementById('notifDetailContent');
+
+async function showNotifDetail(id) {
+    detailContent.innerHTML = '<div class="text-center py-10"><div class="spinner-border text-primary"></div></div>';
+    detailModal.show();
+    
+    try {
+        const res = await fetch(`/accountant/notifications/${id}/detail/`);
+        const data = await res.json();
+        
+        if (data.success) {
+            const n = data.notification;
+            const time = new Date(n.created_at);
+            const timeStr = time.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+            const dateStr = time.toLocaleDateString('uz-UZ', { day: '2-digit', month: 'short' }).replace('.', '') + ' / ' + time.getFullYear().toString().slice(-2);
+            
+            detailContent.innerHTML = `
+                <div style="padding: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                        <div>
+                            <h6 style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">${n.sender_name}</h6>
+                            <span style="font-size: 12px; color: #3b82f6;">About: ${n.message_type_display || 'Message'}</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 13px; color: #6b7280; font-weight: 500;">${timeStr}</div>
+                            <div style="font-size: 12px; color: #9ca3af; margin-top: 2px;">${dateStr}</div>
+                        </div>
+                    </div>
+                    
+                    <div style="height: 1px; background: #e5e7eb; margin: 16px 0;"></div>
+                    
+                    <div style="background: #f9fafb; padding: 16px; border-radius: 8px; border-left: 3px solid #3b82f6;">
+                        <p style="margin: 0; color: #374151; line-height: 1.6; white-space: pre-wrap;">${n.message}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Reload page to update unread status
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        detailContent.innerHTML = '<div class="text-center py-10 text-danger">Xatolik yuz berdi</div>';
+    }
+}
+</script>
+
+{% endblock %}

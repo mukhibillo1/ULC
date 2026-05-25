@@ -1,0 +1,433 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+
+<body id="kt_body"
+      class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+
+{% include "parts/header-mobile.html" %}
+
+<div class="d-flex flex-column flex-root">
+    <div class="d-flex flex-row flex-column-fluid page">
+
+        {% include "parts/aside.html" with menu_parent="teacher-salary" menu_child="teacher-salary-create" %}
+
+        <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+
+            {% include "parts/header.html" %}
+
+            <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+
+                <div class="d-flex flex-column-fluid">
+                    <div class="container">
+
+                        <div class="card card-custom card-sticky">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h3 class="card-label">Create Teacher Salary</h3>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+
+                                {% if error %}
+                                <div class="alert alert-danger">
+                                    <strong>Error:</strong> {{ error }}
+                                </div>
+                                {% endif %}
+
+                                <form class="form" method="post">
+                                    {% csrf_token %}
+
+                                    <!-- COURSE -->
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label text-right"><b>Course</b></label>
+                                        <div class="col-lg-9">
+                                            <select id="id_course" class="form-control" name="course" required>
+                                                <option value="">--- Select course ---</option>
+                                                {% for course in courses %}
+                                                    <option value="{{ course.id }}">{{ course.title }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- TEACHER -->
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label text-right"><b>Teacher</b></label>
+                                        <div class="col-lg-9">
+                                            <select id="id_teacher" class="form-control" name="teacher" required>
+                                                <option value="">--- Select teacher ---</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Teacher Info (bir qatorda) -->
+                                    <div id="teacher-info" class="form-group row" style="display:none;">
+                                        <label class="col-lg-3 col-form-label text-right"></label>
+                                        <div class="col-lg-9">
+                                            <div class="alert alert-light-info" style="background-color: #E1F0FF; border-left: 4px solid #3699FF; padding: 12px;">
+                                                <span style="font-weight: 600; color: #187DE4;">Type:</span> 
+                                                <span id="t_type" style="color: #187DE4;"></span>
+                                                &nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                                                <span style="font-weight: 600; color: #187DE4;">Salary/Percentage:</span> 
+                                                <span id="t_salary" style="color: #187DE4;"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- GROUP -->
+                                    <div class="form-group row" id="group-wrapper" style="display:none;">
+                                        <label class="col-lg-3 col-form-label text-right"><b>Group</b></label>
+                                        <div class="col-lg-9">
+                                            <select id="id_group" class="form-control" name="group">
+                                                <option value="">--- Select group ---</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Monthly Salary Preview (bir qatorda, qizil) -->
+                                    <div id="salary-preview" class="form-group row" style="display:none;">
+                                        <label class="col-lg-3 col-form-label text-right"></label>
+                                        <div class="col-lg-9">
+                                            <div class="alert" style="background-color: #FFE2E5; border-left: 4px solid #F64E60; padding: 15px; margin-bottom: 0;">
+                                                <strong style="color: #F64E60; font-size: 15px;">Monthly Salary:</strong> 
+                                                <span id="calc_salary_text" style="color: #F64E60; font-size: 15px; font-weight: 500;"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- AMOUNT -->
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label text-right"><b>Amount</b></label>
+                                        <div class="col-lg-9">
+                                            <input type="number" 
+                                                   step="0.01" 
+                                                   min="0" 
+                                                   id="id_amount" 
+                                                   class="form-control" 
+                                                   name="amount" 
+                                                   placeholder="Enter amount" 
+                                                   required>
+                                        </div>
+                                    </div>
+
+                                    <!-- PAYMENT TYPE -->
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label text-right"><b>Payment Type</b></label>
+                                        <div class="col-lg-9">
+                                            <select class="form-control" name="type" required>
+                                                <option value="Cash">Cash (Naqd)</option>
+                                                <option value="Bank Card">Bank Card</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- DATE -->
+                                    <div class="form-group row">
+                                        <label class="col-lg-3 col-form-label text-right"><b>Date</b></label>
+                                        <div class="col-lg-9">
+                                            <input type="date" 
+                                                   id="id_date" 
+                                                   name="date" 
+                                                   class="form-control" 
+                                                   value="{{ today }}" 
+                                                   required>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <div class="row">
+                                            <div class="col-lg-3"></div>
+                                            <div class="col-lg-9">
+                                                <button type="submit" class="btn btn-primary mr-2">Save</button>
+                                                <a href="{% url 'manager:tsalary-list' %}" class="btn btn-secondary">Cancel</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            {% include "parts/footer.html" %}
+        </div>
+    </div>
+</div>
+
+{% include "parts/scrolltop.html" %}
+
+</body>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        
+        console.log("Document ready - initializing...");
+        
+        // COURSE tanlanganda teacherlarni yuklash
+        $("#id_course").on("change", function() {
+            let courseId = $(this).val();
+            console.log("Selected course ID:", courseId);
+            
+            // Teacherlarni tozalash
+            $("#id_teacher").html('<option value="">--- Select teacher ---</option>');
+            $("#teacher-info, #group-wrapper, #salary-preview").hide();
+            $("#id_group").html('<option value="">--- Select group ---</option>');
+            $("#id_amount").val("");
+
+            if (!courseId) return;
+
+            // AJAX request
+            $.ajax({
+                url: "{% url 'manager:ajax_teachers' %}",
+                data: { course_id: courseId },
+                method: "GET",
+                success: function(data) {
+                    console.log("Teachers received:", data);
+                    
+                    if (data.length === 0) {
+                        $("#id_teacher").append('<option value="" disabled>No teachers found</option>');
+                        return;
+                    }
+                    
+                    data.forEach(function(teacher) {
+                        $("#id_teacher").append(
+                            `<option value="${teacher.id}">${teacher.full_name} (${teacher.type})</option>`
+                        );
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error loading teachers:", error);
+                    console.error("Response:", xhr.responseText);
+                    alert("Error loading teachers. Please try again.");
+                }
+            });
+        });
+
+        // TEACHER tanlanganda info va grouplarni yuklash
+        $("#id_teacher").on("change", function() {
+            let teacherId = $(this).val();
+            console.log("Selected teacher ID:", teacherId);
+
+            $("#teacher-info, #group-wrapper, #salary-preview").hide();
+            $("#id_group").html('<option value="">--- Select group ---</option>');
+            $("#id_amount").val("");
+
+            if (!teacherId) return;
+
+            // Teacher info olish
+            $.ajax({
+                url: "{% url 'manager:ajax_teacher_info' %}",
+                data: { teacher_id: teacherId },
+                method: "GET",
+                success: function(data) {
+                    console.log("Teacher info:", data);
+                    
+                    $("#teacher-info").show();
+                    $("#t_type").text(data.type);
+                    
+                    // Type bo'yicha salary yozuvi
+                    if (data.type === "Fixed") {
+                        $("#t_salary").text(data.salary.toLocaleString() + " so'm");
+                        $("#id_amount").val(data.salary);
+                    } 
+                    else if (data.type === "Precent") {
+                        $("#t_salary").text(data.salary + "%");
+                        loadTeacherGroups(teacherId);
+                    }
+                    else if (data.type === "Group by") {
+                        $("#t_salary").text(data.salary.toLocaleString() + " so'm");
+                        loadTeacherGroups(teacherId);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error loading teacher info:", error);
+                    console.error("Response:", xhr.responseText);
+                    alert("Error loading teacher information. Please try again.");
+                }
+            });
+        });
+
+        // Teacher grouplarini yuklash
+        function loadTeacherGroups(teacherId) {
+            console.log("Loading groups for teacher:", teacherId);
+            
+            $.ajax({
+                url: "{% url 'manager:ajax_teacher_groups' %}",
+                data: { teacher_id: teacherId },
+                method: "GET",
+                success: function(data) {
+                    console.log("Groups received:", data);
+                    
+                    $("#id_group").html('<option value="">--- Select group ---</option>');
+                    
+                    // Event listener ni tozalash va qayta qo'shish
+                    $("#id_group").off("change");
+                    
+                    if (data.length === 0) {
+                        $("#group-wrapper").show();
+                        $("#id_group").append('<option value="" disabled>No groups found</option>');
+                        console.warn("No groups found for this teacher");
+                        return;
+                    }
+                    
+                    $("#group-wrapper").show();
+                    
+                    // Grouplarni qo'shish
+                    data.forEach(function(group) {
+                        console.log("Processing group:", group);
+                        
+                        let disabled = group.disabled ? "disabled" : "";
+                        let paidText = group.disabled ? " ✓ Paid" : "";
+                        
+                        let optionHtml = `<option value="${group.id}" 
+                                 ${disabled} 
+                                 data-salary="${group.monthly_salary}"
+                                 data-type="${group.type}"
+                                 data-percentage="${group.percentage}"
+                                 data-students="${group.students}"
+                                 data-price="${group.price}">
+                            ${group.name} (${group.students} students)${paidText}
+                        </option>`;
+                        
+                        $("#id_group").append(optionHtml);
+                    });
+                    
+                    // Event listener ni qayta qo'shish
+                    $("#id_group").on("change", handleGroupChange);
+                    
+                    console.log("Groups loaded successfully. Total:", data.length);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error loading groups:", error);
+                    console.error("Status:", xhr.status);
+                    console.error("Response:", xhr.responseText);
+                    alert("Error loading groups. Please check console for details.");
+                }
+            });
+        }
+        
+        // Group change handler
+        function handleGroupChange() {
+            console.log("=== GROUP CHANGED ===");
+            
+            let groupId = $(this).val();
+            console.log("Selected group ID:", groupId);
+            
+            let selectedOption = $(this).find("option:selected");
+            console.log("Selected option element:", selectedOption);
+            
+            // Data attributlarni o'qish
+            let salary = selectedOption.attr("data-salary");
+            let type = selectedOption.attr("data-type");
+            let percentage = selectedOption.attr("data-percentage");
+            let students = selectedOption.attr("data-students");
+            let price = selectedOption.attr("data-price");
+            
+            console.log("Raw attributes:", {
+                salary: salary,
+                type: type,
+                percentage: percentage,
+                students: students,
+                price: price
+            });
+            
+            // Parse qilish
+            salary = parseFloat(salary) || 0;
+            percentage = parseFloat(percentage) || 0;
+            students = parseInt(students) || 0;
+            price = parseFloat(price) || 0;
+            
+            console.log("Parsed values:", {
+                salary: salary,
+                type: type,
+                percentage: percentage,
+                students: students,
+                price: price
+            });
+
+            $("#salary-preview").hide();
+
+            if (!groupId) {
+                console.log("No group selected");
+                return;
+            }
+
+            // Monthly Salary hisoblash va ko'rsatish
+            let salaryText = "";
+            
+            if (type === "Precent") {
+                // Precent: Batafsil hisoblash
+                let totalIncome = students * price;
+                let calculatedSalary = (totalIncome * percentage) / 100;
+                salaryText = `${students} students × ${price.toLocaleString()} so'm = ${totalIncome.toLocaleString()} so'm × ${percentage}% = ${calculatedSalary.toLocaleString()} so'm`;
+                salary = calculatedSalary;
+                console.log("Precent calculation:", salaryText);
+            } 
+            else if (type === "Group by") {
+                // Group by: Faqat teacher salary
+                salaryText = `${salary.toLocaleString()} so'm (fixed per group)`;
+                console.log("Group by salary:", salaryText);
+            }
+            else {
+                // Fixed
+                salaryText = `${salary.toLocaleString()} so'm`;
+                console.log("Fixed salary:", salaryText);
+            }
+            
+            console.log("Final salary text:", salaryText);
+            
+            // HTML ga yozish
+            $("#calc_salary_text").html(salaryText);
+            $("#salary-preview").show();
+            
+            // Amount fieldiga avtomatik qiymat
+            let roundedSalary = Math.round(salary);
+            $("#id_amount").val(roundedSalary);
+            
+            console.log("Amount set to:", roundedSalary);
+            console.log("Preview element visible:", $("#salary-preview").is(":visible"));
+            console.log("Text element content:", $("#calc_salary_text").html());
+            console.log("=== END GROUP CHANGE ===");
+        }
+
+        // GROUP tanlanganda monthly salary ko'rsatish
+        $("#id_group").on("change", function() {
+            let groupId = $(this).val();
+            let teacherId = $("#id_teacher").val();
+
+            $("#salary-preview").hide();
+
+            if (!groupId) return;
+
+            $.ajax({
+                url: "{% url 'manager:ajax_teacher_groups' %}",
+                data: { teacher_id: teacherId },
+                method: "GET",
+                success: function(data) {
+                    let selectedGroup = data.find(g => g.id == groupId);
+                    
+                    if (selectedGroup && selectedGroup.monthly_salary) {
+                        $("#salary-preview").show();
+                        $("#calc_salary").text(selectedGroup.monthly_salary.toLocaleString());
+                        $("#id_amount").val(selectedGroup.monthly_salary);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error calculating salary:", error);
+                }
+            });
+        });
+
+    });
+</script>
+
+{% endblock %}

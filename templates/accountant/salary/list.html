@@ -1,0 +1,192 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+{% load humanize i18n %}
+
+<style>
+    .card-toolbar{
+      padding-left: 10px;
+    }
+    .filter-select {
+        border-radius: 8px;
+        height: 42px;
+        margin-left: 8px;
+        padding: 5px 12px;
+        border: 1px solid #cbd3e1;
+        font-size: 14px;
+    }
+
+    .reset-btn {
+        display: none;
+        background: #f14646;
+        color: #fff;
+        border: none;
+        margin-left: 8px;
+        padding: 8px 25px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: 0.25s;
+    }
+    .reset-btn:hover {
+        background: #d93636;
+    }
+</style>
+
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+  <div class="d-flex flex-column flex-root">
+    <div class="d-flex flex-row flex-column-fluid page">
+      {% include "accountant/parts/aside.html" with menu_parent='finance-all' menu_child='teacher-list' %}
+      <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+        {% include "accountant/parts/header.html" %}
+        <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+          <div class="d-flex flex-column-fluid">
+            <div class="container">
+
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card card-custom card-stretch gutter-b">
+                    <div class="card-header border-0 py-5">
+                      <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label font-weight-bolder text-dark">{% trans "Teachers" %}</span>
+                      </h3>
+                      <form method="get" id="filterForm">
+                          <div class="filter-container">
+
+                              <!-- MONTH -->
+                              <select id="month-select" name="month" class="filter-select">
+                                  <option value="1"  {% if selected_month == 1 %}selected{% endif %}>{% trans "January" %}</option>
+                                  <option value="2"  {% if selected_month == 2 %}selected{% endif %}>{% trans "February" %}</option>
+                                  <option value="3"  {% if selected_month == 3 %}selected{% endif %}>{% trans "March" %}</option>
+                                  <option value="4"  {% if selected_month == 4 %}selected{% endif %}>{% trans "April" %}</option>
+                                  <option value="5"  {% if selected_month == 5 %}selected{% endif %}>{% trans "May" %}</option>
+                                  <option value="6"  {% if selected_month == 6 %}selected{% endif %}>{% trans "June" %}</option>
+                                  <option value="7"  {% if selected_month == 7 %}selected{% endif %}>{% trans "July" %}</option>
+                                  <option value="8"  {% if selected_month == 8 %}selected{% endif %}>{% trans "August" %}</option>
+                                  <option value="9"  {% if selected_month == 9 %}selected{% endif %}>{% trans "September" %}</option>
+                                  <option value="10" {% if selected_month == 10 %}selected{% endif %}>{% trans "October" %}</option>
+                                  <option value="11" {% if selected_month == 11 %}selected{% endif %}>{% trans "November" %}</option>
+                                  <option value="12" {% if selected_month == 12 %}selected{% endif %}>{% trans "December" %}</option>
+                              </select>
+
+                              <!-- YEAR -->
+                              <select id="year-select" name="year" class="filter-select"></select>
+
+                              <!-- RESET BUTTON -->
+                              <button type="button" id="resetBtn" class="reset-btn">{% trans "Reset" %}</button>
+
+                          </div>
+                      </form>
+                    </div>
+                    
+                    <form method="get">
+                      <div class="form-group row">
+                          <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6  ml-10 ">
+                              <input type="text" class="form-control datatable-input" placeholder="{% trans "Search" %}" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                          </div>
+
+                          <button type="submit" class="btn btn-primary font-weight-bolder  ml-7 mb-1">
+                              <span class="nav-icon"><i class="fas fa-search"></i></span>
+                              <span class="nav-text">{% trans "Search" %}</span>
+                          </button>
+                          <div class="card-toolbar">
+                          <a href="{% url 'accountant:tsalary-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">{% trans "Create new teacher" %}</a>
+                          </div>
+                      </div>
+                    </form>
+
+                    <div class="card-body pt-0 pb-3">
+                      <div class="tab-content">
+                        <div class="table-responsive">
+                          {% if objects %}
+                          <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                            <thead>
+                              <tr class="text-left text-uppercase">
+                                <th style="min-width: 100px">{% trans "Full name" %}</th>
+                                <th style="min-width: 100px">{% trans "Course" %}</th>
+                                <th style="min-width: 100px">{% trans "Group" %}</th>
+                                <th style="min-width: 100px">{% trans "Salary Type" %}</th>
+                                <th style="min-width: 100px">{% trans "Salary" %}</th>
+                                <th style="min-width: 100px">{% trans "Date" %}</th>
+                                <th style="min-width: 100px">{% trans "Actions" %}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for object in objects %}
+                              {% url 'accountant:tsalary-update' object.id as u %}
+                              {% url 'accountant:tsalary-delete' object.id as d %}
+                              <tr>
+                                <td class="pl-0 py-6">
+                                  <div class="d-flex align-items-center">
+                                    <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                      <span class="symbol-label">{{ object.teacher.full_name|slice:':1' }}</span>
+                                    </div>
+                                    <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.teacher}}</span>      
+                                  </div>
+                                </td>
+                                <td><span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.course}}</span></td>
+                                <td><span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.group}}</span></td>
+                                <td><span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.type}}</span></td>
+                                <td><span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.amount| intcomma}}</span></td>
+                                <td><span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.date}}</span></td>
+                                <td nowrap="nowrap">{% include "parts/actions.html" with update_url=u delete_url=d %}</td>
+                              </tr>
+                              {% endfor %}
+                          </table>
+                          {% else %}
+                          {% include "parts/nothing-found.html" %}
+                          {% endif %}
+                        </div>
+                        {% if page_obj.paginator.num_pages > 1 %}
+                        {% include 'parts/pagination.html' %}
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        {% include "parts/footer.html" %}
+      </div>
+    </div>
+  </div>
+  {% include "parts/user-panel.html" %}
+  {% include "parts/scrolltop.html" %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const filterForm  = document.getElementById("filterForm");
+    const monthSelect = document.getElementById("month-select");
+    const yearSelect  = document.getElementById("year-select");
+    const resetBtn    = document.getElementById("resetBtn");
+
+    const selectedMonth = {{ selected_month }};
+    const selectedYear  = {{ selected_year }};
+    const currentMonth  = new Date().getMonth() + 1;
+    const currentYear   = new Date().getFullYear();
+
+    for (let y = 2023; y <= 2030; y++) {
+        let opt = document.createElement("option");
+        opt.value = y;
+        opt.textContent = y;
+        if (selectedYear === y) opt.selected = true;
+        yearSelect.appendChild(opt);
+    }
+
+    monthSelect.addEventListener("change", () => filterForm.submit());
+    yearSelect.addEventListener("change", () => filterForm.submit());
+
+    if (selectedMonth !== currentMonth || selectedYear !== currentYear) {
+        resetBtn.style.display = "inline-block";
+    }
+
+    resetBtn.addEventListener("click", function () {
+        window.location.href = "{% url 'accountant:tsalary-list' %}";
+    });
+});
+</script>
+</body>
+{% endblock %}

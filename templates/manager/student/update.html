@@ -4,7 +4,10 @@
 <!--end::Head-->
 <!--begin::Body-->
 
-<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+<body
+    id="kt_body"
+    class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading"
+>
     <!--begin::Main-->
     <!--begin::Header Mobile-->
     {% include "parts/header-mobile.html" %}
@@ -34,7 +37,7 @@
                                 <div class="card-header">
                                     <div class="card-title">
                                         <h3 class="card-label">
-                                           Edit student <i class="mr-2"></i>
+                                           Add student <i class="mr-2"></i>
                                         </h3>
                                     </div>
                                 </div>
@@ -44,17 +47,21 @@
                                         {% csrf_token %}
                                         {% for field in form %}
 
-                                        <div class="form-student row">
+                                        <div class="form-group row">
                                             <label class="col-form-label text-right col-lg-3 col-sm-12" for="{{field.auto_id}}">
                                                 {% if field.field.required %}
                                                 <b>{{field.label}}</b>
                                                 {% else %}
                                                 {{field.label}} 
                                                 {% endif %}
-                                            </label>
+                                           </label>
                                             <div class='col-lg-9 col-md-9 col-sm-12'>
                                                 <span style="color:red;">{{field.errors}}</span>
                                                 {{field}}
+                                                {% if field.name == "code" %}
+                                                <button type="button" class="btn btn-sm btn-info mt-2" id="generate-code">Kod yaratish</button>
+                                                {% endif %}
+ 
                                             </div>
                                         </div>
                                         {% endfor %}    
@@ -105,6 +112,24 @@
     <!--end::Demo Panel-->
     <!--end::Page Scripts-->
 </body>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const button = document.getElementById("generate-code");
+    const codeInput = document.getElementById("id_code");
+
+    if (button && codeInput) {
+        button.addEventListener("click", function() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let code = "";
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            codeInput.value = code;
+        });
+    }
+});
+</script>
+
 <!--end::Body-->
 {% endblock %}
 

@@ -1,0 +1,259 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-09 10:56+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: .\common\models.py:42
+msgid "Admin"
+msgstr "Администратор"
+
+#: .\common\models.py:43
+msgid "Telegram Kanal"
+msgstr "Telegram канал"
+
+#: .\common\models.py:44
+msgid "Instagram"
+msgstr "Instagram"
+
+#: .\common\models.py:45 .\templates\manager\teacher\list.html:181
+msgid "Phone"
+msgstr "Телефон"
+
+#: .\common\models.py:46
+msgid "logos"
+msgstr "Логотипы"
+
+#: .\common\models.py:47
+msgid "Region"
+msgstr "Регион"
+
+#: .\common\models.py:51 .\common\models.py:52
+msgid "Informations"
+msgstr "Информация"
+
+#: .\common\models.py:68 .\common\models.py:219 .\common\models.py:256
+#: .\common\models.py:346
+msgid "full name"
+msgstr "Полное имя"
+
+#: .\common\models.py:69 .\common\models.py:221 .\common\models.py:257
+#: .\common\models.py:347
+msgid "birth date"
+msgstr "Дата рождения"
+
+#: .\common\models.py:71 .\common\models.py:222 .\common\models.py:258
+#: .\common\models.py:348 .\common\models.py:400
+msgid "phone"
+msgstr "Телефон"
+
+#: .\common\models.py:72
+msgid "type"
+msgstr "Тип"
+
+#: .\common\models.py:73
+msgid "salary"
+msgstr "Зарплата"
+
+#: .\common\models.py:74 .\common\models.py:223 .\common\models.py:259
+msgid "address"
+msgstr "Адрес"
+
+#: .\common\models.py:75 .\common\models.py:183 .\common\models.py:226
+#: .\common\models.py:261 .\common\models.py:351 .\common\models.py:369
+msgid "status"
+msgstr "Статус"
+
+#: .\common\models.py:79
+msgid "teacher"
+msgstr "Учитель"
+
+#: .\common\models.py:80
+msgid "teachers"
+msgstr "Учителя"
+
+#: .\common\models.py:152 .\common\models.py:174
+msgid "title"
+msgstr "Название"
+
+#: .\common\models.py:153
+msgid "description"
+msgstr "Описание"
+
+#: .\common\models.py:154
+msgid "duration"
+msgstr "Продолжительность"
+
+#: .\common\models.py:158
+msgid "course"
+msgstr "Курс"
+
+#: .\common\models.py:159
+msgid "courses"
+msgstr "Курсы"
+
+#: .\common\models.py:176
+msgid "price"
+msgstr "Цена"
+
+#: .\common\models.py:179
+msgid "lesson days"
+msgstr "Дни занятий"
+
+#: .\common\models.py:180
+msgid "start_time"
+msgstr "Время начала"
+
+#: .\common\models.py:181
+msgid "end_time"
+msgstr "Время окончания"
+
+#: .\common\models.py:187
+msgid "group"
+msgstr "Группа"
+
+#: .\common\models.py:188
+msgid "groups"
+msgstr "Группы"
+
+#: .\common\models.py:215
+msgid "Active"
+msgstr "Активный"
+
+#: .\common\models.py:216
+msgid "Archive"
+msgstr "Архив"
+
+#: .\common\models.py:224
+msgid "balance"
+msgstr "Баланс"
+
+#: .\common\models.py:225 .\common\models.py:262 .\common\models.py:349
+msgid "joined"
+msgstr "Присоединился"
+
+#: .\common\models.py:230
+msgid "student"
+msgstr "Студент"
+
+#: .\common\models.py:231
+msgid "students"
+msgstr "Студенты"
+
+#: .\common\models.py:252
+msgid "Request"
+msgstr "Запрос"
+
+#: .\common\models.py:253
+msgid "Trial"
+msgstr "Пробный"
+
+#: .\common\models.py:254
+msgid "In group"
+msgstr "В группе"
+
+#: .\common\models.py:266
+msgid "lead"
+msgstr "Лид"
+
+#: .\common\models.py:267
+msgid "leads"
+msgstr "Лиды"
+
+#: .\common\models.py:277
+msgid "amount"
+msgstr "Сумма"
+
+#: .\common\models.py:278 .\common\models.py:371
+msgid "date"
+msgstr "Дата"
+
+#: .\common\models.py:279
+msgid "debt"
+msgstr "Долг"
+
+#: .\common\models.py:333
+msgid "name"
+msgstr "Имя"
+
+#: .\common\models.py:334
+msgid "capacity"
+msgstr "Вместимость"
+
+#: .\common\models.py:350
+msgid "Monthly Salary"
+msgstr "Месячная зарплата"
+
+#: .\common\models.py:355 .\common\models.py:356
+msgid "Employee"
+msgstr "Сотрудник"
+
+#: .\common\models.py:385
+msgid "To'lov miqdori"
+msgstr "Сумма платежа"
+
+#: .\common\models.py:386
+msgid "To'lov turi"
+msgstr "Тип платежа"
+
+#: .\common\models.py:387
+msgid "To'lov sanasi"
+msgstr "Дата платежа"
+
+#: .\common\models.py:391
+msgid "Teacher Salary"
+msgstr "Зарплата учителя"
+
+#: .\common\models.py:392
+msgid "Teacher Salaries"
+msgstr "Зарплаты учителей"
+
+#: .\helpers\models.py:9
+msgid "Created at"
+msgstr "Создано"
+
+#: .\helpers\models.py:10
+msgid "Updated at"
+msgstr "Обновлено"
+
+#: .\templates\manager\teacher\list.html:128
+msgid "Teachers"
+msgstr "Учителя"
+
+#: .\templates\manager\teacher\list.html:129
+msgid "Total"
+msgstr "Всего"
+
+#: .\templates\manager\teacher\list.html:135
+msgid "All Courses"
+msgstr "Все курсы"
+
+#: .\templates\manager\teacher\list.html:146
+msgid "Reset All"
+msgstr "Сбросить всё"
+
+#: .\templates\manager\teacher\list.html:155
+#: .\templates\manager\teacher\list.html:162
+msgid "Search"
+msgstr "Поиск"
+
+#: .\templates\manager\teacher\list.html:165
+msgid "Create new teacher"
+msgstr "Создать нового учителя"
+
+#: .\templates\manager\teacher\list.html:179
+msgid "Full name"
+msgstr "Полное имя"

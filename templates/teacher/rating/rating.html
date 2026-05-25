@@ -1,0 +1,698 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rating - {{ group.title }}</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Subheader */
+        .subheader {
+            background-color: white;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .subheader .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .subheader .nav-tabs .nav-link {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+            background-color: #e5e7eb20;
+        }
+
+        .subheader .nav-tabs .nav-link:hover {
+            background-color: #e5e7eb;
+            color: #3b82f6;
+        }
+
+        .subheader .nav-tabs .active {
+            background-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Header */
+        .header {
+            border-radius: 20px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Controls Row */
+        .controls-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Month/Year Filter */
+        .filter-container {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex: 1;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .filter-group select {
+            padding: 10px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 130px;
+            background: white;
+        }
+
+        .filter-group select:hover {
+            border-color: #667eea;
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Top 3 Cards Row */
+        .top-three-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .top-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .top-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .top-card.rank-1::before { background: linear-gradient(90deg, #ffd700, #ffed4e); }
+        .top-card.rank-2::before { background: linear-gradient(90deg, #c0c0c0, #e8e8e8); }
+        .top-card.rank-3::before { background: linear-gradient(90deg, #cd7f32, #ffb347); }
+
+        .top-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        .rank-box {
+            width: 45px;
+            height: 45px;
+            border: 3px solid #e5e7eb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #374151;
+            flex-shrink: 0;
+        }
+
+        .rank-1 .rank-box { 
+            border-color: #ffd700;
+            color: #ffd700;
+            background: #fffbeb;
+        }
+
+        .rank-2 .rank-box { 
+            border-color: #c0c0c0;
+            color: #9ca3af;
+            background: #f9fafb;
+        }
+
+        .rank-3 .rank-box { 
+            border-color: #cd7f32;
+            color: #cd7f32;
+            background: #fef3c7;
+        }
+
+        .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .top-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .top-phone {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .score-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .top-score {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #667eea;
+            line-height: 1;
+        }
+
+        .score-divider {
+            width: 60px;
+            height: 2px;
+            background: #e5e7eb;
+        }
+
+        .grade-count {
+            font-size: 0.85rem;
+            color: #6b7280;
+            text-align: right;
+        }
+
+        /* Leaderboard Dropdown */
+        .leaderboard-dropdown {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .dropdown-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dropdown-header:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #664a8e 100%);
+        }
+
+        .dropdown-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dropdown-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .dropdown-icon.open {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+
+        .dropdown-content.open {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in;
+        }
+
+        .leaderboard-item {
+            display: grid;
+            grid-template-columns: 80px 60px 1fr 200px 120px;
+            gap: 20px;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e5e7eb;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .leaderboard-item:hover {
+            background: #f9fafb;
+        }
+
+        .rank-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .student-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .student-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .student-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .student-stats {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .student-phone {
+            font-size: 1rem;
+            color: #4b5563;
+        }
+
+        .student-score {
+            text-align: right;
+        }
+
+        .score-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #667eea;
+        }
+
+        .score-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        /* Loading & Empty States */
+        .loading, .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #6b7280;
+            font-size: 1.1rem;
+            background: white;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .top-three-row {
+                grid-template-columns: 1fr;
+            }
+
+            .leaderboard-item {
+                grid-template-columns: 50px 1fr 100px;
+                gap: 15px;
+            }
+
+            .student-avatar,
+            .student-phone {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .controls-row {
+                flex-direction: column;
+            }
+
+            .filter-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Subheader Navigation -->
+        <div class="subheader">
+            <ul class="nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link {% if active_tab == 'all' %}active{% endif %}" href="{% url 'teacher:group-settings' group.pk %}">All</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if active_tab == 'attendance' %}active{% endif %}" href="{% url 'teacher:attendance-list' group.pk %}">Davomat</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if active_tab == 'baholash' %}active{% endif %}" href="{% url 'teacher:grades' group.pk %}">Baholash</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if active_tab == 'rating' %}active{% endif %}" href="{% url 'teacher:rating' group.pk %}">Rating</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if active_tab == 'debtors' %}active{% endif %}" href="{% url 'teacher:group-debtors' group.pk %}">Debtors</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Header -->
+
+        <div class="header">
+            <div class="header-content">
+                <div class="header-title">
+                    <h1>Rating system</h1>
+                    <p>{{ group.title }}'s - students rating system</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <p>⏳ Ma'lumotlar yuklanmoqda...</p>
+        </div>
+
+        <!-- Main Content -->
+        <div id="main-content" style="display: none;">
+            <!-- Controls Row: Month/Year Filter -->
+            <div class="controls-row">
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label>Oy:</label>
+                        <select id="month-select">
+                            <option value="0">Yanvar</option>
+                            <option value="1">Fevral</option>
+                            <option value="2">Mart</option>
+                            <option value="3">Aprel</option>
+                            <option value="4">May</option>
+                            <option value="5">Iyun</option>
+                            <option value="6">Iyul</option>
+                            <option value="7">Avgust</option>
+                            <option value="8">Sentabr</option>
+                            <option value="9">Oktabr</option>
+                            <option value="10">Noyabr</option>
+                            <option value="11">Dekabr</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Yil:</label>
+                        <select id="year-select"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top 3 Cards Row -->
+            <div class="top-three-row" id="top-three-container"></div>
+
+            <!-- Leaderboard Dropdown -->
+            <div class="leaderboard-dropdown">
+                <div class="dropdown-header" onclick="toggleDropdown()">
+                    <div class="dropdown-title">
+                        📊 Others
+                    </div>
+                    <div class="dropdown-icon" id="dropdown-icon">▼</div>
+                </div>
+                <div class="dropdown-content" id="dropdown-content">
+                    <div id="leaderboard"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <h3>📭 Ma'lumotlar topilmadi</h3>
+            <p>Tanlangan oyda hech qanday baho qo'yilmagan</p>
+        </div>
+    </div>
+
+    <script>
+        const groupId = '{{ group.id }}';
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeYearSelect();
+            setCurrentDate();
+            loadRatingData();
+        });
+
+        // Year select
+        function initializeYearSelect() {
+            const yearSelect = document.getElementById('year-select');
+            for (let y = 2020; y <= 2030; y++) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                yearSelect.appendChild(opt);
+            }
+        }
+
+        function setCurrentDate() {
+            document.getElementById('month-select').value = currentMonth;
+            document.getElementById('year-select').value = currentYear;
+        }
+
+        // Event listeners
+        document.getElementById('month-select').addEventListener('change', function() {
+            currentMonth = parseInt(this.value);
+            console.log('📅 Oy o\'zgardi:', currentMonth);
+            loadRatingData();
+        });
+
+        document.getElementById('year-select').addEventListener('change', function() {
+            currentYear = parseInt(this.value);
+            console.log('📅 Yil o\'zgardi:', currentYear);
+            loadRatingData();
+        });
+
+        // Toggle dropdown
+        function toggleDropdown() {
+            const content = document.getElementById('dropdown-content');
+            const icon = document.getElementById('dropdown-icon');
+            
+            content.classList.toggle('open');
+            icon.classList.toggle('open');
+        }
+
+        // Load rating data
+        async function loadRatingData() {
+            showLoading();
+            
+            try {
+                const apiMonth = currentMonth + 1;
+                const url = `/manager/api/rating/${groupId}/?month=${apiMonth}&year=${currentYear}`;
+                
+                console.log('📥 Rating yuklanmoqda:', url);
+                console.log(`📅 Tanlangan oy: ${apiMonth}, yil: ${currentYear}`);
+                
+                const res = await fetch(url);
+                
+                console.log('📡 Response status:', res.status);
+                
+                if (!res.ok) {
+                    throw new Error(`API xatolik: ${res.status}`);
+                }
+                
+                const data = await res.json();
+                console.log('✅ Rating yuklandi:', data);
+                
+                if (data.success && data.students && data.students.length > 0) {
+                    console.log(`👥 ${data.students.length} ta talaba topildi`);
+                    renderTopThree(data.students.slice(0, 3));
+                    renderLeaderboard(data.students.slice(3));
+                    showContent();
+                } else {
+                    console.log('⚠️ Talabalar topilmadi');
+                    showEmptyState();
+                }
+            } catch (e) {
+                console.error('❌ Xatolik:', e);
+                showEmptyState();
+            }
+        }
+
+        // Render Top 3 Cards
+        function renderTopThree(topThree) {
+            const container = document.getElementById('top-three-container');
+            container.innerHTML = '';
+            
+            topThree.forEach((student, index) => {
+                const card = document.createElement('div');
+                card.className = `top-card rank-${index + 1}`;
+                card.innerHTML = `
+                    <div class="rank-box">#${index + 1}</div>
+                    <div class="card-content">
+                        <div class="top-name">${student.name}</div>
+                        <div class="top-phone">${student.phone || 'Telefon yo\'q'}</div>
+                    </div>
+                    <div class="score-section">
+                        <div class="top-score">${student.average}</div>
+                        <div class="score-divider"></div>
+                        <div class="grade-count">${student.total_grades} ta baho</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Render Leaderboard
+        function renderLeaderboard(students) {
+            const leaderboard = document.getElementById('leaderboard');
+            leaderboard.innerHTML = '';
+            
+            if (students.length === 0) {
+                leaderboard.innerHTML = '<div style="padding: 40px; text-align: center; color: #6b7280;">Boshqa talabalar yo\'q</div>';
+                return;
+            }
+            
+            students.forEach(student => {
+                const initial = student.name.charAt(0).toUpperCase();
+                const colors = ['#667eea', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6'];
+                const bgColor = colors[student.rank % colors.length];
+                
+                const item = document.createElement('div');
+                item.className = 'leaderboard-item';
+                item.innerHTML = `
+                    <div class="rank-badge">${student.rank}</div>
+                    <div class="student-avatar" style="background: ${bgColor}">${initial}</div>
+                    <div class="student-info">
+                        <div class="student-name">${student.name}</div>
+                        <div class="student-stats">${student.total_grades} ta baho</div>
+                    </div>
+                    <div class="student-phone">${student.phone || 'Telefon yo\'q'}</div>
+                    <div class="student-score">
+                        <div class="score-value">${student.average}</div>
+                        <div class="score-label">o'rtacha</div>
+                    </div>
+                `;
+                leaderboard.appendChild(item);
+            });
+        }
+
+        // UI States
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('empty-state').style.display = 'none';
+        }
+
+        function showContent() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('empty-state').style.display = 'none';
+        }
+
+        function showEmptyState() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('empty-state').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+{% load humanize i18n %}
+<style>
+.card-toolbar{
+  padding-left: 10px;
+}
+</style>
+
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+  <!--begin::Main-->
+  <div class="d-flex flex-column flex-root">
+    <!--begin::Page-->
+    <div class="d-flex flex-row flex-column-fluid page">
+      <!--begin::Aside-->
+      {% include "reception/parts/aside.html" with menu_parent='workers-all' menu_child='employee-list' %}
+      <!--end::Aside-->
+      <!--begin::Wrapper-->
+      <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+        <!--begin::Header-->
+        {% include "reception/parts/header.html" %}
+        <!--end::Header-->
+        <!--begin::Content-->
+        <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+          <div class="d-flex flex-column-fluid">
+            <div class="container">
+
+              <div class="row">
+                <div class="col-md-12">
+                  <!--begin::Advance Table Widget 4-->
+                  <div class="card card-custom card-stretch gutter-b">
+                    <!--begin::Header-->
+                    <div class="card-header border-0 py-5">
+                      <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label font-weight-bolder text-dark">{% trans "Staffs" %}</span>
+                        <small class='mt-2'>{% trans "Total" %}: {{objects | length}}</small>
+                      </h3>
+                    </div>
+                    <form method="get">
+                      <div class="form-group row">
+                          <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6  ml-10 ">
+                              <input type="text" class="form-control datatable-input" placeholder="{% trans 'Search' %}" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                          </div>
+
+                          <button type="submit" class="btn btn-primary font-weight-bolder  ml-7 mb-1">
+                              <span class="nav-icon">
+                                  <i class="fas fa-search"></i>
+                              </span>
+                              <span class="nav-text">{% trans "Search" %}</span>
+                          </button>
+                          <div class="card-toolbar">
+                          <a href="{% url 'reception:employee-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">{% trans "Create new staff" %}</a>
+                          </div>
+                      </div>
+                    </form>
+                    <!--end::Header-->
+                    <!--begin::Body-->
+                    <div class="card-body pt-0 pb-3">
+                      <div class="tab-content">
+                        <!--begin::Table-->
+                        <div class="table-responsive">
+                          {% if objects %}
+                          <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                            <thead>
+                              <tr class="text-left text-uppercase">
+                                <th style="min-width: 100px">{% trans "Full name" %}</th>
+                                <th style="min-width: 100px">{% trans "Role" %}</th>
+                                <th style="min-width: 100px">{% trans "Phone" %}</th>
+                                <th style="min-width: 100px">{% trans "Salary" %}</th>
+                                <th style="min-width: 100px">{% trans "Date Joined" %}</th>
+                                <th style="min-width: 100px">{% trans "Actions" %}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for object in objects %}
+                              {% url 'reception:employee-update' object.id as u %}
+                              {% url 'reception:employee-delete' object.id as d %}
+                              <tr>
+                                <td class="pl-0 py-6">
+                                  <div class="d-flex align-items-center">
+                                    <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                      <span class="symbol-label">{{ object.employee.full_name|slice:':1' }}</span>
+                                    </div>
+                                    <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.full_name}}</span>      
+                                  </div>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.role}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.phone}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.salary| intcomma}} UZS</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.date_joined}}</span>
+                                </td>
+                                <td nowrap="nowrap">
+                                  {% include "parts/actions.html" with update_url=u delete_url=d %}
+                                </td>
+                              </tr>
+                              {% endfor %}
+                          </table>
+                        </div>
+                        <!--end::Table-->
+                        {% else %}
+                        {% include "parts/nothing-found.html" %}
+                        {% endif %}
+                      </div>
+                      {% if page_obj.paginator.num_pages > 1 %}
+                      {% include 'parts/pagination.html' %}
+                      {% endif %}
+                    </div>
+                    <!--end::Body-->
+                  </div>
+                  <!--end::Advance Table Widget 4-->
+                </div>
+              </div>
+
+            </div>
+            <!-- .container -->
+          </div> <!-- .d-flex.flex-column-fluid -->
+        </div>
+        <!--end::Content--> 
+        <!--begin::Footer-->
+        {% include "parts/footer.html" %}
+        <!--end::Footer-->
+      </div>
+      <!--end::Wrapper-->
+    </div>
+    <!--end::Page-->
+  </div>
+  <!--end::Main-->
+  <!-- begin::User Panel-->
+  {% include "parts/user-panel.html" %}
+  <!--begin::Scrolltop-->
+  {% include "parts/scrolltop.html" %}
+  <!--end::Scrolltop-->
+
+</body>
+{% endblock %}

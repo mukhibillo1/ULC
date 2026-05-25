@@ -1,10 +1,12 @@
 from django import forms
 from helpers import widgets as widget
 from common import models
-from common.models import Student,Employee
+from common.models import Student,Employee ,Teacher , BaseUser
 from django.forms import DateInput
 from django.utils import timezone
+from django.conf import settings
 from datetime import date
+from django.apps import apps
 from django.contrib.auth.forms import UserCreationForm
 
 class UserForm(UserCreationForm):
@@ -20,8 +22,8 @@ class UserForm(UserCreationForm):
             "phone" : forms.TelInput(attrs={"class" : "form-control", "placeholder" : "Phone"}),
             "role" : forms.Select(attrs={"class" : "form-control", "id" : "kt_select2_2"}),
             "teacher_profile" : forms.Select(attrs={"class" : "form-control", "id" : "kt_select2_3"}),
-            "password1" : forms.PasswordInput(attrs={"class" : "form-control", "placeholder" : "Password"}),
-            "password2" : forms.PasswordInput(attrs={"class" : "form-control", "placeholder" : "Password"}),
+            "password1" : forms.PasswordInput(attrs={"class" : "form-control","id" : "kt_select2_3", "placeholder" : "Please write a password"}),
+            "password2" : forms.PasswordInput(attrs={"class" : "form-control","id" : "kt_select2_3" ,"placeholder" : "Please write a password retry"}),
 
         }
 
@@ -38,6 +40,7 @@ class TeacherForm(forms.ModelForm):
     class Meta:
         model = models.Teacher
         fields = [
+            "user",
             "full_name",
             "birth_date",
             "phone",
@@ -48,6 +51,7 @@ class TeacherForm(forms.ModelForm):
             "status",
         ]
         widgets = {
+            "user": forms.Select(attrs={"class": "form-control",}),
             "full_name" : forms.TextInput(attrs={"class" : "form-control", "placeholder" : "Full name"}),
             "birth_date" : widget.DateWidget(attrs={"class" : "form-control", "id": "kt_datetimepicker_3"}),
             "phone" : forms.TelInput(attrs={"class" : "form-control", "placeholder" : "Phone"}),
@@ -65,12 +69,13 @@ class CourseForm(forms.ModelForm):
         fields = [
             "title",
             "duration",
+            "price",
             "description",
         ]
         widgets = {
             "title" : forms.TextInput(attrs={"class" : "form-control", "placeholder" : "Title"}),
             "duration" : forms.TextInput(attrs={"class" : "form-control", "placeholder" : "Duration"}),
-            "address" : forms.TextInput(attrs={"class" : "form-control", "id" : "address"}),
+            "price" : forms.TextInput(attrs={"class" : "form-control", "placeholder" : "Price"}),
             "description" : forms.Textarea(attrs={"class" : "form-control", "placeholder": "description"})
         }
 
@@ -170,6 +175,7 @@ class LeadForm(forms.ModelForm):
             "phone",
             "interested_course",
             "address",
+            "date_joined",
             "status",
         ]
         widgets = {
@@ -178,6 +184,7 @@ class LeadForm(forms.ModelForm):
             "interested_course" : forms.Select(attrs={"class" : "form-control", "id" : "kt_select2_2"}),
             "phone" : forms.TelInput(attrs={"class" : "form-control", "placeholder" : "Phone"}),
             "address" : forms.TextInput(attrs={"class" : "form-control", "placeholder" : "Address"}),
+            "date_joined": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
             "status" : forms.Select(attrs={"class" : "form-control", "id": "kt_select2_2"})
         }
 
@@ -222,10 +229,7 @@ class WagesForm(forms.ModelForm):
                 'min': 0
             }),
             'method': forms.Select(attrs={'class': 'form-control'}),
-            'date': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date'
-            }),
+            'date': forms.DateInput(attrs={'class': 'form-control','type': 'date'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -248,3 +252,175 @@ class WagesForm(forms.ModelForm):
             role_value = self.instance.role
             self.fields['employee'].queryset = Employee.objects.filter(role=role_value)
             self.fields['employee'].widget.attrs.pop('disabled', None)
+
+
+class TeacherSalaryForm(forms.ModelForm):
+    class Meta:
+        model = models.TeacherSalary
+        fields = ['course', 'teacher', 'group', 'amount', 'type', 'date']
+        widgets = {
+            "course" : forms.Select(attrs={"class" : "form-control", "id": "kt_select2_2"}),
+            'teacher' : forms.Select(attrs={"class" : "form-control", "placeholder" : "Teachers"}),
+            'amount': forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Summa kiriting','step': '0.01','min': '0'}),
+            'group' : forms.Select(attrs={"class" : "form-control", "id" : "kt_select2_2"}),
+            'type' : forms.Select(attrs={"class" : "form-control", "id" : "kt_select2_2"}),
+            'date': forms.DateInput(attrs={'class': 'form-control','type': 'date',})
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Barcha fieldlarni ixtiyoriy qilamiz (AJAX orqali to'ldiriladi)
+        self.fields['teacher'].required = False
+        self.fields['group'].required = False
+
+
+class NotificationForm(forms.ModelForm):
+    # recipient'ni IntegerField qilamiz (ModelChoiceField emas!)
+    recipient = forms.IntegerField(
+        widget=forms.Select(attrs={'class': 'form-control', 'id': 'person', 'required': True}),
+        label='Qabul qiluvchi'
+    )
+    
+    class Meta:
+        model = models.Notification
+        fields = ['recipient_role', 'course', 'message_type', 'message']
+        widgets = {
+            'recipient_role': forms.Select(attrs={'class': 'form-control', 'id': 'role', 'required': True}),
+            'course': forms.Select(attrs={'class': 'form-control', 'id': 'course'}),
+            'message_type': forms.Select(attrs={'class': 'form-control', 'id': 'messageType'}),
+            'message': forms.Textarea(attrs={'class': 'form-control', 'id': 'message', 'rows': 5, 'placeholder': 'Xabar matni...', 'required': True}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        self.sender = kwargs.pop('sender', None)
+        super().__init__(*args, **kwargs)
+        
+        # Course va message_type optional
+        self.fields['course'].required = False
+        self.fields['course'].queryset = models.Course.objects.all()
+        self.fields['message_type'].required = False
+        
+        # recipient fieldi IntegerField, shuning uchun queryset kerak emas
+    
+    def clean_recipient(self):
+        """recipient fieldini alohida clean qilamiz"""
+        recipient_id = self.cleaned_data.get('recipient')
+        
+        print(f"DEBUG clean_recipient - ID: {recipient_id}, type: {type(recipient_id)}")
+        
+        if not recipient_id:
+            raise forms.ValidationError("Qabul qiluvchini tanlang!")
+        
+        return recipient_id
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        recipient_role = cleaned_data.get('recipient_role')
+        course = cleaned_data.get('course')
+        message_type = cleaned_data.get('message_type')
+        recipient_id = cleaned_data.get('recipient')
+        
+        print(f"DEBUG clean() - Role: {recipient_role}, Recipient ID: {recipient_id}")
+        
+        # Validation
+        if recipient_role == 'teacher':
+            if not course:
+                raise forms.ValidationError("Teacher uchun kurs tanlash majburiy!")
+            if not message_type:
+                raise forms.ValidationError("Teacher uchun xabar turi tanlash majburiy!")
+        
+        if not recipient_id:
+            raise forms.ValidationError("Qabul qiluvchini tanlang!")
+        
+        # Recipient User objectini topish
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        
+        try:
+            if recipient_role == 'teacher':
+                # Teacher modelidan topamiz
+                from common.models import Teacher
+                teacher = Teacher.objects.get(id=recipient_id)
+                print(f"DEBUG - Teacher topildi: {teacher.full_name}")
+                
+                # Teacher'ning user accountini topish
+                user = None
+                
+                # Variant 1: teacher.user
+                if hasattr(teacher, 'user') and teacher.user:
+                    user = teacher.user
+                    print(f"DEBUG - User (teacher.user): {user.username}")
+                
+                # Variant 2: username
+                if not user and hasattr(teacher, 'username'):
+                    user = User.objects.filter(username=teacher.username).first()
+                    if user:
+                        print(f"DEBUG - User (username): {user.username}")
+                
+                # Variant 3: email
+                if not user and hasattr(teacher, 'email'):
+                    user = User.objects.filter(email=teacher.email).first()
+                    if user:
+                        print(f"DEBUG - User (email): {user.username}")
+                
+                if not user:
+                    raise forms.ValidationError(
+                        f"Teacher '{teacher.full_name}' uchun user account topilmadi! "
+                        f"Teacher ID: {teacher.id}"
+                    )
+                
+                cleaned_data['recipient_user'] = user
+                
+            else:
+                # Manager, Reception, Accountant uchun
+                user = User.objects.get(id=recipient_id, role=recipient_role)
+                print(f"DEBUG - User topildi ({recipient_role}): {user.username}")
+                cleaned_data['recipient_user'] = user
+                
+        except Teacher.DoesNotExist:
+            raise forms.ValidationError(f"ID {recipient_id} bilan teacher topilmadi!")
+        except User.DoesNotExist:
+            raise forms.ValidationError(
+                f"ID {recipient_id} bilan {recipient_role} role'dagi user topilmadi!"
+            )
+        except Exception as e:
+            print(f"ERROR in clean: {e}")
+            import traceback
+            traceback.print_exc()
+            raise forms.ValidationError(f"Xatolik: {str(e)}")
+        
+        return cleaned_data
+    
+    def save(self, commit=True):
+        notification = super().save(commit=False)
+        
+        if self.sender:
+            notification.sender = self.sender
+        
+        # cleaned_data'dan recipient User objectini olamiz
+        if 'recipient_user' in self.cleaned_data:
+            notification.recipient = self.cleaned_data['recipient_user']
+            print(f"DEBUG save() - Recipient set to: {notification.recipient.username}")
+        else:
+            raise ValueError("Recipient user topilmadi!")
+        
+        if commit:
+            notification.save()
+            print(f"✅ Notification saqlandi: ID={notification.id}")
+        
+        return notification
+
+    
+class InformationsForm(forms.ModelForm):
+    class Meta:
+        model = models.Informations
+        fields = ['tg_admin', 'tg_channel', 'instagram', 'phone', 'logo', 'regions']
+
+        widgets = {
+            'tg_admin': forms.TextInput(attrs={'class': 'form-control'}),
+            'tg_channel': forms.TextInput(attrs={'class': 'form-control'}),
+            'instagram': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'logo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'regions' : forms.Select(attrs={"class" : "form-control", "id": "kt_select2_2"})
+        }

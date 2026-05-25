@@ -1,0 +1,259 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+{% load humanize %}
+<style>
+.card-toolbar{
+    padding-left: 10px;
+}
+
+select.form-select {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 14px;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+select.form-select:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-color: #0d6efd;
+}
+
+select.form-select:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 5px rgba(13,110,253,0.5);
+}
+</style>
+
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+    <div class="d-flex flex-column flex-root">
+        <div class="d-flex flex-row flex-column-fluid page">
+            {% include 'accountant/parts/aside.html' with menu_parent='finance-all' menu_child='employee-list' %}
+            <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+                {% include "accountant/parts/header.html" %}
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <div class="d-flex flex-column-fluid">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card card-custom card-stretch gutter-b">
+                                        <div class="card-header border-0 py-5">
+                                            <h3 class="card-title align-items-start flex-column">
+                                                <span class="card-label font-weight-bolder text-dark">{% trans "Payment" %}</span>
+                                                <small class='mt-2'>{% trans "Total" %}: <span id="total-count">{{objects | length}}</span></small>   
+                                            </h3>
+                                            <div class="controls">
+                                                <div class="controls-grid">
+                                                    <div class="mb-3">
+                                                        <div class="filter-row" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                                                            <!-- Month -->
+                                                            <div style="flex: 1;">
+                                                                <select id="month-select" class="form-select form-control">
+                                                                    <option value="">{% trans "All Months" %}</option>
+                                                                    <option value="0">{% trans "January" %}</option>
+                                                                    <option value="1">{% trans "February" %}</option>
+                                                                    <option value="2">{% trans "March" %}</option>
+                                                                    <option value="3">{% trans "April" %}</option>
+                                                                    <option value="4">{% trans "May" %}</option>
+                                                                    <option value="5">{% trans "June" %}</option>
+                                                                    <option value="6">{% trans "July" %}</option>
+                                                                    <option value="7">{% trans "August" %}</option>
+                                                                    <option value="8">{% trans "September" %}</option>
+                                                                    <option value="9">{% trans "October" %}</option>
+                                                                    <option value="10">{% trans "November" %}</option>
+                                                                    <option value="11">{% trans "December" %}</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <!-- Year -->
+                                                            <div style="flex: 1;">
+                                                                <select id="year-select" class="form-select form-control">
+                                                                    <option value="">{% trans "All Years" %}</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Group select below month & year -->
+                                                        <div class="filter-row" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                                            <div style="flex: 1;">
+                                                                <select id="group-select" class="form-select form-control">
+                                                                    <option value="">{% trans "All Groups" %}</option>
+                                                                    {% for group in groups %}
+                                                                        <option value="{{ group.id }}">{{ group.title }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <form method="get" id="search-form">
+                                            <div class="form-group row">
+                                                <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6 ml-10">
+                                                    <input type="text" class="form-control datatable-input" placeholder="{% trans 'Search' %}" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary font-weight-bolder ml-7 mb-1">
+                                                    <span class="nav-icon">
+                                                        <i class="fas fa-search"></i>
+                                                    </span>
+                                                    <span class="nav-text">{% trans "Search" %}</span>
+                                                </button>
+                                                <div class="card-toolbar">
+                                                    <a href="{% url 'accountant:payment-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">{% trans "Create new payment" %}</a>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                        <div class="card-body pt-0 pb-3">
+                                            <div class="tab-content">
+                                                <div class="table-responsive">
+                                                    
+                                                    <table class="table table-head-custom table-head-bg table-borderless table-vertical-center" id="payments-table">
+                                                        <thead>
+                                                            <tr class="text-left text-uppercase">
+                                                                <th style="min-width: 100px">{% trans "Student" %}</th>
+                                                                <th style="min-width: 100px">{% trans "Group" %}</th>
+                                                                <th style="min-width: 100px">{% trans "Amount" %}</th>
+                                                                <th style="min-width: 100px">{% trans "Date" %}</th>
+                                                                <th style="min-width: 100px">{% trans "Debt" %}</th>
+                                                                <th style="min-width: 100px">{% trans "Actions" %}</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="payments-table-body">
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                
+                                                {% if page_obj.paginator.num_pages > 1 %}
+                                                {%include 'parts/pagination.html' %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% include 'parts/footer.html' %}
+            </div>
+        </div>
+    </div>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script>
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+    let currentGroup = "";
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeYearSelect();
+        setCurrentDate();
+        loadPayments(); // sahifa ochilganda avtomatik yuklaydi
+    });
+
+    function initializeYearSelect() {
+        const yearSelect = document.getElementById('year-select');
+        for (let year = 2020; year <= 2030; year++) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        }
+    }
+
+    function setCurrentDate() {
+        document.getElementById('month-select').value = currentMonth;
+        document.getElementById('year-select').value = currentYear;
+    }
+
+    function loadPayments() {
+        $.ajax({
+            url: window.location.href,
+            method: "GET",
+            data: {
+                month: currentMonth + 1,
+                year: currentYear,
+                group: currentGroup,
+            },
+            success: function(response) {
+                const tbody = $("#payments-table-body");
+                tbody.empty();
+
+                if (response.payments.length === 0) {
+                    tbody.append(`
+                        <tr>
+                            <td colspan="6" class="text-center">{% include "parts/nothing-found.html" %}</td>
+                        </tr>
+                    `);
+                } else {
+                    response.payments.forEach(function(p) {
+                        tbody.append(`
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                            <span class="symbol-label">${p.student_initial}</span>
+                                        </div>
+                                        <span class="text-dark-75 font-weight-bolder d-block font-size-lg">${p.student_name}</span>      
+                                    </div>
+                                </td>
+                                <td><span class="font-weight-bolder">${p.group}</span></td>
+                                <td><span class="font-weight-bolder">${p.amount} UZS</span></td>
+                                <td><span class="font-weight-bolder">${p.date}</span></td>
+                                <td><span class="font-weight-bolder">-${p.debt}</span></td>
+                                <td nowrap="nowrap">
+                                    <a href="${p.update_url}" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" title="{% trans 'Edit details' %}">
+                                        <span class="svg-icon svg-icon-md">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                                            </svg>
+                                        </span>
+                                    </a>
+
+                                    <a href="${p.delete_url}" data-toggle="modal" data-target="#deleteModal" class="btn btn-sm btn-clean btn-icon removeButton" title="{% trans 'Delete' %}">
+                                        <span class="svg-icon svg-icon-md">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                            </svg>
+                                        </span>
+                                    </a>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                }
+
+                $("#total-count").text(response.total);
+            }
+        });
+    }
+
+    document.getElementById('month-select').addEventListener('change', function() {
+        currentMonth = parseInt(this.value);
+        loadPayments();
+    });
+
+    document.getElementById('year-select').addEventListener('change', function() {
+        currentYear = parseInt(this.value);
+        loadPayments();
+    });
+
+    document.getElementById('group-select').addEventListener('change', function() {
+        currentGroup = this.value;
+        loadPayments();
+    });
+</script>
+
+</body>
+{% endblock %}

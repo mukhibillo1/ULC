@@ -1,0 +1,588 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+{% load humanize %}
+<style>
+.group-section {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    width: 100%;
+    flex-wrap: nowrap;
+}
+
+/* Left: Group Details card */
+.group-details-card {
+    max-width: 360px !important;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+/* Right: Courses container */
+.courses-container {
+    flex: 1;
+    width: 100%;
+}
+
+/* Teacher Salary Card - NEW */
+.teacher-salary-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.42rem;
+    margin-top: 1.5rem;
+}
+
+.teacher-salary-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.teacher-salary-card .card-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.teacher-salary-card .card-header h3 {
+    color: white;
+}
+
+.teacher-salary-card .card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.teacher-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.salary-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.salary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.salary-item-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+.salary-item-value {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 6px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.monthly-salary {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.monthly-salary-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.monthly-salary-value {
+    font-size: 2rem;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calculation-details {
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    opacity: 0.8;
+    line-height: 1.6;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.75rem;
+    border-radius: 8px;
+}
+
+.badge-salary {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-precent {
+    background: rgba(34, 197, 94, 0.3);
+    color: #fff;
+}
+
+.badge-group-by {
+    background: rgba(59, 130, 246, 0.3);
+    color: #fff;
+}
+
+/* Responsive — tablet & phone */
+@media (max-width: 992px) {
+    .group-section {
+        flex-wrap: wrap;
+    }
+    .group-details-card {
+        max-width: 100%;
+    }
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+.flex-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.left-panel {
+    flex: 0 0 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.left-panel select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+#groupDetails {
+    border: 1px solid #ddd;
+    padding: 10px;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+.chart-container {
+    flex: 1;
+    min-width: 300px;
+    height: 400px;
+}
+
+.controls {
+    margin-top: 3%;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 20px;
+    max-width: 350px;
+}
+
+.controls-grid {
+    display: flex;
+    flex-direction: column;
+}
+
+.control-group {
+    width: 100%;
+}
+
+.control-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.input-group select {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #333;
+    background-color: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 45px;
+}
+
+.input-group select:hover {
+    background-color: #f0f1f3;
+    border-color: #d1d5db;
+}
+
+.input-group select:focus {
+    background-color: #ffffff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input-group select option {
+    padding: 10px;
+    background-color: #ffffff;
+    color: #333;
+}
+
+@media (max-width: 768px) {
+    .controls {
+        max-width: 100%;
+        padding: 16px;
+    }
+}
+
+.about {
+    max-width: 375px;
+}
+
+.subheader {
+    background-color: white;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 15px;
+}
+
+.subheader .container-fluid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+}
+
+.subheader .nav-tabs {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.subheader .nav-tabs .nav-link {
+    color: #6b7280;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+    background-color: #e5e7eb20;
+}
+
+.subheader .nav-tabs .nav-link:hover {
+    background-color: #e5e7eb;
+    color: #3b82f6;
+}
+
+.subheader .nav-tabs .active {
+    background-color: #3b82f6;
+    color: white;
+    font-weight: 600;
+}
+
+@media (max-width: 576px) {
+    .subheader .nav-tabs {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .subheader .nav-tabs .nav-link {
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .subheader .container-fluid {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 16px;
+    }
+
+    .nav-tabs {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-tabs .nav-link {
+        white-space: nowrap;
+        padding: 12px 16px;
+    }
+}
+</style>
+
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+    <div class="d-flex flex-column flex-root">
+        <div class="d-flex flex-row flex-column-fluid page">
+        {% include "accountant/parts/aside.html" with menu_parent='group-all' menu_child='group-list' %}
+            <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+            {% include "accountant/parts/header.html" %}
+                <!--begin::Subheader-->
+                <div class="subheader py-2 py-lg-4 subheader-solid" id="kt_subheader">
+                    <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
+                    {% for object in groups %}
+                        <!--begin::Info-->
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_tab == 'all' %}active{% endif %}" href="{% url 'accountant:group-settings' object.pk %}">All</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if active_tab == 'Debtor' %}active{% endif %}" href="{% url 'accountant:group-debtors' object.pk %}">Debtors</a>
+                            </li>
+                        </ul>
+                    {% endfor %}
+                        <!--end::Info-->
+
+                        <!--begin::Actions-->
+                        <div class="d-flex align-items-center">
+                            <div class="dropdown dropdown-inline" data-toggle="tooltip" title="Options">
+                                <a href="#" class="btn btn-light-primary font-weight-bold dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Options
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+                                <ul class="navi flex-column navi-hover py-2">
+                                    <li class="navi-item">
+                                    <a href="{% url 'accountant:group-list' %}" class="navi-link">
+                                        <span class="navi-text">Exit</span>
+                                        <span class="svg-icon svg-icon-md">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
+                                            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
+                                            </svg>
+                                        </span>
+                                    </a>
+                                    </li>
+                                </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Actions-->
+                    </div>
+                </div>
+                <!--end::Subheader-->
+
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <div class="container-fluid">
+
+                        <!-- Yangi: Left + Right wrapper -->
+                        <div class="group-section">
+
+                            <!-- CHAP TOMON: Group Details + Teacher Salary -->
+                            <div class="group-details-card">
+                                {% for object in groups %}
+                                <!-- Group Details Card -->
+                                <div class="card card-custom shadow-sm mt-5">
+                                    <div class="card-header border-0">
+                                        <h3 class="card-title font-weight-bolder text-dark">Group Details</h3>
+                                    </div>
+
+                                    <div class="card-body pt-4 pb-4">
+                                        <div class="timeline timeline-2">
+
+                                            <div class="timeline-item align-items-start">
+                                                <div class="timeline-label font-weight-bolder text-dark-75">Course:</div>
+                                                <div class="timeline-content text-muted pl-3">{{ object.course }}</div>
+                                            </div>
+
+                                            <div class="timeline-item align-items-start">
+                                                <div class="timeline-label font-weight-bolder text-dark-75">Group:</div>
+                                                <div class="timeline-content text-muted pl-3">{{ object.title }}</div>
+                                            </div>
+
+                                            <div class="timeline-item align-items-start">
+                                                <div class="timeline-label font-weight-bolder text-dark-75">Teacher:</div>
+                                                <div class="timeline-content text-muted pl-3">{{ object.teacher }}</div>
+                                            </div>
+
+                                            <div class="timeline-item align-items-start">
+                                                <div class="timeline-label font-weight-bolder text-dark-75">Room:</div>
+                                                <div class="timeline-content text-muted pl-3">{{ object.room }}</div>
+                                            </div>
+
+                                            <div class="timeline-item align-items-start">
+                                                <div class="timeline-label font-weight-bolder text-dark-75">Lesson Day:</div>
+                                                <div class="timeline-content text-muted pl-3">{{ object.lesson_days }}</div>
+                                            </div>
+
+                                            <div class="timeline-item align-items-start">
+                                                <div class="timeline-label font-weight-bolder text-dark-75">Time:</div>
+                                                <div class="timeline-content text-muted pl-3">
+                                                    {{ object.start_time|time:"H:i" }} - {{ object.end_time|time:"H:i" }}
+                                                </div>
+                                            </div>
+
+                                            <div class="timeline-item align-items-start">
+                                                <div class="timeline-label font-weight-bolder text-dark-75">Date Started:</div>
+                                                <div class="timeline-content text-muted pl-3">{{ object.date_started }}</div>
+                                            </div>
+
+                                            <div class="timeline-item align-items-start">
+                                                <div class="timeline-label font-weight-bolder text-dark-75">Group Students:</div>
+                                                <div class="timeline-content text-muted pl-3">{{ students_count }} -students</div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Teacher Salary Card - YANGI -->
+                                {% if teacher %}
+                                <div class="card card-custom shadow-sm teacher-salary-card">
+                                    <div class="card-header border-0">
+                                        <h3 class="card-title font-weight-bolder">Teacher Salary</h3>
+                                    </div>
+
+                                    <div class="card-body pt-4 pb-4">
+                                        <span class="salary-item-label">Full Name :</span>
+                                        <div class="teacher-name">{{ teacher.full_name }}</div>
+
+                                        <div class="salary-info">
+                                            <div class="salary-item">
+                                                <span class="salary-item-label">Salary Type:</span>
+                                                <span class="salary-item-value">
+                                                    <span class="badge-salary badge-{{ teacher.type|lower|cut:' ' }}">{{ teacher.type }}</span>
+                                                </span>
+                                            </div>
+
+                                            <div class="salary-item">
+                                                <span class="salary-item-label">Salary Rate:</span>
+                                                <span class="salary-item-value">{{ teacher.salary }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="monthly-salary">
+                                            <div class="monthly-salary-label">Monthly Salary</div>
+                                            <div class="monthly-salary-value">
+                                                {{ monthly_salary|floatformat:0|intcomma }} UZS
+                                            </div>
+
+                                            {% if salary_details.calculation %}
+                                            <div class="calculation-details">
+                                                💡 {{ salary_details.calculation }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% endfor %}
+                            </div>
+
+                            <!-- O'NG TOMON: Students Table -->
+                            <div class="courses-container">
+
+                                <div class="card card-custom card-stretch gutter-b mt-5">
+
+                                    <div class="card-header border-0 py-5">
+                                        <h3 class="card-title align-items-start flex-column">
+                                            <span class="card-label font-weight-bolder text-dark">{{group.title}}'s students</span>
+                                            <small class='mt-2'>Total: {{ students|length }}</small>
+                                        </h3>
+                                    </div>
+
+                                    <form method="get" class="px-4">
+                                        <div class="form-group row align-items-center">
+                                            <div class="col-lg-6 mb-3">
+                                                <input type="text" class="form-control" placeholder="Search"
+                                                    value="{{ request.GET.search }}" name="search" />
+                                            </div>
+
+                                            <div class="col-lg-3 mb-3">
+                                                <button type="submit" class="btn btn-primary w-100">
+                                                    <i class="fas fa-search mr-1"></i> Search
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <div class="card-body pt-0 pb-3">
+                                        {% if has_students %}
+                                        <div class="table-responsive">
+                                            <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                                                <thead>
+                                                    <tr class="text-left text-uppercase">
+                                                        <th style="min-width: 100px">Full name</th>
+                                                        <th style="min-width: 100px">Phone number</th>
+                                                        <th style="min-width: 100px">Balance</th>
+                                                        <th style="min-width: 100px">Date_Joined</th>
+                                                        <th style="min-width: 100px">Status</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    {% for object in students %}
+                                                    <tr>
+                                                        <td class="pl-0 py-6">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                                                    <span class="symbol-label">{{ object.full_name|slice:':1' }}</span>
+                                                                </div>
+                                                                <span class="text-dark-75 font-weight-bolder d-block font-size-lg">
+                                                                    {{ object.full_name }}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td><span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ object.phone }}</span></td>
+                                                        <td><span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ object.balance|intcomma }} UZS</span></td>
+                                                        <td><span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ object.date_joined }}</span></td>
+                                                        <td><span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ object.status }}</span></td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+
+                                        {% else %}
+                                            {% include "parts/nothing-found.html" %}
+                                        {% endif %}
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div> <!-- /group-section -->
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+            {% include "parts/footer.html" %}
+    </div>
+  {% include "parts/user-panel.html" %}
+  {% include "parts/scrolltop.html" %}
+</body>
+{% endblock %}

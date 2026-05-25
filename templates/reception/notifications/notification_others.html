@@ -1,0 +1,382 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+    <div class="d-flex flex-column flex-root">
+        <div class="d-flex flex-row flex-column-fluid page">
+            {% include "reception/parts/aside.html" with menu_parent="notifications" menu_child="notification-others" %}
+            <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+                {% include "reception/parts/header.html" %}
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <div class="d-flex flex-column-fluid">
+                        <div class="container">
+                            <div class="card card-custom card-sticky" id="kt_page_sticky_card">
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <h3 class="card-label">Send Notification - Others <i class="mr-2"></i></h3>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <form class="form" id="notificationForm" method="post">
+                                        {% csrf_token %}
+                                        
+                                        <!-- Role -->
+                                        <div class="form-group row">
+                                            <label class="col-form-label text-right col-lg-3 col-sm-12"><b>Role *</b></label>
+                                            <div class="col-lg-9 col-md-9 col-sm-12">
+                                                <select name="recipient_role" id="role" class="form-control" required>
+                                                    <option value="">Roleni tanlang</option>
+                                                    <option value="manager">Manager</option>
+                                                    <option value="teacher">Teacher</option>
+                                                    <option value="reception">Reception</option>
+                                                    <option value="accountant">Accountant</option>
+                                                </select>
+                                                <small class="form-text text-muted">Xabar qaysi rolga yuborilishini tanlang</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Course (faqat teacher uchun) -->
+                                        <div class="form-group row" id="courseGroup" style="display:none;">
+                                            <label class="col-form-label text-right col-lg-3 col-sm-12"><b>Course *</b></label>
+                                            <div class="col-lg-9 col-md-9 col-sm-12">
+                                                <select name="course" id="course" class="form-control">
+                                                    <option value="">Kursni tanlang</option>
+                                                </select>
+                                                <small class="form-text text-muted">Teacher qaysi kursda ishlashini tanlang</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Person (Recipient) -->
+                                        <div class="form-group row">
+                                            <label class="col-form-label text-right col-lg-3 col-sm-12"><b>Select Person *</b></label>
+                                            <div class="col-lg-9 col-md-9 col-sm-12">
+                                                <select name="recipient" id="person" class="form-control" required disabled>
+                                                    <option value="">Avval roleni tanlang</option>
+                                                </select>
+                                                <small class="form-text text-muted" id="personHint">Xabar qabul qiluvchini tanlang</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Message Type (faqat teacher uchun) -->
+                                        <div class="form-group row" id="typeGroup" style="display:none;">
+                                            <label class="col-form-label text-right col-lg-3 col-sm-12"><b>Type *</b></label>
+                                            <div class="col-lg-9 col-md-9 col-sm-12">
+                                                <select name="message_type" id="messageType" class="form-control">
+                                                    <option value="">Xabar turini tanlang</option>
+                                                    <option value="attendance">Attendance (Davomat)</option>
+                                                    <option value="baholash">Baholash</option>
+                                                </select>
+                                                <small class="form-text text-muted">Xabar qaysi mavzuda ekanligini belgilang</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Message -->
+                                        <div class="form-group row">
+                                            <label class="col-form-label text-right col-lg-3 col-sm-12"><b>Message *</b></label>
+                                            <div class="col-lg-9 col-md-9 col-sm-12">
+                                                <textarea name="message" id="message" class="form-control" rows="5" placeholder="Xabar matni..." required></textarea>
+                                                <small class="form-text text-muted">Yubormoqchi bo'lgan xabaringizni kiriting</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-footer">
+                                            <div class="row">
+                                                <div class="col-lg-3"></div>
+                                                <div class="col-lg-9">
+                                                    <button type="submit" class="btn btn-primary mr-2" id="submitBtn">
+                                                        <i class="fas fa-paper-plane"></i> Send Notification
+                                                    </button>
+                                                    <button type="reset" class="btn btn-secondary" id="resetBtn">
+                                                        <i class="fas fa-redo"></i> Reset
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                    <!-- Success Message -->
+                                    <div id="successMessage" class="alert alert-success alert-dismissible fade show" style="display:none; margin-top:20px;">
+                                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                        <i class="fas fa-check-circle"></i> <span id="successText">Xabar muvaffaqiyatli yuborildi!</span>
+                                    </div>
+
+                                    <!-- Error Message -->
+                                    <div id="errorMessage" class="alert alert-danger alert-dismissible fade show" style="display:none; margin-top:20px;">
+                                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                        <i class="fas fa-exclamation-circle"></i> <span id="errorText"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% include "parts/footer.html" %}
+            </div>
+        </div>
+    </div>
+    {% include "parts/user-panel.html" %}
+    {% include "parts/scrolltop.html" %}
+</body>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Notification form loaded');
+    
+    const roleSelect = document.getElementById('role');
+    const courseGroup = document.getElementById('courseGroup');
+    const courseSelect = document.getElementById('course');
+    const typeGroup = document.getElementById('typeGroup');
+    const typeSelect = document.getElementById('messageType');
+    const personSelect = document.getElementById('person');
+    const personHint = document.getElementById('personHint');
+    const messageTextarea = document.getElementById('message');
+    const notificationForm = document.getElementById('notificationForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+    const successText = document.getElementById('successText');
+    const errorText = document.getElementById('errorText');
+
+    // Message templates
+    const messageTemplates = {
+        attendance: (name) => `Salom hurmatli ${name}, o'z guruhlaringizdagi davomat bo'limiga e'tiborli bo'ling va har darsda ma'lumotlarni saqlash esingizdan chiqmasin!`,
+        baholash: (name) => `Salom hurmatli ${name}, o'z guruhlaringizdagi talabalar baholash tizimini yangilang va natijalarni kiriting!`,
+    };
+
+    // Role o'zgarganda
+    roleSelect.addEventListener('change', async function() {
+        const role = this.value;
+        console.log('📝 Role tanlandi:', role);
+        
+        // Reset
+        personSelect.innerHTML = '<option value="">Yuklanmoqda...</option>';
+        personSelect.disabled = true;
+        messageTextarea.value = '';
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+
+        if (role === 'teacher') {
+            courseGroup.style.display = '';
+            typeGroup.style.display = '';
+            personHint.textContent = 'Teacherni tanlang (ID - Teacher ID)';
+            await loadCourses();
+            personSelect.innerHTML = '<option value="">Avval kursni tanlang</option>';
+        } else {
+            courseGroup.style.display = 'none';
+            typeGroup.style.display = 'none';
+            courseSelect.value = '';
+            typeSelect.value = '';
+            personHint.textContent = 'Xabar qabul qiluvchini tanlang';
+            
+            if (role) {
+                await loadUsersByRole(role);
+            } else {
+                personSelect.innerHTML = '<option value="">Avval roleni tanlang</option>';
+            }
+        }
+    });
+
+    // Course o'zgarganda
+    courseSelect.addEventListener('change', async function() {
+        const courseId = this.value;
+        console.log('📚 Course tanlandi:', courseId);
+        
+        if (courseId) {
+            await loadUsersByRole('teacher', courseId);
+        } else {
+            personSelect.innerHTML = '<option value="">Avval kursni tanlang</option>';
+            personSelect.disabled = true;
+        }
+    });
+
+    // Person o'zgarganda
+    personSelect.addEventListener('change', function() {
+        const type = typeSelect.value;
+        if (type && this.value) {
+            const personName = this.options[this.selectedIndex].text;
+            messageTextarea.value = messageTemplates[type](personName);
+        }
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+    });
+
+    // Type o'zgarganda
+    typeSelect.addEventListener('change', function() {
+        const type = this.value;
+        if (type && personSelect.value) {
+            const personName = personSelect.options[personSelect.selectedIndex].text;
+            messageTextarea.value = messageTemplates[type](personName);
+        } else if (!type) {
+            messageTextarea.value = '';
+        }
+    });
+
+    // Kurslarni yuklash
+    async function loadCourses() {
+        try {
+            console.log('📥 Kurslar yuklanmoqda...');
+            const response = await fetch('{% url "reception:others-notification" %}?action=get_courses');
+            const data = await response.json();
+            console.log('✅ Kurslar yuklandi:', data.courses.length, 'ta');
+            
+            courseSelect.innerHTML = '<option value="">Kursni tanlang</option>';
+            data.courses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course.id;
+                option.textContent = course.name;
+                courseSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('❌ Kurslarni yuklashda xatolik:', error);
+            showError('Kurslarni yuklashda xatolik yuz berdi!');
+        }
+    }
+
+    // Role bo'yicha userlarni yuklash
+    async function loadUsersByRole(role, courseId = null) {
+        try {
+            let url = '{% url "reception:others-notification" %}?action=get_users&role=' + role;
+            if (courseId) {
+                url += '&course_id=' + courseId;
+            }
+            
+            console.log('📥 Userlar yuklanmoqda:', url);
+            const response = await fetch(url);
+            const data = await response.json();
+            console.log('✅ Userlar yuklandi:', data.count, 'ta');
+            console.log('   Users:', data.users);
+            
+            // MUHIM: Avval tozalaymiz
+            personSelect.innerHTML = '';
+            
+            // Default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Shaxsni tanlang';
+            personSelect.appendChild(defaultOption);
+            
+            if (data.users && data.users.length > 0) {
+                data.users.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user.id;  // Bu ID number bo'lishi kerak!
+                    option.textContent = user.name;
+                    option.dataset.username = user.username || '';
+                    personSelect.appendChild(option);
+                    console.log(`   Option qo'shildi: value="${user.id}" text="${user.name}"`);
+                });
+                personSelect.disabled = false;
+            } else {
+                personSelect.innerHTML = '<option value="">Hech kim topilmadi</option>';
+                personSelect.disabled = true;
+                console.warn('⚠️ No users found for role:', role, 'course:', courseId);
+            }
+        } catch (error) {
+            console.error('❌ Userlarni yuklashda xatolik:', error);
+            personSelect.innerHTML = '<option value="">Xatolik yuz berdi</option>';
+            showError('Foydalanuvchilarni yuklashda xatolik yuz berdi!');
+        }
+    }
+
+    // Form submit
+    notificationForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        console.log('📤 Form submit...');
+        
+        // Button disable
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yuborilmoqda...';
+        
+        const formData = new FormData(this);
+        
+        // DEBUG: FormData ni ko'rish
+        console.log('Form data:');
+        for (let [key, value] of formData.entries()) {
+            console.log(`  ${key}: ${value} (type: ${typeof value})`);
+        }
+        
+        // MUHIM: recipient ID'ni tekshirish
+        const recipientId = formData.get('recipient');
+        if (!recipientId || recipientId === '') {
+            showError('Iltimos, qabul qiluvchini tanlang!');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Notification';
+            return;
+        }
+        console.log('✅ Recipient ID:', recipientId);
+
+        try {
+            const response = await fetch('{% url "reception:others-notification" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            const data = await response.json();
+            console.log('📨 Server response:', data);
+            
+            if (data.success) {
+                successText.textContent = `✅ Xabar muvaffaqiyatli yuborildi: ${data.recipient} (${data.recipient_role})`;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+                // Form reset
+                notificationForm.reset();
+                courseGroup.style.display = 'none';
+                typeGroup.style.display = 'none';
+                personSelect.innerHTML = '<option value="">Avval roleni tanlang</option>';
+                personSelect.disabled = true;
+                
+                // Auto hide after 5 seconds
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+                
+            } else {
+                let errorMsg = 'Xatolik yuz berdi:\n';
+                if (data.errors) {
+                    for (let field in data.errors) {
+                        errorMsg += `• ${field}: ${data.errors[field].join(', ')}\n`;
+                    }
+                } else {
+                    errorMsg += 'Noma\'lum xatolik';
+                }
+                showError(errorMsg);
+            }
+        } catch (error) {
+            console.error('❌ Submit error:', error);
+            showError('Xabar yuborishda xatolik yuz berdi! Server bilan aloqa yo\'q.');
+        } finally {
+            // Button enable
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Notification';
+        }
+    });
+    
+    // Reset button
+    resetBtn.addEventListener('click', function() {
+        courseGroup.style.display = 'none';
+        typeGroup.style.display = 'none';
+        personSelect.innerHTML = '<option value="">Avval roleni tanlang</option>';
+        personSelect.disabled = true;
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+    });
+    
+    // Helper function
+    function showError(message) {
+        errorText.textContent = message;
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+        
+        // Scroll to error
+        errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+</script>
+
+{% endblock %}

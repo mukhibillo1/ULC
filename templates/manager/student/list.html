@@ -1,10 +1,14 @@
 {% extends "base/base.html" %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 {% load humanize %}
 <!--begin::Head-->
 <!--end::Head-->
 <style>
+.card-toolbar{
+  padding-left: 10px;
+}
 select.form-select {
     min-width: 180px;
     max-width: 250px;
@@ -119,15 +123,15 @@ select.form-select:focus {
                     <div class="card-header border-0 py-5">
 
                       <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label font-weight-bolder text-dark">students</span>
-                        <small class='mt-2'>Total: {{objects | length}}</small>
+                        <span class="card-label font-weight-bolder text-dark">{% trans "students" %}</span>
+                        <small class='mt-2'>{% trans "Total" %}: {{objects | length}}</small>
                       </h3>
                       <form method="get" id="filterForm">
                           <div class="filter-row" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: center; justify-content: flex-end;">
                               
                               <!-- Group select -->
                               <select name="group" class="form-select selectpicker" onchange="this.form.submit()" style="width: auto; flex: 0 0 auto;">
-                                  <option value="">All Groups</option>
+                                  <option value="">{% trans "All Groups" %}</option>
                                   {% for group in groups %}
                                       <option value="{{ group.id }}" {% if request.GET.group == group.id|stringformat:"s" %}selected{% endif %}>
                                           {{ group.title }}
@@ -137,7 +141,7 @@ select.form-select:focus {
                               <!-- Reset button -->
                               {% if request.GET.group %}
                                   <button type="button" class="reset-btn" onclick="window.location.href='{% url 'manager:student-list' %}'" style="flex: 0 0 auto;">
-                                      <i class="fas fa-redo"></i> Reset All
+                                      <i class="fas fa-redo"></i> {% trans "Reset All" %}
                                   </button>
                               {% endif %}
                           </div>
@@ -146,15 +150,18 @@ select.form-select:focus {
                     <form method="get">
                       <div class="form-group row">
                           <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6  ml-10 ">
-                              <input type="text" class="form-control datatable-input" placeholder="Search" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                              <input type="text" class="form-control datatable-input" placeholder="{% trans 'Search' %}" value="{{request.GET.search}}" name="search" data-col-index="0"/>
                           </div>
 
                           <button type="submit" class="btn btn-primary font-weight-bolder  ml-7 mb-1">
                               <span class="nav-icon">
                                   <i class="fas fa-search"></i>
                               </span>
-                              <span class="nav-text">Search</span>
+                              <span class="nav-text">{% trans "Search" %}</span>
                           </button>
+                          <div class="card-toolbar">
+                          <a href="{% url 'manager:student-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">{% trans "Add new student" %}</a>
+                          </div>
                       </div>
                     </form>
                     <!--end::Header-->
@@ -167,13 +174,13 @@ select.form-select:focus {
                           <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
                             <thead>
                               <tr class="text-left text-uppercase">
-                                <th style="min-width: 100px">Full name</th>
-                                <th style="min-width: 100px">Group</th>
-                                <th style="min-width: 100px">Birth date</th>
-                                <th style="min-width: 100px">Phone number</th>
-                                <th style="min-width: 100px">Address</th>
-                                <th style="min-width: 100px">Balance</th>
-                                <th style="min-width: 100px">Actions</th>
+                                <th style="min-width: 100px">{% trans "Full name" %}</th>
+                                <th style="min-width: 100px">{% trans "group" %}</th>
+                                <th style="min-width: 100px">{% trans "Birthday" %}</th>
+                                <th style="min-width: 100px">{% trans "Phone" %}</th>
+                                <th style="min-width: 100px">{% trans "Address" %}</th>
+                                <th style="min-width: 100px">{% trans "balance" %}</th>
+                                <th style="min-width: 100px">{% trans "Actions" %}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -260,4 +267,3 @@ select.form-select:focus {
 </body>
 <!--end::Body-->
 {% endblock %}
-

@@ -1,0 +1,291 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+<!--begin::Head-->
+<!--end::Head-->
+<!--begin::Body-->
+<style>
+.archive-tabs-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 15px; /* Pastdagi container bilan bir xil padding */
+}
+
+.custom-tabs {
+    border: none;
+    background: white;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    gap: 8px;
+    display: flex;
+    width: 100%; /* To'liq kenglik */
+}
+
+.custom-tabs .nav-item {
+    flex: 1; /* Barcha tugmalar teng bo'ladi */
+}
+
+.text{
+  text-align: center;
+  font-size: 22px;
+  font-weight: 500;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.custom-tabs .nav-link {
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Yozuvni to'liq markazga */
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%; /* Tugma to'liq kenglikni egallaydi */
+}
+
+.custom-tabs .nav-link:hover {
+    background: #f8f9fa;
+    color: #495057;
+}
+
+.custom-tabs .nav-link.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transform: scale(1.02);
+}
+</style>
+
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+  <!--begin::Main-->
+  <div class="d-flex flex-column flex-root">
+    <!--begin::Page-->
+    <div class="d-flex flex-row flex-column-fluid page">
+      <!--begin::Aside-->
+      {% include "reception/parts/aside.html" with menu_parent='settings-all' menu_child='archived-list' %}
+      <!--end::Aside-->
+      <!--begin::Wrapper-->
+      <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+        <!--begin::Header-->
+        {% include "reception/parts/header.html" %}
+        <!--end::Header-->
+        <!--begin::Content-->
+        <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+          <div class="d-flex flex-column-fluid">
+            <div class="container">
+                <!-- Tabs nav -->
+                  <div class="archive-tabs-container">
+                      <ul class="nav nav-tabs custom-tabs" id="archiveTabs" role="tablist">
+                          <li class="nav-item">
+                              <a class="nav-link active" data-bs-toggle="tab" href="#teachers">Teachers</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link" data-bs-toggle="tab" href="#students">Students</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link" data-bs-toggle="tab" href="#groups">Groups</a>
+                          </li>
+                      </ul>
+                  </div>
+                <!-- Tabs content -->
+              <div class="row mt-5">
+
+                <div class="col-md-12">
+                  <!--begin::Advance Table Widget 4-->
+                  <div class="card card-custom card-stretch gutter-b">
+                    <!--end::Header-->
+                    <!--begin::Body-->
+                    <div class="container py-5">
+                        <div class="tab-content">
+
+                            <!-- TEACHERS -->
+                            <div class="tab-pane fade show active mt-2" id="teachers">
+                            <h5 class="text mb-3">Archived Teachers</h5>
+                                  <table class="table table-head-custom table-head-bg table-borderless table-vertical-center mt-4">
+                                    <thead>
+                                    <tr class="text-left text-uppercase">
+                                        <th style="min-width: 100px">Full Name</th>
+                                        <th style="min-width: 100px">Phone</th>
+                                        <th style="min-width: 100px">Status</th>
+                                        <th style="min-width: 100px">Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for t in archive_teachers %}
+                                    {% url 'reception:teacher-update' t.id as u %}
+                                    {% url 'reception:teacher-delete' t.id as d %}
+                                    <tr>
+                                        <td class="pl-0 py-6">
+                                        <div class="d-flex align-items-center">
+                                            <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                            <span class="symbol-label">{{ g.title|slice:':1' }}</span>
+                                            </div>
+                                            <a href="#">
+                                            <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ t.full_name }}</span>
+                                            </a>
+                                        </div>
+                                        </td>
+                                        <td>
+                                        <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ t.phone }}</span>
+                                        </td>
+                                        <td>
+                                        <span class="text-dark-75 font-weight-bolder d-block font-size-lg">
+                                            <span class="badge bg-warning text-dark">Archived</span>
+                                        </span>
+                                        </td>
+                                        <td nowrap="nowrap">
+                                        {% include "parts/actions.html" with update_url=u delete_url=d %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5">
+                                        {% include "parts/nothing-found.html" %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- STUDENTS -->
+                            <div class="tab-pane fade mt-2" id="students">
+                                <h5 class="text mb-3">Archive Student</h5>
+                                <table class="table table-head-custom table-head-bg table-borderless table-vertical-center mt-4">
+                                    <thead>
+                                    <tr class="text-left text-uppercase">
+                                        <th style="min-width: 100px">Full Name</th>
+                                        <th style="min-width: 100px">Phone</th>
+                                        <th style="min-width: 100px">Status</th>
+                                        <th style="min-width: 100px">Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for s in archive_students %}
+                                    {% url 'reception:student-update' s.id as u %}
+                                    {% url 'reception:student-delete' s.id as d %}
+                                    <tr>
+                                        <td class="pl-0 py-6">
+                                        <div class="d-flex align-items-center">
+                                            <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                            <span class="symbol-label">{{ g.title|slice:':1' }}</span>
+                                            </div>
+                                            <a href="#">
+                                            <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ s.full_name }}</span>
+                                            </a>
+                                        </div>
+                                        </td>
+                                        <td>
+                                        <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ s.phone }}</span>
+                                        </td>
+                                        <td>
+                                        <span class="text-dark-75 font-weight-bolder d-block font-size-lg">
+                                            <span class="badge bg-warning text-dark">Archived</span>
+                                        </span>
+                                        </td>
+                                        <td nowrap="nowrap">
+                                        {% include "parts/actions.html" with update_url=u delete_url=d %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3">
+                                        {% include "parts/nothing-found.html" %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- GROUPS -->
+                            <div class="tab-pane fade mt-2" id="groups">
+                                <h5 class="text mb-3">Finished Groups</h5>
+                                <table class="table table-head-custom table-head-bg table-borderless table-vertical-center mt-4">
+                                    <thead>
+                                    <tr class="text-left text-uppercase">
+                                        <th style="min-width: 100px">Title</th>
+                                        <th style="min-width: 100px">Course</th>
+                                        <th style="min-width: 100px">Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for g in groups_finished %}
+                                    <tr>
+                                        <td class="pl-0 py-6">
+                                        <div class="d-flex align-items-center">
+                                            <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                            <span class="symbol-label">{{ g.title|slice:':1' }}</span>
+                                            </div>
+                                            <a href="#">
+                                            <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ g.title }}</span>
+                                            </a>
+                                        </div>
+                                        </td>
+                                        <td>
+                                        <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ g.course }}</span>
+                                        </td>
+                                        <td>
+                                        <span class="text-dark-75 font-weight-bolder d-block font-size-lg">
+                                            <span class="badge bg-warning text-dark">Finished</span>
+                                        </span>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3">
+                                        {% include "parts/nothing-found.html" %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        </div>
+                    <!--end::Body-->
+                  </div>
+                  <!--end::Advance Table Widget 4-->
+                </div>
+              </div>
+
+            </div>
+            <!-- .container -->
+          </div> <!-- .d-flex.flex-column-fluid -->
+        </div>
+        <!--end::Content--> <!--begin::Footer-->
+        {% include "parts/footer.html" %}
+        <!--end::Footer-->
+      </div>
+      <!--end::Wrapper-->
+    </div>
+    <!--end::Page-->
+  </div>
+  <!--end::Main-->
+  <!-- begin::User Panel-->
+  {% include "parts/user-panel.html" %}
+  <!--begin::Quick Cart-->
+  <!--end::Quick Cart-->
+  <!--begin::Quick Panel-->
+  <!--end::Quick Panel-->
+  <!--begin::Chat Panel-->
+  <!--end::Chat Panel-->
+  <!--begin::Scrolltop-->
+  {% include "parts/scrolltop.html" %}
+  <!--end::Scrolltop-->
+  <!--begin::Sticky Toolbar-->
+  <!--end::Sticky Toolbar-->
+  <!--begin::Demo Panel-->
+  <!--end::Demo Panel-->
+
+
+</body>
+<!--end::Body-->
+{% endblock %}
+

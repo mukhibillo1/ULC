@@ -58,10 +58,10 @@
                                             <div class='col-lg-9 col-md-9 col-sm-12'>
                                                 <span style="color:red;">{{field.errors}}</span>
                                                 {{field}}
-        {% if field.name == "code" %}
-        <button type="button" class="btn btn-sm btn-info mt-2" id="generate-code">Kod yaratish</button>
-        {% endif %}
- 
+                                                {% if field.name == "code" %}
+                                                <button type="button" class="btn btn-sm btn-info mt-2" id="generate-code">Kod yaratish</button>
+                                                {% endif %}
+                                        
                                             </div>
                                         </div>
                                         {% endfor %}    
@@ -71,7 +71,7 @@
                                                 <div class="col-lg-9">
                                                     <button type="submit" class="btn btn-primary mr-2" name="save-create">Save and add new</button>
                                                     <button type="submit" class="btn btn-primary mr-2" name="saved">Save</button>
-                                                    <a href="{% url 'manager:home' %}" class="btn btn-secondary"><span>Cancel</span></a>
+                                                    <a href="{% url 'manager:student-list' %}" class="btn btn-secondary"><span>Cancel</span></a>
                                                 </div>
                                             </div>
                                         </div>

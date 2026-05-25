@@ -1,0 +1,286 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+.archive-tabs-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 15px;
+}
+
+.custom-tabs {
+    border: none;
+    background: white;
+    padding: 8px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    gap: 8px;
+    display: flex;
+    width: 100%;
+}
+
+.custom-tabs .nav-item {
+    flex: 1;
+}
+
+.text{
+  text-align: center;
+  font-size: 22px;
+  font-weight: 500;
+  font-family: 'Lucida Sans';
+}
+
+.custom-tabs .nav-link {
+    border: none;
+    background: transparent;
+    color: #6c757d;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.custom-tabs .nav-link.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    transform: scale(1.02);
+}
+</style>
+
+<body id="kt_body" class="header-fixed header-mobile-fixed aside-enabled aside-fixed">
+  <div class="d-flex flex-column flex-root">
+    <div class="d-flex flex-row flex-column-fluid page">
+
+      {% include "reception/parts/aside.html" with menu_parent='settings-all' menu_child='lead-list' %}
+
+      <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+
+        {% include "reception/parts/header.html" %}
+
+        <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+
+          <div class="d-flex flex-column-fluid">
+            <div class="container">
+
+              <!-- Tabs nav -->
+              <div class="archive-tabs-container">
+                <ul class="nav nav-tabs custom-tabs" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="tab" href="#request">Request</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#trial">Trial</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="tab" href="#ingroup">In Group</a>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="row mt-5">
+                <div class="col-md-12">
+
+                  <div class="card card-custom card-stretch gutter-b">
+
+                    <div class="container py-5">
+                      <div class="tab-content">
+
+                        <!-- REQUEST -->
+                        <div class="tab-pane fade show active mt-2" id="request">
+                          <h5 class="text mb-3">Request Leads</h5>
+
+                          <table class="table table-head-custom table-head-bg table-borderless table-vertical-center mt-4">
+                            <thead>
+                              <tr class="text-left text-uppercase">
+                                <th style="min-width: 100px">Full name</th>
+                                <th style="min-width: 100px">Birth day</th>
+                                <th style="min-width: 100px">Phone</th>
+                                <th style="min-width: 100px">Intersted Course</th>
+                                <th style="min-width: 100px">Address</th>
+                                <th style="min-width: 100px">Status</th>
+                                <th style="min-width: 100px">Actions</th>
+                              </tr>
+                            </thead>
+
+                            <tbody>
+                              {% for r in Request %}
+                              {% url 'reception:lead-update' r.id as u %}
+                              {% url 'reception:lead-delete' r.id as d %}
+                              <tr>
+                                <td class="pl-0 py-6">
+                                  <div class="d-flex align-items-center">
+                                    <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                      <span class="symbol-label">{{ r.full_name|slice:':1' }}</span>
+                                    </div>
+                                    <span href="{% url 'reception:group-create' %}" class="text-dark-75 font-weight-bolder d-block font-size-lg">{{r.full_name}}</span>      
+                                  </div>
+                                </td>
+                                
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{r.birth_date}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{r.phone}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{r.interested_course}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{r.address}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{r.status}}</span>
+                                </td>
+                                <td nowrap="nowrap">
+                                  {% include "parts/actions.html" with update_url=u delete_url=d %}
+                                </td>
+                              </tr> 
+                              {% empty %}
+                              <tr><td colspan="8">{% include "parts/nothing-found.html" %}</td></tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <!-- TRIAL -->
+                        <div class="tab-pane fade mt-2" id="trial">
+                          <h5 class="text mb-3">Trial Leads</h5>
+
+                          <table class="table table-head-custom table-head-bg table-borderless table-vertical-center mt-4">
+                            <thead>
+                              <tr class="text-left text-uppercase">
+                                <th style="min-width: 100px">Full name</th>
+                                <th style="min-width: 100px">Birth day</th>
+                                <th style="min-width: 100px">Phone</th>
+                                <th style="min-width: 100px">Intersted Course</th>
+                                <th style="min-width: 100px">Address</th>
+                                <th style="min-width: 100px">Status</th>
+                                <th style="min-width: 100px">Actions</th>
+                              </tr>
+                            </thead>
+
+                            <tbody>
+                              {% for t in Trial %}
+                              {% url 'reception:lead-update' t.id as u %}
+                              {% url 'reception:lead-delete' t.id as d %}
+                              <tr>
+                                <td class="pl-0 py-6">
+                                  <div class="d-flex align-items-center">
+                                    <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                      <span class="symbol-label">{{ t.full_name|slice:':1' }}</span>
+                                    </div>
+                                    <span href="{% url 'reception:group-create' %}" class="text-dark-75 font-weight-bolder d-block font-size-lg">{{t.full_name}}</span>      
+                                  </div>
+                                </td>
+                                
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{t.birth_date}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{t.phone}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{t.interested_course}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{t.address}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{t.status}}</span>
+                                </td>
+                                <td nowrap="nowrap">
+                                  {% include "parts/actions.html" with update_url=u delete_url=d %}
+                                </td>
+                              </tr> 
+                              {% empty %}
+                              <tr><td colspan="8">{% include "parts/nothing-found.html" %}</td></tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <!-- IN GROUP -->
+                        <div class="tab-pane fade mt-2" id="ingroup">
+                          <h5 class="text mb-3">In Group Leads</h5>
+
+                          <table class="table table-head-custom table-head-bg table-borderless table-vertical-center mt-4">
+                            <thead>
+                              <tr class="text-left text-uppercase">
+                                <th style="min-width: 100px">Full name</th>
+                                <th style="min-width: 100px">Birth day</th>
+                                <th style="min-width: 100px">Phone</th>
+                                <th style="min-width: 100px">Intersted Course</th>
+                                <th style="min-width: 100px">Address</th>
+                                <th style="min-width: 100px">Status</th>
+                                <th style="min-width: 100px">Actions</th>
+                              </tr>
+                            </thead>
+
+                            <tbody>
+                              {% for in in Ingroup %}
+                              {% url 'reception:lead-update' in.id as u %}
+                              {% url 'reception:lead-delete' in.id as d %}
+                              <tr>
+                                <td class="pl-0 py-6">
+                                  <div class="d-flex align-items-center">
+                                    <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                      <span class="symbol-label">{{ in.full_name|slice:':1' }}</span>
+                                    </div>
+                                    <span href="{% url 'reception:group-create' %}" class="text-dark-75 font-weight-bolder d-block font-size-lg">{{in.full_name}}</span>      
+                                  </div>
+                                </td>
+                                
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{in.birth_date}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{in.phone}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{in.interested_course}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{in.address}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{in.status}}</span>
+                                </td>
+                                <td nowrap="nowrap">
+                                  {% include "parts/actions.html" with update_url=u delete_url=d %}
+                                </td>
+                              </tr> 
+                              {% empty %}
+                              <tr><td colspan="8">{% include "parts/nothing-found.html" %}</td></tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        {% include "parts/footer.html" %}
+      </div>
+    </div>
+  </div>
+
+</body>
+{% endblock %}   

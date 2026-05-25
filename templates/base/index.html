@@ -1,65 +1,682 @@
-{% extends "base/base.html" %} {% load static %} {% block content %}
-<!DOCTYPE html>
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+{% load humanize %}
 
-<html lang="en">
-	<!--begin::Body-->
-	<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
-		<!--begin::Main-->
-		<!--begin::Header Mobile-->
-	     {% include 'parts/header-mobile.html' %}
-	
-		<!--end::Header Mobile-->
-		<div class="d-flex flex-column flex-root">
-			<!--begin::Page-->
-			<div class="d-flex flex-row flex-column-fluid page">
-				<!--begin::Aside-->
-          {% include 'parts/aside.html' %}
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
 
-				<!--end::Aside-->
-				<!--begin::Wrapper-->
-				<div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
-					<!--begin::Header-->
-          {% include 'parts/header.html' %}
-					<!--end::Header-->
-					<!--begin::Content-->
-					<div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-						<!--begin::Subheader-->
+<style>
+    body, #kt_body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #f5f7fa !important;
+    }
 
-						<!--end::Subheader-->
-						<!--begin::Entry-->
-						<div class="d-flex flex-column-fluid">
-							<!--begin::Container-->
-							<div class="container">
+    .content {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
 
+    .d-flex.flex-column-fluid {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
 
+    .container {
+        padding-top: 20px !important;
+        max-width: 1400px;
+    }
 
-							</div>
-							<!--end::Container-->
-						</div>
-						<!--end::Entry-->
-					</div>
-					<!--end::Content-->
-					<!--begin::Footer-->
-          {% include 'parts/footer.html' %}
+    /* Filters */
+    .dashboard-filters {
+        background: white;
+        padding: 20px 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        margin-top: 0 !important;
+        display: inline-block;
+        justify-content: flex-end;
+        gap: 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
 
-					<!--end::Footer-->
-				</div>
-				<!--end::Wrapper-->
-			</div>
-			<!--end::Page-->
-		</div>
-		<!--end::Main-->
-		<!-- begin::User Panel-->
-    {% include 'parts/user-panel.html' %}
-		<!-- end::User Panel-->
+    .filter-select {
+        padding: 10px 20px;
+        border: 2px solid #e8eaf0;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        min-width: 150px;
+        transition: all 0.3s;
+        color: #2c3e50;
+    }
 
-		<!--begin::Scrolltop-->
-    {% include 'parts/scrolltop.html' %}
-		<!--end::Scrolltop-->
+    .filter-select:hover {
+        border-color: #7c3aed;
+        transform: translateY(-1px);
+    }
 
+    .filter-select:focus {
+        outline: none;
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    }
 
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+    }
 
-	</body>
-	<!--end::Body-->
-</html>
+    /* Stat Card */
+    .stat-card {
+        background: white;
+        padding: 20px 16px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--card-color);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        border-color: var(--card-color);
+    }
+
+    .stat-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .stat-card.purple { --card-color: #7c3aed; }
+    .stat-card.blue { --card-color: #3b82f6; }
+    .stat-card.green { --card-color: #10b981; }
+    .stat-card.orange { --card-color: #f59e0b; }
+    .stat-card.yellow { --card-color: #eab308; }
+    .stat-card.red { --card-color: #ef4444; }
+
+    /* Stat Icon */
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        font-size: 22px;
+        transition: transform 0.3s;
+    }
+
+    .stat-icon.purple { 
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        color: #7c3aed;
+    }
+    .stat-icon.blue { 
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: #3b82f6;
+    }
+    .stat-icon.green { 
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        color: #10b981;
+    }
+    .stat-icon.orange { 
+        background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+        color: #f59e0b;
+    }
+    .stat-icon.red { 
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #ef4444;
+    }
+    .stat-icon.yellow { 
+        background: linear-gradient(135deg, #fef9c3 0%, #fef08a 100%);
+        color: #eab308;
+    }
+
+    /* Stat Content */
+    .stat-content {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Stat Title */
+    .stat-title {
+        font-size: 10px;
+        color: #6b7280;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    /* Stat Value */
+    .stat-value {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1f2937;
+        margin-bottom: 8px;
+        line-height: 1;
+        text-align: center;
+    }
+
+    /* Stat Change */
+    .stat-change {
+        font-size: 11px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        margin: 0 auto;
+    }
+
+    .stat-change.positive { 
+        color: #10b981;
+        background: #d1fae5;
+    }
+    
+    .stat-change.negative { 
+        color: #ef4444;
+        background: #fee2e2;
+    }
+
+    /* Dropdown */
+    .stat-dropdown {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    .dropdown-btn {
+        background: #f3f4f6;
+        border: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 35px;
+        right: 0;
+        background: white;
+        min-width: 120px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 6px;
+        z-index: 10;
+    }
+
+    .dropdown-content a {
+        display: block;
+        padding: 8px 12px;
+        text-decoration: none;
+        color: #1f2937;
+    }
+
+    .dropdown-content a:hover {
+        background: #f3f4f6;
+    }
+
+    /* Chart Stats in Header */
+    .chart-stats {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .chart-stat-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .chart-stat-color {
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
+    }
+
+    .chart-stat-label {
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .chart-stat-value {
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    /* Responsive */
+    @media (max-width: 1400px) {
+        .stats-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (max-width: 992px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .chart-stats {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-filters {
+            flex-direction: column;
+        }
+
+        .filter-select {
+            width: 100%;
+        }
+    }
+</style>    
+
+<!--begin::Header Mobile-->
+{% include 'parts/header-mobile.html' %}
+<!--end::Header Mobile-->
+
+<div class="d-flex flex-column flex-root">
+    <!--begin::Page-->
+    <div class="d-flex flex-row flex-column-fluid page">
+        <!--begin::Aside-->
+        {% include 'parts/aside.html' %}
+        <!--end::Aside-->
+        
+        <!--begin::Wrapper-->
+        <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+            <!--begin::Header-->
+            {% include 'parts/header.html' %}
+            <!--end::Header-->
+            
+            <!--begin::Content-->
+            <div class="content d-flex flex-column flex-column-fluid" id="kt_content" style="padding-top: 0 !important;">
+                <!--begin::Entry-->
+                <div class="d-flex flex-column-fluid" style="padding-top: 0 !important;">
+                    <!--begin::Container-->
+                    <div class="container">
+                        <!-- Filters -->
+                        <div class="dashboard-filters">
+                            <form method="get" style="display: flex; gap: 15px;">
+                                <select name="year" class="filter-select" onchange="this.form.submit()">
+                                    <option value="2024" {% if selected_year == 2024 %}selected{% endif %}>2024</option>
+                                    <option value="2025" {% if selected_year == 2025 %}selected{% endif %}>2025</option>
+                                    <option value="2026" {% if selected_year == 2026 %}selected{% endif %}>2026</option>
+                                    <option value="2027" {% if selected_year == 2027 %}selected{% endif %}>2027</option>
+                                    <option value="2028" {% if selected_year == 2028 %}selected{% endif %}>2028</option>
+                                    <option value="2029" {% if selected_year == 2029 %}selected{% endif %}>2029</option>
+                                    <option value="2030" {% if selected_year == 2030 %}selected{% endif %}>2030</option>
+                                </select>
+
+                                <select name="month" class="filter-select" onchange="this.form.submit()">
+                                    <option value="1" {% if selected_month == 1 %}selected{% endif %}>Yanvar</option>
+                                    <option value="2" {% if selected_month == 2 %}selected{% endif %}>Fevral</option>
+                                    <option value="3" {% if selected_month == 3 %}selected{% endif %}>Mart</option>
+                                    <option value="4" {% if selected_month == 4 %}selected{% endif %}>Aprel</option>
+                                    <option value="5" {% if selected_month == 5 %}selected{% endif %}>May</option>
+                                    <option value="6" {% if selected_month == 6 %}selected{% endif %}>Iyun</option>
+                                    <option value="7" {% if selected_month == 7 %}selected{% endif %}>Iyul</option>
+                                    <option value="8" {% if selected_month == 8 %}selected{% endif %}>Avgust</option>
+                                    <option value="9" {% if selected_month == 9 %}selected{% endif %}>Sentabr</option>
+                                    <option value="10" {% if selected_month == 10 %}selected{% endif %}>Oktabr</option>
+                                    <option value="11" {% if selected_month == 11 %}selected{% endif %}>Noyabr</option>
+                                    <option value="12" {% if selected_month == 12 %}selected{% endif %}>Dekabr</option>
+                                </select>
+                            </form>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon purple">
+                                    <span class="svg-icon svg-icon-md">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                            <path d="M144 128a80 80 0 1 1 160 0 80 80 0 1 1 -160 0zm208 0a128 128 0 1 0 -256 0 128 128 0 1 0 256 0zM48 480c0-70.7 57.3-128 128-128l96 0c70.7 0 128 57.3 128 128l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8c0-97.2-78.8-176-176-176l-96 0C78.8 304 0 382.8 0 480l0 8c0 13.3 10.7 24 24 24s24-10.7 24-24l0-8z"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-title">Leads</div>
+                                    <div class="stat-value">{{ leads_count }}</div>
+                                </div>
+                                <div class="stat-change {% if trials_diff >= 0 %}positive{% else %}negative{% endif %}">
+                                    <span>-{{Request_count}}</span>
+                                    <span>/</span>
+                                    <span>{{ leads_count }}</span>
+                                </div>
+                                <div class="stat-dropdown">
+                                    <button class="dropdown-btn">☰</button>
+                                    <div class="dropdown-content">
+                                        <a href="{% url 'manager:lead-list' %}">All Leads</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon blue">
+                                    <i class="flaticon2-list-2 icon-2x"></i>
+                                </div>
+                                <div class="stat-title">Trail</div>
+                                <div class="stat-value">{{ trials_count }}</div>
+                                <div class="stat-change {% if trials_diff >= 0 %}positive{% else %}negative{% endif %}">
+                                    <span>+{{ trials_count }}</span>
+                                    <span>/</span>
+                                    <span>{{ leads_count }}</span>
+                                </div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon green">       
+                                    <span class="svg-icon svg-icon-md">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+                                            <path d="M320 16a104 104 0 1 1 0 208 104 104 0 1 1 0-208zM96 88a72 72 0 1 1 0 144 72 72 0 1 1 0-144zM0 416c0-70.7 57.3-128 128-128 12.8 0 25.2 1.9 36.9 5.4-32.9 36.8-52.9 85.4-52.9 138.6l0 16c0 11.4 2.4 22.2 6.7 32L32 480c-17.7 0-32-14.3-32-32l0-32zm521.3 64c4.3-9.8 6.7-20.6 6.7-32l0-16c0-53.2-20-101.8-52.9-138.6 11.7-3.5 24.1-5.4 36.9-5.4 70.7 0 128 57.3 128 128l0 32c0 17.7-14.3 32-32 32l-86.7 0zM472 160a72 72 0 1 1 144 0 72 72 0 1 1 -144 0zM160 432c0-88.4 71.6-160 160-160s160 71.6 160 160l0 16c0 17.7-14.3 32-32 32l-256 0c-17.7 0-32-14.3-32-32l0-16z"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-title">In Groups</div>
+                                    <div class="stat-value">{{ active_students_new }}</div>
+                                </div>
+                                <div class="stat-change {% if leads_diff >= 0 %}positive{% else %}negative{% endif %}">
+                                    <span>+{{ active_students_new }}</span>
+                                    <span>/</span>
+                                    <span>{{ leads_count }}</span>
+                                </div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon orange">            
+                                    <span class="svg-icon svg-icon-md">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list-check" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M5 11.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5M3.854 2.146a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 3.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 1 1 .708-.708L2 7.293l1.146-1.147a.5.5 0 0 1 .708 0m0 4a.5.5 0 0 1 0 .708l-1.5 1.5a.5.5 0 0 1-.708 0l-.5-.5a.5.5 0 0 1 .708-.708l.146.147 1.146-1.147a.5.5 0 0 1 .708 0"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-title">{{ month_name|upper }} Payments</div>
+                                    <div class="stat-value">{{ payments_count }}</div>
+                                </div>
+                                <div class="stat-dropdown">
+                                    <button class="dropdown-btn">☰</button>
+                                    <div class="dropdown-content">
+                                        <a href="{% url 'manager:payment-list' %}">All Payments</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon yellow"><i class="flaticon2-hourglass-1"></i></div>
+                                <div class="stat-content">
+                                    <div class="stat-title">Frozens</div>
+                                    <div class="stat-value">{{ frozen_count }}</div>
+                                </div>
+                                <div class="stat-dropdown">
+                                    <button class="dropdown-btn">☰</button>
+                                    <div class="dropdown-content">
+                                        <a href="{% url 'manager:archive-list' %}">All Archives</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon red">            
+                                    <span class="svg-icon svg-icon-md">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash-coin" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8m5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0"/>
+                                            <path d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195z"/>
+                                            <path d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083q.088-.517.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1z"/>
+                                            <path d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 6 6 0 0 1 3.13-1.567"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-title">Debtors</div>
+                                    <div class="stat-value">{{ debtors_count }}</div>
+                                </div>
+                                <div class="stat-dropdown">
+                                    <button class="dropdown-btn">☰</button>
+                                    <div class="dropdown-content">
+                                        <a href="{% url 'manager:payment-list' %}">All Payments</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chart Section -->
+                        <div class="container-fluid mt-4 px-0">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-header bg-white py-3">
+                                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                                <!-- Chap: Sarlavha -->
+                                                <h5 class="mb-0 fw-bold">Daromad va chiqimlar oylar kesimida</h5>
+                                                
+                                                <!-- O'ng: Statistika va Yil -->
+                                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                                    <!-- Statistika -->
+                                                    <div class="chart-stats">
+                                                        <div class="chart-stat-item">
+                                                            <div class="chart-stat-color" style="background-color: #3b82f6;"></div>
+                                                            <span class="chart-stat-label">Payments: </span>
+                                                            <span class="chart-stat-value text-primary">{{ total_payments|intcomma }} UZS</span>
+                                                        </div>
+                                                        
+                                                        <div class="chart-stat-item">
+                                                            <div class="chart-stat-color" style="background-color: #10b981;"></div>
+                                                            <span class="chart-stat-label">Salaries: </span>
+                                                            <span class="chart-stat-value text-success">{{ total_wages|intcomma }} UZS</span>
+                                                        </div>
+                                                        
+                                                        <div class="chart-stat-item">
+                                                            <div class="chart-stat-color" style="background-color: #ef4444;"></div>
+                                                            <span class="chart-stat-label">Teacher Salaries: </span>
+                                                            <span class="chart-stat-value text-danger">{{ total_teacher_salaries|intcomma }} UZS</span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="card-body">
+                                            <div style="position: relative; height: 350px; max-height: 350px;">
+                                                <canvas id="incomeExpenseChart"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end::Container-->
+                </div>
+                <!--end::Entry-->
+            </div>
+            <!--end::Content-->
+            
+            <!--begin::Footer-->
+            {% include 'parts/footer.html' %}
+            <!--end::Footer-->
+        </div>
+        <!--end::Wrapper-->
+    </div>
+    <!--end::Page-->
+</div>
+
+<!-- begin::User Panel-->
+{% include 'parts/user-panel.html' %}
+<!-- end::User Panel-->
+
+<!--begin::Scrolltop-->
+{% include 'parts/scrolltop.html' %}
+<!--end::Scrolltop-->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ========================================
+    // DROPDOWN FUNKSIYASI
+    // ========================================
+    const dropdownBtns = document.querySelectorAll('.dropdown-btn');
+
+    dropdownBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const dropdown = this.nextElementSibling;
+
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                document.querySelectorAll('.dropdown-content').forEach(dc => dc.style.display = 'none');
+                dropdown.style.display = 'block';
+            }
+        });
+    });
+
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.dropdown-content').forEach(dc => dc.style.display = 'none');
+    });
+
+    // ========================================
+    // CHART FUNKSIYASI
+    // ========================================
+    
+    const chartData = {{ chart_data|safe }};
+
+    function formatNumber(num) {
+        return new Intl.NumberFormat('uz-UZ').format(num);
+    }
+
+    const ctx = document.getElementById('incomeExpenseChart');
+    
+    if (ctx) {
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.map(item => item.month),
+                datasets: [
+                    {
+                        label: "Payments",
+                        data: chartData.map(item => item.payments),
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 8,
+                        maxBarThickness: 45
+                    },
+                    {
+                        label: 'Salaries',
+                        data: chartData.map(item => item.wages),
+                        backgroundColor: '#10b981',
+                        borderRadius: 8,
+                        maxBarThickness: 45
+                    },
+                    {
+                        label: "Teacher Salaries",
+                        data: chartData.map(item => item.teacher_salaries),
+                        backgroundColor: '#ef4444',
+                        borderRadius: 8,
+                        maxBarThickness: 45
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: { size: 14 },
+                            boxWidth: 15,
+                            boxHeight: 15
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + formatNumber(context.parsed.y) + " so'm";
+                            }
+                        },
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#1f2937',
+                        bodyColor: '#4b5563',
+                        borderColor: '#e5e7eb',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 50000000,
+                        grid: { 
+                            color: '#f3f4f6',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: { size: 13 },
+                            stepSize: 10000000,
+                            callback: function(value) {
+                                if (value === 0) return '0';
+                                if (value % 10000000 === 0) {
+                                    return (value / 1000000) + 'mln';
+                                }
+                                return '';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

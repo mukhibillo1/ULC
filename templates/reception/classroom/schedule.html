@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dars jadvali</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0e14;
+            color: #e8eaed;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #151921;
+            padding: 25px 40px;
+            border-bottom: 1px solid #2a3441;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            background: #4285f4;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 500;
+        }
+
+        .schedule-container {
+            height: calc(100vh - 90px);
+            overflow-x: auto;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .schedule-wrapper {
+            display: inline-flex;
+            gap: 2px;
+            background: #1a1f2e;
+            border-radius: 8px;
+            overflow: hidden;
+            min-width: 100%;
+        }
+
+        .rooms-column {
+            background: #0f1419;
+            min-width: 180px;
+            position: sticky;
+            left: 0;
+            z-index: 50;
+        }
+
+        .corner-cell {
+            background: #151921;
+            padding: 20px;
+            font-weight: 600;
+            color: #9aa0a6;
+            border-bottom: 2px solid #2a3441;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+        }
+
+        .room-cell {
+            background: #0f1419;
+            padding: 20px;
+            font-weight: 500;
+            color: #e8eaed;
+            border-bottom: 1px solid #2a3441;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+        }
+
+        .schedule-grid {
+            flex: 1;
+            display: grid;
+            background: #1a1f2e;
+        }
+
+        .time-header {
+            background: #151921;
+            padding: 20px;
+            font-weight: 600;
+            font-size: 15px;
+            color: #9aa0a6;
+            border-bottom: 2px solid #2a3441;
+            border-left: 1px solid #2a3441;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+        }
+
+        .schedule-cell {
+            background: #0f1419;
+            border-left: 1px solid #2a3441;
+            border-bottom: 1px solid #2a3441;
+            min-height: 120px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .schedule-cell:hover {
+            background: #151921;
+        }
+
+        .empty-cell {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #5f6368;
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .schedule-cell:hover .empty-cell {
+            opacity: 1;
+        }
+
+        .lesson-card {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .lesson-card.blue {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            border: 1px solid #60a5fa;
+        }
+
+        .lesson-card.green {
+            background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
+            border: 1px solid #34d399;
+        }
+
+        .lesson-card.purple {
+            background: linear-gradient(135deg, #5b21b6 0%, #8b5cf6 100%);
+            border: 1px solid #a78bfa;
+        }
+
+        .lesson-card.orange {
+            background: linear-gradient(135deg, #c2410c 0%, #f97316 100%);
+            border: 1px solid #fb923c;
+        }
+
+        .lesson-name {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            color: #fff;
+        }
+
+        .lesson-teacher {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 8px;
+        }
+
+        .lesson-time {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f1419;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #4285f4;
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5294ff;
+        }
+
+ /* Navbar umumiy uslubi */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 24px;
+        background: linear-gradient(90deg, #1e293b, #0f172a);
+        border-bottom: 1px solid #334155;
+        color: #f1f5f9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .navbar-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .navbar-logo {
+        width: 40px;
+        height: 40px;
+        background: #3b82f6;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .navbar-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #f1f5f9;
+    }
+
+    .navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Filter buttons */
+    .filter-btn {
+        padding: 6px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 6px;
+        border: 1px solid #3b82f6;
+        background: transparent;
+        color: #3b82f6;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+        background: #3b82f6;
+        color: #fff;
+    }
+
+    /* Dropdown */
+    .dropdown {
+        position: relative;
+    }
+
+    .dropdown-toggle {
+        padding: 6px 16px;
+        border-radius: 6px;
+        border: none;
+        background: #1e293b;
+        color: #f1f5f9;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .dropdown-toggle:hover {
+        background: #3b82f6;
+        color: #fff;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 120%;
+        right: 0;
+        background: #1e293b;
+        border-radius: 8px;
+        padding: 8px 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.25s ease;
+        min-width: 160px;
+        z-index: 100;
+    }
+
+    .dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .dropdown-menu .navi-item {
+        list-style: none;
+    }
+
+    .dropdown-menu .navi-link {
+        display: block;
+        padding: 10px 16px;
+        color: #f1f5f9;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+    .dropdown-menu .navi-link:hover {
+        background: #3b82f6;
+        color: #fff;
+    }
+        .schedule{
+            font-size: 15px;
+        }
+
+
+/* ===============================
+   SVG ICONS
+=============================== */
+.svg-icon {
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    fill: #6b7280;
+    transition: all 0.25s ease;
+}
+
+.svg-icon-md {
+    width: 26px;
+    height: 26px;
+}
+
+.navi-link:hover .svg-icon {
+    fill: #2563eb;
+}
+
+
+/* ===============================
+   TEXT HELPERS
+=============================== */
+        .font-weight-bold {
+            font-weight: 700 !important;
+        }
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        .flex-column {
+            flex-direction: column;
+        }
+
+        .schedule{
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="navbar-logo">📚</div>
+            <h1 class="navbar-title">Class Schedule</h1>
+        </div>
+        <div class="navbar-right">
+            <a href="{% url 'reception:schedule' %}"><button class="filter-btn active">All Days</button></a>
+            <a href="?day=odd"><button class="filter-btn {% if filter_day == 'odd' %}active{% endif %}">Toq kunlar</button></a>
+            <a href="?day=even"><button class="filter-btn {% if filter_day == 'even' %}active{% endif %}">Juft kunlar</button></a>
+
+            <div class="dropdown">
+                <button class="btn btn-light-primary dropdown-toggle">Options</button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li class="navi-item"><a href="{% url 'reception:group-create' %}" class="navi-link">Add new Group</a></li>
+                    <li class="navi-item"><a href="{% url 'reception:classroom-list' %}" class="navi-link">Exit</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="schedule-container">
+        <div class="schedule-wrapper">
+            <div class="rooms-column" id="roomsColumn"></div>
+            <div class="schedule-grid" id="scheduleGrid"></div>
+        </div>
+    </div>
+
+<script>
+    const hours = {{ hours|safe }};
+    const roomGroups = {{ room_groups_json|safe }};
+
+    const colors = ['blue', 'green', 'purple', 'orange'];
+
+    // HH:MM:SS -> HH:MM
+    function formatTime(timeStr) {
+        if (!timeStr || timeStr === 'None' || timeStr === 'null') return '';
+        return timeStr.slice(0,5);
+    }
+
+    function parseTime(timeStr) {
+        if (!timeStr || timeStr === 'None' || timeStr === 'null') return 0;
+        const parts = timeStr.split(':');
+        const hours = parseInt(parts[0]) || 0;
+        const minutes = parseInt(parts[1]) || 0;
+        return hours * 60 + minutes;
+    }
+
+    function calculateSpanInIntervals(startTime, endTime) {
+        if (!endTime || endTime === 'None' || endTime === 'null') return 1;
+
+        const startMinutes = parseTime(startTime);
+        const endMinutes = parseTime(endTime);
+        const durationMinutes = endMinutes - startMinutes;
+
+        if (durationMinutes <= 0) return 1;
+
+        // 30 daqiqalik intervalga bo'lish
+        return Math.ceil(durationMinutes / 30);
+    }
+
+    function renderSchedule() {
+        const roomsCol = document.getElementById('roomsColumn');
+        const grid = document.getElementById('scheduleGrid');
+
+        // 30 daqiqalik interval soatlar (08:00 - 18:00)
+        const intervals = [];
+        for (let h = 8; h <= 18; h++) {
+            intervals.push(`${h.toString().padStart(2,'0')}:00`);
+            if (h !== 18) intervals.push(`${h.toString().padStart(2,'0')}:30`);
+        }
+
+        grid.style.gridTemplateColumns = `repeat(${intervals.length}, minmax(68px, 1fr))`;
+
+        // Corner cell
+        const cornerCell = document.createElement('div');
+        cornerCell.className = 'corner-cell';
+        cornerCell.textContent = 'Xona / Vaqt';
+        roomsCol.appendChild(cornerCell);
+
+        // Time headers
+        intervals.forEach(hour => {
+            const timeCell = document.createElement('div');
+            timeCell.className = 'time-header';
+            timeCell.textContent = hour;
+            grid.appendChild(timeCell);
+        });
+
+        const roomNames = Object.keys(roomGroups);
+
+        roomNames.forEach((roomName, roomIndex) => {
+            const roomCell = document.createElement('div');
+            roomCell.className = 'room-cell';
+            roomCell.textContent = roomName;
+            roomsCol.appendChild(roomCell);
+
+            const groups = roomGroups[roomName];
+
+            // Create map of start times in minutes
+            const lessonMap = {};
+            groups.forEach(group => {
+                lessonMap[parseTime(group.start_time)] = group;
+            });
+
+            let i = 0;
+            while (i < intervals.length) {
+                const cell = document.createElement('div');
+                cell.className = 'schedule-cell';
+
+                const intervalTime = intervals[i];
+                const intervalMinutes = parseTime(intervalTime);
+
+                if (lessonMap[intervalMinutes]) {
+                    const group = lessonMap[intervalMinutes];
+                    const span = calculateSpanInIntervals(group.start_time, group.end_time);
+
+                    cell.style.gridColumn = `span ${span}`;
+
+                    const card = document.createElement('div');
+                    card.className = `lesson-card ${colors[roomIndex % colors.length]}`;
+                    const endTimeText = (group.end_time && group.end_time !== 'None' && group.end_time !== 'null') 
+                        ? ' - ' + formatTime(group.end_time)
+                        : '';
+                    const studentsCount = group.students_count || 0;
+
+                    card.innerHTML = `
+                        <div>
+                            <div class="lesson-name">Group: ${group.name}</div>
+                            <div class="lesson-teacher">Teacher: ${group.teacher} | Students: ${studentsCount}</div>
+                        </div>
+                        <div class="lesson-time">${formatTime(group.start_time)}${endTimeText}</div>
+                    `;
+
+                    card.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        alert(`Guruh: ${group.name}\nO'qituvchi: ${group.teacher}\nVaqt: ${formatTime(group.start_time)}${endTimeText}`);
+                    });
+
+                    cell.appendChild(card);
+                    i += span;
+                } else {
+                    cell.addEventListener('click', () => {
+                        alert(`${roomName} - ${intervalTime}\nYangi dars qo'shish`);
+                    });
+                    i++;
+                }
+
+                grid.appendChild(cell);
+            }
+        });
+    }
+
+    renderSchedule();
+</script>
+
+
+
+</body>
+</html>

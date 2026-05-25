@@ -59,6 +59,7 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",  
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -157,3 +158,21 @@ AUTH_USER_MODEL = "common.BaseUser"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = "/accounts/sign-in/"
+
+# Til sozlamalari
+LANGUAGE_CODE = 'uz'  # Default til
+
+LANGUAGES = [
+    ('uz', 'O\'zbekcha'),
+    ('en', 'English'),
+    ('ru', 'Русский'),
+]
+
+USE_I18N = True
+USE_L10N = True
+
+# Tarjima fayllar uchun papka
+import os
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]

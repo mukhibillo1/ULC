@@ -1,5 +1,6 @@
 {% extends "base/base.html" %}
 {% load static %}
+{% load i18n %}
 {% block content %}
 {% load humanize %}
 <!--begin::Head-->
@@ -124,14 +125,14 @@ select.form-select:focus {
                     <div class="card-header border-0 py-5">
 
                       <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label font-weight-bolder text-dark">Teachers</span>
-                        <small class='mt-2'>Total: {{objects | length}}</small>
+                        <span class="card-label font-weight-bolder text-dark">{% trans "Teachers" %}</span>
+                        <small class='mt-2'>{% trans "Total" %}: {{objects | length}}</small>
                       </h3>
                         <form method="get" id="filterForm">
                           <div class="filter-row" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: center; justify-content: flex-end;">
                             <!-- Course select -->
                             <select name="course" class="form-select selectpicker" onchange="this.form.submit()">
-                                <option value="">All Courses</option>
+                                <option value="">{% trans "All Courses" %}</option>
                                 {% for course in courses %}
                                     <option value="{{ course.id }}" {% if course_id|stringformat:"s" == course.id|stringformat:"s" %}selected{% endif %}>
                                         {{ course.title }}
@@ -142,7 +143,7 @@ select.form-select:focus {
                             <!-- Reset button -->
                               {% if search or course_id %}
                                 <button type="button" class="reset-btn" onclick="window.location.href='{% url 'manager:teacher-list' %}'" style="flex: 0 0 auto;">
-                                    <i class="fas fa-redo"></i> Reset All
+                                    <i class="fas fa-redo"></i> {% trans "Reset All" %}
                                 </button>
                               {% endif %}
                           </div>
@@ -151,17 +152,17 @@ select.form-select:focus {
                     <form method="get">
                       <div class="form-group row">
                           <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6  ml-10 ">
-                              <input type="text" class="form-control datatable-input" placeholder="Search" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                              <input type="text" class="form-control datatable-input" placeholder="{% trans 'Search' %}" value="{{request.GET.search}}" name="search" data-col-index="0"/>
                           </div>
 
                           <button type="submit" class="btn btn-primary font-weight-bolder  ml-7 mb-1">
                               <span class="nav-icon">
                                   <i class="fas fa-search"></i>
                               </span>
-                              <span class="nav-text">Search</span>
+                              <span class="nav-text">{% trans "Search" %}</span>
                           </button>
                           <div class="card-toolbar">
-                          <a href="{% url 'manager:teacher-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">Create new teacher</a>
+                          <a href="{% url 'manager:teacher-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">{% trans "Create new teacher" %}</a>
                           </div>
                       </div>
                     </form>
@@ -175,14 +176,14 @@ select.form-select:focus {
                           <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
                             <thead>
                               <tr class="text-left text-uppercase">
-                                <th style="min-width: 100px">Full name</th>
-                                <th style="min-width: 100px">Birhtday</th>
-                                <th style="min-width: 100px">Phone</th>
-                                <th style="min-width: 100px">Course</th>
-                                <th style="min-width: 100px">Salary Type</th>
-                                <th style="min-width: 100px">Salary</th>
-                                <th style="min-width: 100px">Address</th>
-                                <th style="min-width: 100px">Actions</th>
+                                <th style="min-width: 100px">{% trans "Full name" %}</th>
+                                <th style="min-width: 100px">{% trans "Birthday" %}</th>
+                                <th style="min-width: 100px">{% trans "Phone" %}</th>
+                                <th style="min-width: 100px">{% trans "Course" %}</th>
+                                <th style="min-width: 100px">{% trans "Salary Type" %}</th>
+                                <th style="min-width: 100px">{% trans "Salary" %}</th>
+                                <th style="min-width: 100px">{% trans "Address" %}</th>
+                                <th style="min-width: 100px">{% trans "Actions" %}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -271,4 +272,3 @@ select.form-select:focus {
 </body>
 <!--end::Body-->
 {% endblock %}
-

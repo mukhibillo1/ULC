@@ -1,0 +1,196 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+<div class="d-flex flex-column flex-root">
+  <div class="d-flex flex-row flex-column-fluid page">
+    {% include 'accountant/parts/aside.html' %}
+    <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+      {% include "accountant/parts/header.html" %}
+      <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+        <div class="d-flex flex-column-fluid">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card card-custom gutter-b example example-compact">
+                  <div class="card-header">
+                    <h3 class="card-title">Add Payment</h3>
+                  </div>
+
+                  {% if form.non_field_errors %}
+                  <div class="alert alert-danger text-center m-3">
+                    {% for error in form.non_field_errors %}
+                      {{ error }}
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+
+                  <form class="form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card-body">
+
+                      <!-- Group -->
+                      <div class="form-group row">
+                        <label class="col-form-label text-right col-lg-2 col-sm-6"><b>Group</b></label>
+                        <div class="col-lg-9 col-md-9 col-sm-12">
+                          {{ form.group }}
+                          <small id="group-price" class="form-text price-text"></small>
+                          {% if form.group.errors %}
+                          <div class="alert alert-danger mt-2">{{ form.group.errors|striptags }}</div>
+                          {% endif %}
+                        </div>
+                      </div>
+
+                      <!-- Student -->
+                      <div class="form-group row">
+                        <label class="col-form-label text-right col-lg-2 col-sm-6"><b>Student</b></label>
+                        <div class="col-lg-9 col-md-9 col-sm-12">
+                          {{ form.student }}
+                          <div class="d-flex justify-content-between">
+                            <small id="student-balance" class="form-text balance-text"></small>
+                            <small id="student-debt" class="form-text debt-text"></small>
+                          </div>
+                          {% if form.student.errors %}
+                          <div class="alert alert-danger mt-2">{{ form.student.errors|striptags }}</div>
+                          {% endif %}
+                        </div>
+                      </div>
+
+                      <!-- Amount -->
+                      <div class="form-group row">
+                        <label class="col-form-label text-right col-lg-2 col-sm-6"><b>Amount</b></label>
+                        <div class="col-lg-9 col-md-9 col-sm-12">
+                          {{ form.amount }}
+                          <small class="form-text text-muted">Enter amount student pays.</small>
+                          {% if form.amount.errors %}
+                          <div class="alert alert-danger mt-2">{{ form.amount.errors|striptags }}</div>
+                          {% endif %}
+                        </div>
+                      </div>
+
+                      <!-- Date -->
+                      <div class="form-group row">
+                        <label class="col-form-label text-right col-lg-2 col-sm-6"><b>Date</b></label>
+                        <div class="col-lg-9 col-md-9 col-sm-12">
+                          {{ form.date }}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="card-footer">
+                      <div class="row">
+                        <div class="col-2"></div>
+                        <div class="col-10">
+                          <button type="submit" class="btn btn-success mr-2" name="saved">Save</button>
+                          <button type="submit" class="btn btn-success mr-2" name="save-create">Save and add new</button>
+                          <a href="{% url 'accountant:payment-list' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% include 'parts/footer.html' %}
+    </div>
+  </div>
+</div>
+
+</body>
+
+<!-- STYLE -->
+<style>
+.price-text {
+  color: red;
+  font-weight: bold;
+}
+.balance-text {
+  color: green;
+  font-weight: bold;
+}
+.debt-text {
+  color: red;
+  font-weight: bold;
+}
+</style>
+
+<!-- JS kutubxonalar -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"></script>
+
+<!-- JS kod -->
+<script>
+$(document).ready(function() {
+
+  // Group tanlanganda studentlar va price olish
+  $('#id_group').change(function() {
+    var groupId = $(this).val();
+
+    if (!groupId) {
+      $('#id_student').html('<option value="">Select student</option>');
+      $('#student-balance').text('');
+      $('#student-debt').text('');
+      $('#group-price').text('');
+      $('#id_amount').val('');
+      $('#id_student').selectpicker('refresh');
+      return;
+    }
+
+    $.ajax({
+      url: '{% url "manager:ajax-payment-data" %}',
+      data: { 'group': groupId },
+      success: function(data) {
+        var studentSelect = $('#id_student');
+        studentSelect.empty();
+        studentSelect.append('<option value="">Select student</option>');
+
+        data.students.forEach(function(student) {
+          studentSelect.append(
+            `<option value="${student.id}" data-balance="${student.balance}" data-debt="${student.debt}">
+              ${student.name}
+            </option>`
+          );
+        });
+
+        $('#group-price').text('Price: ' + data.monthly_fee + ' UZS');
+        $('#id_amount').val(data.monthly_fee);
+        $('#student-balance').text('');
+        $('#student-debt').text('');
+        studentSelect.selectpicker('refresh');
+      }
+    });
+  });
+
+  // Student tanlanganda balance va debt ko‘rsatish
+  $('#id_student').change(function() {
+    var selected = $(this).find('option:selected');
+    var balance = parseFloat(selected.data('balance')) || 0;
+    var debt = parseFloat(selected.data('debt')) || 0;
+    $('#student-balance').text('Balance: ' + balance + ' UZS');
+    $('#student-debt').text('Debt: ' + debt + ' UZS');
+  });
+
+  // Amount kiritilganda qarzni hisoblash
+  $('#id_amount').on('input', function() {
+    var amount = parseFloat($(this).val()) || 0;
+    var price = parseFloat($('#group-price').text().replace(/\D/g, '')) || 0;
+    var debt = price - amount;
+
+    if (debt > 0) {
+      $('#student-debt').text('Debt: ' + debt + ' UZS');
+    } else {
+      $('#student-debt').text('Debt: 0 UZS');
+    }
+  });
+
+});
+</script>
+
+{% endblock %}

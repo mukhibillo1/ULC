@@ -1,0 +1,62 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block content %}
+
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+    <div class="d-flex flex-column flex-root">
+        <div class="d-flex flex-row flex-column-fluid page">
+            {% include 'accountantparts/aside.html' %}
+            <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+                {% include "accountant/parts/header.html" %}
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+                    <div class="d-flex flex-column-fluid">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card card-custom gutter-b example example-compact">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Add Payment</h3>
+                                        </div>
+
+                                        <form class="form" method="post" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="card-body">
+                                                {% for field in form %}
+                                                    <div class="form-group row">
+                                                        <label class="col-form-label text-right col-lg-2 col-sm-6" for="{{ field.auto_id }}">
+                                                            {% if field.field.required %}<b>{{ field.label }}</b>{% else %}{{ field.label }}{% endif %}
+                                                        </label>
+                                                        <div class='col-lg-9 col-md-9 col-sm-12'>
+                                                            <span style="color:red;">{{ field.errors }}</span>
+                                                            {{ field }}
+                                                        </div>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+
+                                            <div class="card-footer">
+                                                <div class="row">
+                                                    <div class="col-2"></div>
+                                                    <div class="col-10">
+                                                        <button type="submit" class="btn btn-success mr-2" name="saved">Save</button>
+                                                        <button type="submit" class="btn btn-success mr-2" name="save-create">Save and add new</button>
+                                                        <a href="{% url 'accountant:payment-list' %}" class="btn btn-secondary">Cancel</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% include 'parts/footer.html' %}
+            </div>
+        </div>
+    </div>
+</body>
+
+{% endblock %}

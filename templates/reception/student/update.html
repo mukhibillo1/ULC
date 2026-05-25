@@ -1,0 +1,131 @@
+
+{% extends "base/base.html" %} {% load static %} {% block content %}
+<!--begin::Head-->
+<!--end::Head-->
+<!--begin::Body-->
+
+<body
+    id="kt_body"
+    class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading"
+>
+    <!--begin::Main-->
+    <div class="d-flex flex-column flex-root">
+        <!--begin::Page-->
+        <div class="d-flex flex-row flex-column-fluid page">
+            <!--begin::Aside-->
+            {% include "reception/parts/aside.html" with menu_parent="student-all" menu_child="student-create" %}
+            <!--end::Aside-->
+            <!--begin::Wrapper-->
+            <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+                <!--begin::Header-->
+                {% include "reception/parts/header.html" %}
+                <!--end::Header-->
+                <!--begin::Content-->
+                <div
+                    class="content d-flex flex-column flex-column-fluid"
+                    id="kt_content"
+                >
+                    <div class="d-flex flex-column-fluid">
+                        <div class="container">
+                            <div
+                                class="card card-custom card-sticky"
+                                id="kt_page_sticky_card"
+                            >
+                                <div class="card-header">
+                                    <div class="card-title">
+                                        <h3 class="card-label">
+                                           Add student <i class="mr-2"></i>
+                                        </h3>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <!--begin::Form-->
+                                    <form class="form" method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        {% for field in form %}
+
+                                        <div class="form-group row">
+                                            <label class="col-form-label text-right col-lg-3 col-sm-12" for="{{field.auto_id}}">
+                                                {% if field.field.required %}
+                                                <b>{{field.label}}</b>
+                                                {% else %}
+                                                {{field.label}} 
+                                                {% endif %}
+                                           </label>
+                                            <div class='col-lg-9 col-md-9 col-sm-12'>
+                                                <span style="color:red;">{{field.errors}}</span>
+                                                {{field}}
+                                                {% if field.name == "code" %}
+                                                <button type="button" class="btn btn-sm btn-info mt-2" id="generate-code">Kod yaratish</button>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% endfor %}    
+                                        <div class="card-footer">
+                                            <div class="row">
+                                                <div class="col-lg-3"></div>
+                                                <div class="col-lg-9">
+                                                    <button type="submit" class="btn btn-primary mr-2" name="save-create">Save and add new</button>
+                                                    <button type="submit" class="btn btn-primary mr-2" name="saved">Save</button>
+                                                    <a href="{% url 'reception:student-list' %}" class="btn btn-secondary"><span>Cancel</span></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <!-- .container -->
+                    </div>
+                    <!-- .d-flex.flex-column-fluid -->
+                </div>
+                <!--end::Content-->
+                <!--begin::Footer-->
+                {% include "parts/footer.html" %}
+                <!--end::Footer-->
+            </div>
+            <!--end::Wrapper-->
+        </div>
+        <!--end::Page-->
+    </div>
+    <!--end::Main-->
+    <!-- begin::User Panel-->
+    {% include "parts/user-panel.html" %}
+    <!--begin::Quick Cart-->
+    <!--end::Quick Cart-->
+    <!--begin::Quick Panel-->
+    <!--end::Quick Panel-->
+    <!--begin::Chat Panel-->
+    <!--end::Chat Panel-->
+    <!--begin::Scrolltop-->
+    {% include "parts/scrolltop.html" %}
+    <!--end::Scrolltop-->
+    <!--begin::Sticky Toolbar-->
+    <!--end::Sticky Toolbar-->
+    <!--begin::Demo Panel-->
+    <!--end::Demo Panel-->
+    <!--end::Page Scripts-->
+</body>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const button = document.getElementById("generate-code");
+    const codeInput = document.getElementById("id_code");
+
+    if (button && codeInput) {
+        button.addEventListener("click", function() {
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            let code = "";
+            for (let i = 0; i < 6; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            codeInput.value = code;
+        });
+    }
+});
+</script>
+
+<!--end::Body-->
+{% endblock %}
+

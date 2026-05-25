@@ -111,10 +111,10 @@
                                 <a class="nav-link {% if active_tab == 'attendance' %}active{% endif %}" href="{% url 'manager:attendance-list' group.pk %}">Davomat</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {% if active_tab == 'baholash' %}active{% endif %}" href="#">Baholash</a>
+                                <a class="nav-link {% if active_tab == 'baholash' %}active{% endif %}" href="{% url 'manager:grades' group.pk %}">Baholash</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {% if active_tab == 'rating' %}active{% endif %}" href="#">Rating</a>
+                                <a class="nav-link {% if active_tab == 'rating' %}active{% endif %}" href="{% url 'manager:rating' group.pk %}">Rating</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {% if active_tab == 'debtors' %}active{% endif %}" href="{% url 'manager:group-debtors' group.pk %}">Debtors</a>
@@ -167,6 +167,7 @@
                             </thead>
                             <tbody>
                               {% for object in debts %}
+                              {% url 'manager:payment-update' object.id as u %}
                               <tr>
                                 <td class="pl-0 py-6">
                                   <div class="d-flex align-items-center">

@@ -1,0 +1,331 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+
+<style>
+    .info{
+        padding-left: 30px;
+        padding-top: 25px;
+    }
+    .logo{
+        margin-top: 20px;
+        margin-left: 10px;
+    }
+
+    .form-group label {
+        font-weight: 500;
+        margin-bottom: 6px;
+        display: block;
+        color: #333;
+    }
+    .form-group{
+        margin-left: 20px;
+    }
+
+    .prefix-input {
+        display: flex;
+        align-items: center;
+        background: #f3f4f6;
+        border-radius: 16px;
+        padding: 4px;
+    }
+
+    .prefix {
+        background: #e5e7eb;
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-size: 14px;
+        color: #7a7a7a;
+        white-space: nowrap;
+        user-select: none;
+    }
+
+    .form-input {
+        border: none;
+        outline: none;
+        padding: 10px 14px;
+        background: transparent;
+        flex: 1;
+        font-size: 14px;
+    }
+
+    .save-btn {
+        background: #c5c5c5;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 14px;
+        border: none;
+        cursor: not-allowed;
+        font-size: 14px;
+        transition: 0.3s ease;
+    }
+
+    .save-btn:enabled {
+        background: #2563eb;
+        cursor: pointer;
+    }
+
+    /* Logo Upload Styles */
+    .logo-upload-box {
+        width: 100%;
+        height: 250px;
+        background: #2c2c2c;
+        border-radius: 8px;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .logo-upload-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .upload-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+        width: 100%;
+        padding: 20px;
+        transition: opacity 0.3s ease;
+    }
+
+    .logo-upload-box:hover .upload-content {
+        opacity: 0.9;
+    }
+
+    .upload-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 15px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+    }
+
+    .upload-text {
+        font-size: 16px;
+        margin-bottom: 8px;
+        font-weight: 500;
+    }
+
+    .upload-subtext {
+        font-size: 13px;
+        color: rgba(255,255,255,0.7);
+    }
+
+    .preview-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 20px;
+    }
+
+    .delete-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255,255,255,0.9);
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        color: #333;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 10;
+    }
+
+    .logo-upload-box:hover .delete-btn {
+        opacity: 1;
+    }
+
+    .delete-btn:hover {
+        background: #ff4444;
+        color: white;
+    }
+
+    .logo-file-input {
+        display: none;
+    }
+
+    .file-name {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+        text-align: center;
+    }
+</style>
+
+<body id="kt_body" class="header-fixed header-mobile-fixed aside-enabled aside-fixed">
+  <div class="d-flex flex-column flex-root">
+    <div class="d-flex flex-row flex-column-fluid page">
+
+      {% include "reception/parts/aside.html" with menu_parent='settings-all' menu_child='lead-list' %}
+
+      <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+
+        {% include "reception/parts/header.html" %}
+
+        <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+
+          <div class="d-flex flex-column-fluid">
+            <div class="container">
+              <div class="row mt-5">
+                <div class="col-md-12">
+
+                  <form action="{% url 'reception:center-info' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="card card-custom card-stretch gutter-b">
+                      <h3 class="info">{% trans "Markaz ma'lumotlari" %}</h3>
+                      <div class="container py-5">
+                        <div class="card p-4">
+                          <div class="row mt-3">
+
+                            <div class="form-group mt-3">
+                                <label>{% trans "Administrator telegram username" %}:</label>
+                                <div class="prefix-input">
+                                    <span class="prefix">https://t.me/</span>
+                                    {{ form.tg_admin }}
+                                </div>
+                            </div>
+
+                            <div class="form-group mt-3">
+                                <label>{% trans "Telegram Kanal" %}:</label>
+                                <div class="prefix-input">
+                                    <span class="prefix">https://t.me/</span>
+                                    {{ form.tg_channel }}
+                                </div>
+                            </div>
+
+                            <div class="form-group mt-3">
+                                <label>{% trans "Instagram" %}:</label>
+                                <div class="prefix-input">
+                                    <span class="prefix">https://www.instagram.com/</span>
+                                    {{ form.instagram }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mt-3">
+                                <label>{% trans "Operator telefon raqami" %}:</label>
+                                {{ form.phone }}
+                            </div>
+
+                            <div class="col-md-6 mt-3">
+                                <label>{% trans "Manzil" %}:</label>
+                                {{ form.regions }}
+                            </div>
+
+                          </div>
+                        </div>
+
+                        <!-- LOGO SECTION -->
+                        <h3 class="logo">{% trans "O'quv markaz logosi" %}</h3>
+                        <div class="card p-4 mt-4">
+                            <div class="row mt-3">
+                                <div class="col-md-12">
+                                    <div class="logo-upload-box" id="uploadBox" onclick="document.getElementById('logoFileInput').click()">
+                                        <input type="file" id="logoFileInput" name="logo" class="logo-file-input" accept="image/*" onchange="handleFileSelect(event)">
+                                        
+                                        <div class="upload-content" id="uploadContent">
+                                            <div class="upload-icon">📷</div>
+                                            <div class="upload-text">{% trans "O'zgartirish uchun olib keling yoki bosing" %}</div>
+                                            <div class="upload-subtext">{% trans "PNG, JPG, JPEG (max. 5MB)" %}</div>
+                                        </div>
+                                        
+                                        <img id="previewImage" class="preview-image" style="display: none;" 
+                                            {% if form.instance.logo %}src="{{ form.instance.logo.url }}"{% endif %}>
+                                        <button type="button" class="delete-btn" id="deleteBtn" onclick="deleteImage(event)">{% trans "O'CHIRISH" %}</button>
+                                    </div>
+                                    <div class="file-name" id="fileName"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="saveBtn" class="mt-6 save-btn" type="submit">{% trans "Save Information" %}</button>
+
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        {% include "parts/footer.html" %}
+      </div>
+    </div>
+  </div>
+
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+    const previewImage = document.getElementById('previewImage');
+    if (previewImage.src && previewImage.src !== window.location.href) {
+        previewImage.style.display = 'block';
+        document.getElementById('uploadContent').style.display = 'none';
+    }
+});
+
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    
+    if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+            alert('{% trans "Fayl hajmi 5MB dan oshmasligi kerak!" %}');
+            event.target.value = '';
+            return;
+        }
+
+        if (!file.type.match('image.*')) {
+            alert('{% trans "Faqat rasm fayllari yuklanadi!" %}');
+            event.target.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const previewImage = document.getElementById('previewImage');
+            const uploadContent = document.getElementById('uploadContent');
+            const fileName = document.getElementById('fileName');
+            
+            previewImage.src = e.target.result;
+            previewImage.style.display = 'block';
+            uploadContent.style.display = 'none';
+            fileName.textContent = file.name;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function deleteImage(event) {
+    event.stopPropagation();
+    const previewImage = document.getElementById('previewImage');
+    const uploadContent = document.getElementById('uploadContent');
+    const fileName = document.getElementById('fileName');
+    const logoInput = document.getElementById('logoFileInput');
+    
+    previewImage.src = '';
+    previewImage.style.display = 'none';
+    uploadContent.style.display = 'block';
+    fileName.textContent = '';
+    logoInput.value = '';
+}
+</script>
+
+</body>
+{% endblock %}

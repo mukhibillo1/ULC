@@ -1,73 +1,74 @@
-
-{% extends "base/base.html" %} {% load static %} {% block content %}
-<!--begin::Head-->
-<!--end::Head-->
-<!--begin::Body-->
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
 
 <body
     id="kt_body"
     class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading"
 >
-    <!--begin::Main-->
-    <!--begin::Header Mobile-->
     {% include "parts/header-mobile.html" %}
-    <!--end::Header Mobile-->
+
     <div class="d-flex flex-column flex-root">
-        <!--begin::Page-->
         <div class="d-flex flex-row flex-column-fluid page">
-            <!--begin::Aside-->
             {% include "parts/aside.html" with menu_parent="group-all" menu_child="group-create" %}
-            <!--end::Aside-->
-            <!--begin::Wrapper-->
+
             <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
-                <!--begin::Header-->
                 {% include "parts/header.html" %}
-                <!--end::Header-->
-                <!--begin::Content-->
-                <div
-                    class="content d-flex flex-column flex-column-fluid"
-                    id="kt_content"
-                >
+
+                <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
                     <div class="d-flex flex-column-fluid">
                         <div class="container">
-                            <div
-                                class="card card-custom card-sticky"
-                                id="kt_page_sticky_card"
-                            >
+                            <div class="card card-custom card-sticky" id="kt_page_sticky_card">
                                 <div class="card-header">
                                     <div class="card-title">
                                         <h3 class="card-label">
-                                           Add group <i class="mr-2"></i>
+                                            Add group
                                         </h3>
                                     </div>
                                 </div>
+
                                 <div class="card-body">
-                                    <!--begin::Form-->
                                     <form class="form" method="post" enctype="multipart/form-data">
                                         {% csrf_token %}
-                                        {% for field in form %}
 
+                                        {% for field in form %}
                                         <div class="form-group row">
-                                            <label class="col-form-label text-right col-lg-3 col-sm-12" for="{{field.auto_id}}">
+                                            <label class="col-form-label text-right col-lg-3 col-sm-12">
                                                 {% if field.field.required %}
-                                                <b>{{field.label}}</b>
+                                                    <b>{{ field.label }}</b>
                                                 {% else %}
-                                                {{field.label}} 
+                                                    {{ field.label }}
                                                 {% endif %}
                                             </label>
-                                            <div class='col-lg-9 col-md-9 col-sm-12'>
-                                                <span style="color:red;">{{field.errors}}</span>
-                                                {{field}}
+
+                                            <div class="col-lg-9 col-md-9 col-sm-12">
+                                                <span style="color:red;">{{ field.errors }}</span>
+
+                                                {{ field }}
+
+                                                {% if field.name == "course" %}
+                                                    <div id="course-info"
+                                                         class="mt-2"
+                                                         style="color:red; font-size:14px;">
+                                                    </div>
+                                                {% endif %}
                                             </div>
                                         </div>
-                                        {% endfor %}    
+                                        {% endfor %}
+
                                         <div class="card-footer">
                                             <div class="row">
                                                 <div class="col-lg-3"></div>
                                                 <div class="col-lg-9">
-                                                    <button type="submit" class="btn btn-primary mr-2" name="save-create">Save and add new</button>
-                                                    <button type="submit" class="btn btn-primary mr-2" name="saved">Save</button>
-                                                    <a href="{% url 'manager:group-list' %}" class="btn btn-secondary"><span>Cancel</span></a>
+                                                    <button type="submit" class="btn btn-primary mr-2" name="save-create">
+                                                        Save and add new
+                                                    </button>
+                                                    <button type="submit" class="btn btn-primary mr-2" name="saved">
+                                                        Save
+                                                    </button>
+                                                    <a href="{% url 'manager:group-list' %}" class="btn btn-secondary">
+                                                        Cancel
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>
@@ -75,39 +76,71 @@
                                 </div>
 
                             </div>
-
                         </div>
-                        <!-- .container -->
                     </div>
-                    <!-- .d-flex.flex-column-fluid -->
                 </div>
-                <!--end::Content-->
-                <!--begin::Footer-->
-                {% include "parts/footer.html" %}
-                <!--end::Footer-->
-            </div>
-            <!--end::Wrapper-->
-        </div>
-        <!--end::Page-->
-    </div>
-    <!--end::Main-->
-    <!-- begin::User Panel-->
-    {% include "parts/user-panel.html" %}
-    <!--begin::Quick Cart-->
-    <!--end::Quick Cart-->
-    <!--begin::Quick Panel-->
-    <!--end::Quick Panel-->
-    <!--begin::Chat Panel-->
-    <!--end::Chat Panel-->
-    <!--begin::Scrolltop-->
-    {% include "parts/scrolltop.html" %}
-    <!--end::Scrolltop-->
-    <!--begin::Sticky Toolbar-->
-    <!--end::Sticky Toolbar-->
-    <!--begin::Demo Panel-->
-    <!--end::Demo Panel-->
-    <!--end::Page Scripts-->
-</body>
-<!--end::Body-->
-{% endblock %}
 
+                {% include "parts/footer.html" %}
+            </div>
+        </div>
+    </div>
+
+    {% include "parts/user-panel.html" %}
+    {% include "parts/scrolltop.html" %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    function initCourseListener() {
+        const courseSelect = document.querySelector("select[name='course']");
+        const infoBox = document.getElementById("course-info");
+        const COURSE_INFO_URL = "{% url 'manager:ajax_course_info' %}";
+
+        if (!courseSelect || !infoBox) {
+            console.warn("Course select yoki infoBox topilmadi");
+            return;
+        }
+
+        // Agar select oldin tanlangan bo'lsa, info ko'rsatish
+        if (courseSelect.value) {
+            fetch(`${COURSE_INFO_URL}?course_id=${courseSelect.value}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.price && data.duration) {
+                        infoBox.innerHTML = `Price: <b>${data.price}</b> | Duraction: <b>${data.duration}</b>`;
+                    }
+                });
+        }
+
+        courseSelect.addEventListener("change", function () {
+            const courseId = this.value;
+
+            if (!courseId) {
+                infoBox.innerHTML = "";
+                return;
+            }
+
+            fetch(`${COURSE_INFO_URL}?course_id=${courseId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.price && data.duration) {
+                        infoBox.innerHTML = `Price: <b>${data.price}</b> | Duraction: <b>${data.duration}</b>`;
+                    } else {
+                        infoBox.innerHTML = "";
+                    }
+                })
+                .catch(err => {
+                    console.error("AJAX error:", err);
+                    infoBox.innerHTML = "";
+                });
+        });
+    }
+
+    setTimeout(initCourseListener, 500);
+
+});
+</script>
+
+
+</body>
+{% endblock %}

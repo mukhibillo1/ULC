@@ -48,8 +48,35 @@
 									<h4 class="menu-text">Main</h4>
 									<i class="menu-icon ki ki-bold-more-hor icon-md"></i>
 								</li>
-
-								
+								<li class="menu-item menu-item-submenu {% if menu_parent == 'group-all' %}{% endif %}" 
+								aria-haspopup="true" data-menu-toggle="hover">
+									<a href="{% url 'teacher:tgroup-list' %}" class="menu-link menu-toggle">
+										<span class="svg-icon menu-icon">
+											<!--begin::Svg Icon | path:/static/assets/media/svg/icons/Layout/Layout-4-blocks.svg-->
+											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">
+											<path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2z"/>
+											<path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8m0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0M4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0m0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+											</svg>
+											<!--end::Svg Icon-->
+										</span>
+										<span class="menu-text">My Groups</span>
+										<i class="menu-arrow"></i>
+									</a>
+								</li>
+								<li class="menu-item menu-item-submenu {% if menu_parent == 'student-all' %}{% endif %}"
+								aria-haspopup="true" data-menu-toggle="hover">
+									<a href="{% url 'teacher:tstudent-list' %}" class="menu-link">
+										<span class="svg-icon menu-icon">
+											<!--begin::Svg Icon | path:/static/assets/media/svg/icons/Layout/Layout-4-blocks.svg-->
+											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+											<path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+											</svg>
+											<!--end::Svg Icon-->
+										</span>
+										<span class="menu-text">MY Students</span>
+										<i class="menu-arrow"></i>
+									</a>
+								</li>
 							</ul>
 							<!--end::Menu Nav-->
 						</div>

@@ -364,7 +364,7 @@
                                 <a class="nav-link {% if active_tab == 'baholash' %}active{% endif %}" href="{% url 'manager:grades' object.pk %}">Baholash</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {% if active_tab == 'Rating' %}active{% endif %}" href="#">Rating</a>
+                                <a class="nav-link {% if active_tab == 'Rating' %}active{% endif %}" href="{% url 'manager:rating' object.pk %}">Rating</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {% if active_tab == 'Debtor' %}active{% endif %}" href="{% url 'manager:group-debtors' object.pk %}">Debtors</a>

@@ -13,7 +13,7 @@
     <!--begin::Page-->
     <div class="d-flex flex-row flex-column-fluid page">
       <!--begin::Aside-->
-      {% include "parts/aside.html" with menu_parent='user' menu_child='user-list' %}
+      {% include "parts/aside.html" with menu_parent='workers-all' menu_child='employee-list' %}
       <!--end::Aside-->
       <!--begin::Wrapper-->
       <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
@@ -34,7 +34,7 @@
                     <div class="card-header border-0 py-5">
 
                       <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label font-weight-bolder text-dark">Groups</span>
+                        <span class="card-label font-weight-bolder text-dark">Users</span>
                         <small class='mt-2'>Total: {{objects | length}}</small>
                         
                       </h3>
@@ -59,8 +59,8 @@
                             </thead>
                             <tbody>
                               {% for object in objects %}
-                              {% url 'manager:group-update' object.id as u %}
-                              {% url 'manager:group-delete' object.id as d %}
+                              {% url 'manager:user-update' object.id as u %}
+                              {% url 'manager:user-delete' object.id as d %}
                               <tr>
                                 <td class="pl-0 py-6">
                                   <div class="d-flex align-items-center">

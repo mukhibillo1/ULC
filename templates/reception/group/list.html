@@ -1,0 +1,329 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+{% load humanize %}
+<!--end::Head-->
+<!--begin::Body-->
+<style>
+.card-toolbar{
+  padding-left: 10px;
+}
+/* Select styling */
+select.form-select {
+    min-width: 180px;
+    max-width: 250px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-size: 14px;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+select.form-select:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-color: #0d6efd;
+}
+
+select.form-select:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 5px rgba(13,110,253,0.5);
+}
+
+/* Reset button styling */
+.reset-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #dc3545;
+    background-color: #dc3545;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.reset-btn:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
+}
+
+.reset-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 992px) {
+    .filter-row {
+        justify-content: flex-start !important;
+    }
+    
+    select.form-select {
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-row {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+    
+    select.form-select {
+        width: 100% !important;
+        max-width: 100%;
+    }
+    
+    .reset-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<body id="kt_body" class="header-fixed header-mobile-fixed subheader-enabled subheader-fixed aside-enabled aside-fixed aside-minimize-hoverable page-loading">
+  <!--begin::Main-->
+  <div class="d-flex flex-column flex-root">
+    <!--begin::Page-->
+    <div class="d-flex flex-row flex-column-fluid page">
+      <!--begin::Aside-->
+      {% include "reception/parts/aside.html" with menu_parent='course-all' menu_child='course-list' %}
+      <!--end::Aside-->
+      <!--begin::Wrapper-->
+      <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
+        <!--begin::Header-->
+        {% include "reception/parts/header.html" %}
+        <!--end::Header-->
+        <!--begin::Content-->
+        <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
+          <div class="d-flex flex-column-fluid">
+            <div class="container">
+
+              <div class="row">
+
+                <div class="col-md-12">
+                  <!--begin::Advance Table Widget 4-->
+                  <div class="card card-custom card-stretch gutter-b">
+                    <!--begin::Header-->
+                    <div class="card-header border-0 py-5">
+
+                      <h3 class="card-title align-items-start flex-column">
+                        <span class="card-label font-weight-bolder text-dark">{% trans "Groups" %}</span>
+                        <small class='mt-2'>{% trans "Total" %}: {{objects | length}}</small>
+                      </h3>
+                      <form method="get" id="filterForm">
+                          <div class="filter-row" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: center; justify-content: flex-end;">
+                              
+                              <select name="day" class="form-select selectpicker" onchange="this.form.submit()" style="width: auto; flex: 0 0 auto;">
+                                  <option value="">{% trans "Lesson Days" %}</option>
+                                  <option value="odd" {% if request.GET.day == 'odd' %}selected{% endif %}>{% trans "Mo We Fri" %}</option>
+                                  <option value="even" {% if request.GET.day == 'even' %}selected{% endif %}>{% trans "Tu Thu Sat" %}</option>
+                              </select>
+
+                              <select name="teacher" class="form-select selectpicker" onchange="this.form.submit()" style="width: auto; flex: 0 0 auto;">
+                                  <option value="">{% trans "All Teachers" %}</option>
+                                  {% for teacher in teachers %}
+                                      <option value="{{ teacher.id }}" {% if request.GET.teacher == teacher.id|stringformat:"s" %}selected{% endif %}>
+                                          {{ teacher }}
+                                      </option>
+                                  {% endfor %}
+                              </select>
+
+                              <select name="course" class="form-select selectpicker" onchange="this.form.submit()" style="width: auto; flex: 0 0 auto;">
+                                  <option value="">{% trans "All Courses" %}</option>
+                                  {% for course in courses %}
+                                      <option value="{{ course.id }}" {% if request.GET.course == course.id|stringformat:"s" %}selected{% endif %}>
+                                          {{ course.title }}
+                                      </option>
+                                  {% endfor %}
+                              </select>
+
+                              {% if request.GET.search %}
+                                  <input type="hidden" name="search" value="{{ request.GET.search }}">
+                              {% endif %}
+                              
+                              <!-- Reset button -->
+                              {% if request.GET.day or request.GET.teacher or request.GET.course %}
+                                  <button type="button" class="reset-btn" onclick="window.location.href='{% url 'reception:group-list' %}'" style="flex: 0 0 auto;">
+                                      <i class="fas fa-redo"></i> {% trans "Reset All" %}
+                                  </button>
+                              {% endif %}
+                          </div>
+                      </form>
+                    </div>
+                    <form method="get">
+                      <div class="form-group row">
+                          <div class="col-lg-3 col-md-9 col-sm-12 mb-lg-0 mb-6  ml-10 ">
+                              <input type="text" class="form-control datatable-input" placeholder="{% trans 'Search' %}" value="{{request.GET.search}}" name="search" data-col-index="0"/>
+                          </div>
+
+                          <button type="submit" class="btn btn-primary font-weight-bolder  ml-7 mb-1">
+                              <span class="nav-icon">
+                                  <i class="fas fa-search"></i>
+                              </span>
+                              <span class="nav-text">{% trans "Search" %}</span>
+                          </button>
+                          <div class="card-toolbar">
+                          <a href="{% url 'reception:group-create' %}" class="btn btn-primary font-weight-bolder font-size-sm">{% trans "Add new group" %}</a>
+                          </div>
+                      </div>
+                    </form>
+                    <!--end::Header-->
+                    <!--begin::Body-->
+                    <div class="card-body pt-0 pb-3">
+                      <div class="tab-content">
+                        <!--begin::Table-->
+                        <div class="table-responsive">
+                          {% if objects %}
+                          <table class="table table-head-custom table-head-bg table-borderless table-vertical-center">
+                            <thead>
+                              <tr class="text-left text-uppercase">
+                                <th style="min-width: 100px">{% trans "Title" %}</th>
+                                <th style="min-width: 100px">{% trans "Teacher" %}</th>
+                                <th style="min-width: 100px">{% trans "Course" %}</th>
+                                <th style="min-width: 100px">{% trans "Room" %}</th>
+                                <th style="min-width: 100px">{% trans "Lesson Days" %}</th>
+                                <th style="min-width: 100px">{% trans "Time" %}</th>
+                                <th style="min-width: 100px">{% trans "Price" %}</th>
+                                <th style="min-width: 100px">{% trans "Actions" %}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for object in objects %}
+                              {% url 'reception:group-delete' object.id as d %}
+                              <tr>
+                                <td class="pl-0 py-6">
+                                  <div class="d-flex align-items-center">
+                                    <div class="mr-4 symbol symbol-40 symbol-light-success">
+                                      <span class="symbol-label">{{ object.title|slice:':1' }}</span>
+                                    </div>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.title}}</span>      
+
+                                  </div>
+                                </td>
+                                
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.teacher}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.course}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.room}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.lesson_days}}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{ object.start_time|time:"H:i" }} - {{ object.end_time|time:"H:i" }}</span>
+                                </td>
+                                <td>
+                                  <span class="text-dark-75 font-weight-bolder d-block font-size-lg">{{object.price| intcomma}} UZS</span>
+                                </td>
+                                <td nowrap="nowrap">
+                                  <a href="{% url 'reception:group-settings' object.pk %}">
+                                      <span class="svg-icon svg-icon-md">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                                          <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
+                                          <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
+                                          </svg>
+                                      </span>
+                                  </a>
+                                  <a href="{% url 'reception:group-delete' object.id %}" data-toggle="modal" data-target="#deleteModal" class="btn btn-sm btn-clean btn-icon removeButton" title="Delete">
+                                      <span class="svg-icon svg-icon-md">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                                          </svg>
+                                      </span>
+                                  </a>
+                                </td>
+                              </tr>
+                              {% endfor %}
+                          </table>
+                        </div>
+                        <!--end::Table-->
+                        {% else %}
+                        {% include "parts/nothing-found.html" %}
+                        {% endif %}
+                      </div>
+                      {% if page_obj.paginator.num_pages > 1 %}
+                      {%include 'parts/pagination.html' %}
+                      {% endif %}
+                    </div>
+                    <!--end::Body-->
+                  </div>
+                  <!--end::Advance Table Widget 4-->
+                </div>
+              </div>
+
+            </div>
+            <!-- .container -->
+          </div> <!-- .d-flex.flex-column-fluid -->
+        </div>
+        <!--end::Content--> <!--begin::Footer-->
+        {% include "parts/footer.html" %}
+        <!--end::Footer-->
+      </div>
+      <!--end::Wrapper-->
+    </div>
+    <!--end::Page-->
+  </div>
+  <!--end::Main-->
+  <!-- begin::User Panel-->
+  {% include "parts/user-panel.html" %}
+  <!--begin::Quick Cart-->
+  <!--end::Quick Cart-->
+  <!--begin::Quick Panel-->
+  <!--end::Quick Panel-->
+  <!--begin::Chat Panel-->
+  <!--end::Chat Panel-->
+  <!--begin::Scrolltop-->
+  {% include "parts/scrolltop.html" %}
+  <!--end::Scrolltop-->
+  <!--begin::Sticky Toolbar-->
+  <!--end::Sticky Toolbar-->
+  <!--begin::Demo Panel-->
+  <!--end::Demo Panel-->
+
+<script>
+// Sahifa refresh bo'lganda filterni reset qilish
+window.addEventListener('load', function() {
+    // Agar URL'da filter parametrlari bo'lmasa, selectlarni reset qilish
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (!urlParams.has('day') && !urlParams.has('teacher') && !urlParams.has('course')) {
+        document.getElementById('dayFilter').selectedIndex = 0;
+        document.getElementById('teacherFilter').selectedIndex = 0;
+        document.getElementById('courseFilter').selectedIndex = 0;
+    }
+});
+
+// Select o'zgarganda avtomatik submit
+document.getElementById('dayFilter').addEventListener('change', function() {
+    document.getElementById('filterForm').submit();
+});
+
+document.getElementById('teacherFilter').addEventListener('change', function() {
+    document.getElementById('filterForm').submit();
+});
+
+document.getElementById('courseFilter').addEventListener('change', function() {
+    document.getElementById('filterForm').submit();
+});
+</script>
+</body>
+<!--end::Body-->
+{% endblock %}

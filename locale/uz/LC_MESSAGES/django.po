@@ -1,0 +1,395 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-12-09 10:57+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: uz\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: .\common\models.py:42
+msgid "Admin"
+msgstr "Administrator"
+
+#: .\common\models.py:43
+msgid "Telegram Kanal"
+msgstr "Telegram kanal"
+
+#: .\common\models.py:44
+msgid "Instagram"
+msgstr "Instagram"
+
+#: .\common\models.py:45 .\templates\manager\teacher\list.html:181
+msgid "Phone"
+msgstr "Telefon"
+
+#: .\common\models.py:46
+msgid "logos"
+msgstr "Logotiplar"
+
+#: .\common\models.py:47
+msgid "Region"
+msgstr "Hudud"
+
+#: .\common\models.py:51 .\common\models.py:52
+msgid "Informations"
+msgstr "Ma'lumotlar"
+
+#: .\common\models.py:68 .\common\models.py:219 .\common\models.py:256
+#: .\common\models.py:346
+msgid "full name"
+msgstr "To'liq ismi"
+
+#: .\common\models.py:69 .\common\models.py:221 .\common\models.py:257
+#: .\common\models.py:347
+msgid "birth date"
+msgstr "Tug'ilgan sana"
+
+#: .\common\models.py:71 .\common\models.py:222 .\common\models.py:258
+#: .\common\models.py:348 .\common\models.py:400
+msgid "phone"
+msgstr "Telefon"
+
+#: .\common\models.py:72
+msgid "type"
+msgstr "Turi"
+
+#: .\common\models.py:73
+msgid "salary"
+msgstr "Maosh"
+
+#: .\common\models.py:74 .\common\models.py:223 .\common\models.py:259
+msgid "address"
+msgstr "Manzil"
+
+#: .\common\models.py:75 .\common\models.py:183 .\common\models.py:226
+#: .\common\models.py:261 .\common\models.py:351 .\common\models.py:369
+msgid "status"
+msgstr "Holat"
+
+#: .\common\models.py:79
+msgid "teacher"
+msgstr "O'qituvchi"
+
+#: .\common\models.py:80
+msgid "teachers"
+msgstr "O'qituvchilar"
+
+#: .\common\models.py:152 .\common\models.py:174
+msgid "title"
+msgstr "Sarlavha"
+
+#: .\common\models.py:153
+msgid "description"
+msgstr "Tavsif"
+
+#: .\common\models.py:154
+msgid "duration"
+msgstr "Davomiyligi"
+
+#: .\common\models.py:158
+msgid "course"
+msgstr "Kurs"
+
+#: .\common\models.py:159
+msgid "courses"
+msgstr "Kurslar"
+
+#: .\common\models.py:176
+msgid "price"
+msgstr "Narxi"
+
+#: .\common\models.py:179
+msgid "lesson days"
+msgstr "Dars kunlari"
+
+#: .\common\models.py:180
+msgid "start_time"
+msgstr "Boshlanish vaqti"
+
+#: .\common\models.py:181
+msgid "end_time"
+msgstr "Tugash vaqti"
+
+#: .\common\models.py:187
+msgid "group"
+msgstr "Guruh"
+
+#: .\common\models.py:188
+msgid "groups"
+msgstr "Guruhlar"
+
+#: .\common\models.py:215
+msgid "Active"
+msgstr "Faol"
+
+#: .\common\models.py:216
+msgid "Archive"
+msgstr "Arxiv"
+
+#: .\common\models.py:224
+msgid "balance"
+msgstr "Balans"
+
+#: .\common\models.py:225 .\common\models.py:262 .\common\models.py:349
+msgid "joined"
+msgstr "Qo'shilgan"
+
+#: .\common\models.py:230
+msgid "student"
+msgstr "O'quvchi"
+
+#: .\common\models.py:231
+msgid "students"
+msgstr "O'quvchilar"
+
+#: .\common\models.py:252
+msgid "Request"
+msgstr "So'rov"
+
+#: .\common\models.py:253
+msgid "Trial"
+msgstr "Sinov"
+
+#: .\common\models.py:254
+msgid "In group"
+msgstr "Guruhda"
+
+#: .\common\models.py:266
+msgid "lead"
+msgstr "Lid"
+
+#: .\common\models.py:267
+msgid "leads"
+msgstr "Lidlar"
+
+#: .\common\models.py:277
+msgid "amount"
+msgstr "Miqdor"
+
+#: .\common\models.py:278 .\common\models.py:371
+msgid "date"
+msgstr "Sana"
+
+#: .\common\models.py:279
+msgid "debt"
+msgstr "Qarz"
+
+#: .\common\models.py:333
+msgid "name"
+msgstr "Nomi"
+
+#: .\common\models.py:334
+msgid "capacity"
+msgstr "Sig'im"
+
+#: .\common\models.py:350
+msgid "Monthly Salary"
+msgstr "Oylik maosh"
+
+#: .\common\models.py:355 .\common\models.py:356
+msgid "Employee"
+msgstr "Xodim"
+
+#: .\common\models.py:385
+msgid "To'lov miqdori"
+msgstr "To'lov miqdori"
+
+#: .\common\models.py:386
+msgid "To'lov turi"
+msgstr "To'lov turi"
+
+#: .\common\models.py:387
+msgid "To'lov sanasi"
+msgstr "To'lov sanasi"
+
+#: .\common\models.py:391
+msgid "Teacher Salary"
+msgstr "O'qituvchi maoshi"
+
+#: .\common\models.py:392
+msgid "Teacher Salaries"
+msgstr "O'qituvchi maoshlari"
+
+#: .\helpers\models.py:9
+msgid "Created at"
+msgstr "Yaratilgan vaqt"
+
+#: .\helpers\models.py:10
+msgid "Updated at"
+msgstr "Yangilangan vaqt"
+
+#: .\templates\manager\teacher\list.html:128
+msgid "Teachers"
+msgstr "O'qituvchilar"
+
+#: .\templates\manager\teacher\list.html:129
+msgid "Total"
+msgstr "Jami"
+
+#: .\templates\manager\teacher\list.html:135
+msgid "All Courses"
+msgstr "Barcha kurslar"
+
+#: .\templates\manager\teacher\list.html:146
+msgid "Reset All"
+msgstr "Hammasini tozalash"
+
+#: .\templates\manager\teacher\list.html:155
+#: .\templates\manager\teacher\list.html:162
+msgid "Search"
+msgstr "Qidirish"
+
+#: .\templates\manager\teacher\list.html:165
+msgid "Create new teacher"
+msgstr "Yangi o'qituvchi qo'shish"
+
+#: .\templates\manager\teacher\list.html:179
+msgid "Full name"
+msgstr "To'liq ismi"
+
+#: .\templates\manager\teacher\list.html:180
+msgid "Birthday"
+msgstr "Tug'ilgan kun"
+
+#: .\templates\manager\teacher\list.html:182
+msgid "Course"
+msgstr "Kurs"
+
+#: .\templates\manager\teacher\list.html:183
+msgid "Salary Type"
+msgstr "Maosh turi"
+
+#: .\templates\manager\teacher\list.html:184
+msgid "Salary"
+msgstr "Maosh"
+
+#: .\templates\manager\teacher\list.html:185
+msgid "Address"
+msgstr "Manzil"
+
+#: .\templates\manager\teacher\list.html:186
+msgid "Actions"
+msgstr "Amallar"
+
+# YANGI QO'SHILGAN TARJIMALAR
+msgid "Groups"
+msgstr "Guruhlar"
+
+msgid "Courses"
+msgstr "Kurslar"
+
+msgid "Classrooms"
+msgstr "Xonalar"
+
+msgid "Payment"
+msgstr "To'lovlar"
+
+msgid "Salaries"
+msgstr "Maoshlar"
+
+msgid "Home"
+msgstr "Bosh sahifa"
+
+msgid "MAIN"
+msgstr "ASOSIY"
+
+msgid "Classroom"
+msgstr "Xona"
+
+msgid "Student"
+msgstr "O'quvchi"
+
+msgid "Finance"
+msgstr "Moliya"
+
+msgid "Payments"
+msgstr "To'lovlar"
+
+msgid "Workers"
+msgstr "Xodimlar"
+
+msgid "Settings"
+msgstr "Sozlamalar"
+
+msgid "Lesson Days"
+msgstr "Dars kunlari"
+
+msgid "All Teachers"
+msgstr "Barcha o'qituvchilar"
+
+msgid "Add new group"
+msgstr "Yangi guruh qo'shish"
+
+msgid "Add new course"
+msgstr "Yangi kurs qo'shish"
+
+msgid "Create new classroom"
+msgstr "Yangi xona yaratish"
+
+msgid "Create new payment"
+msgstr "Yangi to'lov yaratish"
+
+msgid "Create new salary"
+msgstr "Yangi maosh yaratish"
+
+msgid "All Groups"
+msgstr "Barcha guruhlar"
+
+msgid "Mo We Fri"
+msgstr "Du Chor Ju"
+
+msgid "Tu Thu Sat"
+msgstr "Se Pay Sha"
+
+msgid "Room"
+msgstr "Xona"
+
+msgid "Time"
+msgstr "Vaqt"
+
+msgid "Price"
+msgstr "Narx"
+
+msgid "Title"
+msgstr "Sarlavha"
+
+msgid "Duration"
+msgstr "Davomiyligi"
+
+msgid "Teacher"
+msgstr "O'qituvchi"
+
+msgid "STUDENT"
+msgstr "O'QUVCHI"
+
+msgid "GROUP"
+msgstr "GURUH"
+
+msgid "AMOUNT"
+msgstr "MIQDOR"
+
+msgid "DATE"
+msgstr "SANA"
+
+msgid "DEBT"
+msgstr "QARZ"
+
+msgid "ROLE"
+msgstr "ROL"
+
+msgid "Administrator"
+msgstr "Administrator"
+
+msgid "Cash"
+msgstr "Naqd"

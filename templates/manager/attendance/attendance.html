@@ -6,9 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Davomat Tizimi</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-
     <style>
-        /* Subheader container */
         .subheader {
             background-color: white;
             padding: 0.75rem 1rem;
@@ -17,15 +15,6 @@
             margin-bottom: 15px;
         }
 
-        .subheader .container-fluid {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 1rem;
-        }
-
-        /* Nav tabs */
         .subheader .nav-tabs {
             display: flex;
             gap: 0.5rem;
@@ -34,8 +23,7 @@
             margin: 0;
         }
 
-        .subheader .nav-tabs .nav-link {
-            display: inline-block;
+        .subheader .nav-link {
             padding: 0.5rem 1rem;
             font-size: 0.875rem;
             font-weight: 500;
@@ -43,131 +31,274 @@
             border-radius: 6px;
             text-decoration: none;
             transition: all 0.2s;
-            background-color: #e5e7eb20;
         }
 
-        .subheader .nav-tabs .nav-link:hover {
+        .subheader .nav-link:hover {
             background-color: #e5e7eb;
             color: #3b82f6;
         }
 
-        .subheader .nav-tabs .active {
+        .subheader .nav-link.active {
             background-color: #3b82f6;
             color: white;
-            font-weight: 600;
         }
 
-        /* Month/Year Select Styles */
-        #month-select, #year-select {
+        /* Katakcha stillar */
+        .attendance-cell {
+            position: relative;
+            text-align: center;
+            padding: 8px;
+            min-width: 80px;
+            height: 60px;
+        }
+
+        .attendance-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .attendance-button.empty {
+            background: #f3f4f6;
+            border: 2px dashed #d1d5db;
+        }
+
+        .attendance-button.present {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .attendance-button.absent {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .attendance-button.disabled {
+            background: #f9fafb;
+            color: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .attendance-button svg {
+            width: 24px;
+            height: 24px;
+            stroke-width: 3;
+        }
+
+        /* Click buttons (hover emas!) */
+        .click-buttons {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            gap: 6px;
+            z-index: 100;
+            background: white;
+            padding: 8px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .attendance-cell.active .click-buttons {
+            display: flex;
+        }
+
+        .hover-btn {
+            width: 36px;
+            height: 36px;
             border: none;
-            border-bottom: 2px solid #d1d5db;
-            background: transparent;
-            color: #374151;
-            font-weight: 500;
-            padding: 8px 4px;
-            transition: all 0.3s;
-            width: 150px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
 
-        #month-select:focus, #year-select:focus {
-            border-bottom-color: #2563eb;
-            outline: none;
+        .hover-btn.present {
+            background: #10b981;
+            color: white;
         }
 
-        #month-select:hover, #year-select:hover {
-            border-bottom-color: #3b82f6;
+        .hover-btn.present:hover {
+            background: #059669;
+            transform: scale(1.1);
         }
 
-        /* O'tgan kunlar uchun maxsus stil */
-        .attendance-cell.past-date {
+        .hover-btn.absent {
+            background: #ef4444;
+            color: white;
+        }
+
+        .hover-btn.absent:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .hover-btn.clear {
+            background: #6b7280;
+            color: white;
+        }
+
+        .hover-btn.clear:hover {
+            background: #4b5563;
+            transform: scale(1.1);
+        }
+
+        .hover-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* O'tgan kunlar - ko'rinadi lekin disabled */
+        .attendance-cell.past-date .attendance-button {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .attendance-cell.past-date .click-buttons {
+            display: none !important;
+        }
+
+        /* Qulflangan kunlar (keyingi dars kunlari) */
+        .attendance-cell.locked {
             position: relative;
         }
 
-        /* O'tgan kunlarni yopish uchun overlay */
-        .attendance-cell.past-date::before {
-            content: '';
+        .attendance-cell.locked .lock-icon {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(240,240,240,0.6) 100%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 28px;
+            height: 28px;
+            fill: #6b7280;
+            z-index: 2;
             pointer-events: none;
-            z-index: 1;
-            border-radius: 8px;
         }
 
-        /* O'tgan kunlar uchun opacity kamayadi */
-        .attendance-cell.past-date .attendance-button {
-            opacity: 0.5;
+        .attendance-cell.locked .attendance-button {
+            opacity: 0.2;
             cursor: not-allowed;
             pointer-events: none;
         }
 
-        /* O'tgan kunlarda hover buttons ko'rinmasin */
-        .attendance-cell.past-date .hover-buttons {
+        .attendance-cell.locked .click-buttons {
             display: none !important;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .subheader .container-fluid {
-                flex-direction: column;
-                gap: 12px;
-                padding: 12px 16px;
-            }
-            
-            .nav-tabs {
-                width: 100%;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .nav-tabs .nav-link {
-                white-space: nowrap;
-                padding: 12px 16px;
-            }
+        /* Tooltip */
+        .tooltip {
+            position: absolute;
+            bottom: calc(100% + 5px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
         }
 
-        @media (max-width: 576px) {
-            .subheader .nav-tabs {
-                flex-direction: column;
-                gap: 0.25rem;
-            }
+        .attendance-cell:hover .tooltip {
+            opacity: 1;
+        }
 
-            .subheader .nav-tabs .nav-link {
-                text-align: center;
-            }
+        /* Foiz badge */
+        .percentage-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .percentage-badge.high {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .percentage-badge.medium {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .percentage-badge.low {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .percentage-details {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .join-date {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="max-width">
-            <!--begin::Subheader-->
-            <div class="subheader py-2 py-lg-4 subheader-solid" id="kt_subheader">
-                <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
-                    <ul class="nav nav-tabs">
-                        <li class="nav-item">
-                            <a class="nav-link {% if active_tab == 'all' %}active{% endif %}" href="{% url 'manager:group-settings' group.pk %}">All</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if active_tab == 'attendance' %}active{% endif %}" href="{% url 'manager:attendance-list' group.pk %}">Davomat</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {% if active_tab == 'baholash' %}active{% endif %}" href="#">Baholash</a>
-                        </li>
-                    </ul>
-                </div>
+            <div class="subheader">
+                <ul class="nav-tabs">
+                    <li><a class="nav-link" href="{% url 'manager:group-settings' group.pk %}">All</a></li>
+                    <li><a class="nav-link active" href="{% url 'manager:attendance-list' group.pk %}">Davomat</a></li>
+                    <li><a class="nav-link" href="{% url 'manager:grades' group.pk %}">Baholash</a></li>
+                    <li><a class="nav-link" href="{% url 'manager:rating' group.pk %}">Rating</a></li>
+                    <li><a class="nav-link" href="{% url 'manager:group-debtors' group.pk %}">Debtors</a></li>
+                </ul>
             </div>
-            <!--end::Subheader-->
 
-            <!-- Header -->
             <div class="header">
                 <div class="header-content">
                     <div class="header-title">
                         <h1>Davomat Tizimi</h1>
-                        <p>{{ group.name }} - O'quvchilar davomatini boshqarish</p>
+                        <p>{{ group.title }} - O'quvchilar davomatini boshqarish</p>
                     </div>
                     <div class="header-stats">
                         <div class="stat-item">
@@ -182,7 +313,6 @@
                 </div>
             </div>
 
-            <!-- Controls -->
             <div class="controls">
                 <div class="controls-grid">
                     <div class="control-group">
@@ -208,12 +338,10 @@
                 </div>
             </div>
 
-            <!-- Loading State -->
-            <div id="loading-state" style="text-align: center; padding: 40px; color: #666;">
-                <p>Talabalar yuklanmoqda...</p>
+            <div id="loading-state" style="text-align: center; padding: 40px;">
+                <p>Yuklanmoqda...</p>
             </div>
 
-            <!-- Attendance Table -->
             <div class="table-container" id="table-container" style="display: none;">
                 <div id="table-content"></div>
             </div>
@@ -221,7 +349,6 @@
     </div>
 
     <script>
-        // Global variables
         const groupId = {{ group.id }};
         const lessonDays = "{{ group.lesson_days }}";
         let students = [];
@@ -229,101 +356,117 @@
         let lessonDates = [];
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
+        let deadlineDate = null;
 
-        // Bugungi sanani olish (faqat sana, vaqtsiz)
         function getTodayDateString() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            return new Date().toISOString().split('T')[0];
         }
 
-        // Sanani solishtirish - o'tgan kun yoki yo'q
         function isPastDate(dateString) {
-            const today = getTodayDateString();
-            return dateString < today;
+            return dateString < getTodayDateString();
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Bugungi sana:', getTodayDateString());
+        function isEditableDate(dateString) {
+            const today = getTodayDateString();
+            if (!deadlineDate) return dateString >= today;
+            return dateString >= today && dateString <= deadlineDate;
+        }
+
+        function isLockedDate(dateString) {
+            const today = getTodayDateString();
+            if (!deadlineDate) return false;
+            return dateString > deadlineDate;
+        }
+
+        function getNextLessonDeadline(startDate, lessonDaysStr) {
+            const dayMap = { mo:0, tu:1, we:2, thu:3, fri:4, sa:5, sun:6 };
+            const days = lessonDaysStr.toLowerCase().split(' ').map(d => dayMap[d]).filter(n => n !== undefined).sort();
+            
+            const today = new Date(startDate);
+            const todayWeekday = today.getDay();
+            const todayIndex = todayWeekday === 0 ? 6 : todayWeekday - 1;
+            
+            const nextDays = days.filter(d => d > todayIndex);
+            let daysUntil;
+            
+            if (nextDays.length > 0) {
+                daysUntil = nextDays[0] - todayIndex;
+            } else {
+                daysUntil = (7 - todayIndex) + days[0];
+            }
+            
+            const nextLesson = new Date(today);
+            nextLesson.setDate(nextLesson.getDate() + daysUntil);
+            
+            // Keyingi darsdan 1 kun oldin - deadline
+            const deadline = new Date(nextLesson);
+            deadline.setDate(deadline.getDate() - 1);
+            
+            console.log('📅 Bugun:', startDate);
+            console.log('📅 Keyingi dars:', nextLesson.toISOString().split('T')[0]);
+            console.log('⏰ Deadline:', deadline.toISOString().split('T')[0], '23:59:59');
+            
+            return deadline.toISOString().split('T')[0];
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            deadlineDate = getNextLessonDeadline(getTodayDateString(), lessonDays);
+            
             initializeYearSelect();
             setCurrentDate();
             loadStudentsFromAPI();
         });
 
-        // Load students from API
         async function loadStudentsFromAPI() {
             try {
-                const response = await fetch(`/manager/api/groups/${groupId}/students/`);
-                
-                if (!response.ok) {
-                    throw new Error(`API xatolik: ${response.status}`);
-                }
-                
-                const apiStudents = await response.json();
-                
-                students = apiStudents.map(student => ({
-                    id: student.id,
-                    name: student.full_name,
-                    joinDate: new Date().toISOString().split('T')[0]
+                const res = await fetch(`/manager/api/groups/${groupId}/students/`);
+                const data = await res.json();
+                students = data.map(s => ({
+                    id: s.id,
+                    name: s.full_name,
+                    joinDate: s.date_joined ? s.date_joined.split('T')[0] : getTodayDateString()
                 }));
                 
-                console.log('Yuklangan talabalar:', students);
-                
+                document.getElementById('student-count').textContent = `${students.length} ta o'quvchi`;
                 document.getElementById('loading-state').style.display = 'none';
                 document.getElementById('table-container').style.display = 'block';
                 
                 updateLessonDates();
                 await loadExistingAttendance();
                 renderTable();
-                updateStats();
-                
-            } catch (error) {
-                console.error('Xatolik:', error);
-                document.getElementById('loading-state').innerHTML = `
-                    <p style="color: red;">❌ Talabalarni yuklashda xatolik: ${error.message}</p>
-                `;
+            } catch (e) {
+                console.error(e);
+                document.getElementById('loading-state').innerHTML = `<p style="color:red;">Xatolik: ${e.message}</p>`;
             }
         }
 
-        // Load existing attendance from backend
         async function loadExistingAttendance() {
             try {
-                const startDate = new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
-                const endDate = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
+                const start = new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
+                const end = new Date(currentYear, currentMonth + 1, 0).toISOString().split('T')[0];
+                const res = await fetch(`/manager/api/attendance/?group=${groupId}&start_date=${start}&end_date=${end}`);
                 
-                const response = await fetch(
-                    `/manager/api/attendance/?group=${groupId}&start_date=${startDate}&end_date=${endDate}`
-                );
-                
-                if (response.ok) {
-                    const attendanceData = await response.json();
-                    console.log('Yuklangan davomat:', attendanceData);
-                    
-                    attendanceData.forEach(item => {
+                if (res.ok) {
+                    const data = await res.json();
+                    attendance = {};
+                    data.forEach(item => {
                         const date = item.date_time.split('T')[0];
-                        const key = `${item.student}-${date}`;
-                        attendance[key] = item.is_present;
+                        attendance[`${item.student}-${date}`] = item.is_present;
                     });
-                    
-                    console.log('Davomat ma\'lumotlari yuklandi:', Object.keys(attendance).length);
-                } else {
-                    console.log('Davomat ma\'lumotlari topilmadi yoki API yo\'q');
+                    console.log('✅ Davomat yuklandi:', Object.keys(attendance).length);
                 }
-            } catch (error) {
-                console.error('Davomatni yuklashda xatolik:', error);
+            } catch (e) {
+                console.error(e);
             }
         }
 
         function initializeYearSelect() {
-            const yearSelect = document.getElementById('year-select');
-            for (let year = 2020; year <= 2030; year++) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                yearSelect.appendChild(option);
+            const sel = document.getElementById('year-select');
+            for (let y = 2020; y <= 2030; y++) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                sel.appendChild(opt);
             }
         }
 
@@ -332,13 +475,11 @@
             document.getElementById('year-select').value = currentYear;
         }
 
-        // Event listeners
         document.getElementById('month-select').addEventListener('change', async function() {
             currentMonth = parseInt(this.value);
             updateLessonDates();
             await loadExistingAttendance();
             renderTable();
-            updateStats();
         });
 
         document.getElementById('year-select').addEventListener('change', async function() {
@@ -346,21 +487,11 @@
             updateLessonDates();
             await loadExistingAttendance();
             renderTable();
-            updateStats();
         });
 
         function getLessonDaysNumbers() {
-            const dayMap = {
-                'mo': 1,
-                'tu': 2,
-                'we': 3,
-                'thu': 4,
-                'fri': 5,
-                'sa': 6
-            };
-            
-            const days = lessonDays.toLowerCase().split(' ');
-            return days.map(day => dayMap[day]).filter(Boolean);
+            const dayMap = { mo:1, tu:2, we:3, thu:4, fri:5, sa:6, sun:0 };
+            return lessonDays.toLowerCase().split(' ').map(d => dayMap[d]).filter(n => n !== undefined);
         }
 
         function getWeekdays(month, year) {
@@ -368,71 +499,51 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const allowedDays = getLessonDaysNumbers();
             
-            console.log('Allowed lesson days:', allowedDays);
-            
             for (let day = 1; day <= daysInMonth; day++) {
                 const date = new Date(year, month, day);
-                const dayOfWeek = date.getDay();
+                if (!allowedDays.includes(date.getDay())) continue;
                 
-                if (allowedDays.includes(dayOfWeek)) {
-                    const dateString = date.toISOString().split('T')[0];
-                    dates.push({
-                        date: dateString,
-                        display: `${day.toString().padStart(2, '0')}.${(month + 1).toString().padStart(2, '0')}`,
-                        dayOfMonth: day,
-                        dayOfWeek: dayOfWeek,
-                        fullDate: date,
-                        isPast: isPastDate(dateString)
-                    });
-                }
+                const dateStr = date.toISOString().split('T')[0];
+                dates.push({
+                    date: dateStr,
+                    display: `${String(day).padStart(2,'0')}.${String(month+1).padStart(2,'0')}`,
+                    isPast: isPastDate(dateStr),
+                    isEditable: isEditableDate(dateStr),
+                    isLocked: isLockedDate(dateStr)
+                });
             }
-            
-            console.log(`Found ${dates.length} lesson days for ${month + 1}/${year}`);
             return dates;
         }
 
         function updateLessonDates() {
             lessonDates = getWeekdays(currentMonth, currentYear);
-            
-            students.forEach(student => {
-                lessonDates.forEach(dateObj => {
-                    const key = `${student.id}-${dateObj.date}`;
-                    if (!(key in attendance)) {
-                        const studentJoinDate = new Date(student.joinDate);
-                        const lessonDate = new Date(dateObj.date);
-                        
-                        if (lessonDate >= studentJoinDate) {
-                            attendance[key] = null;
-                        }
-                    }
-                });
-            });
+            document.getElementById('lesson-count').textContent = `${lessonDates.length} kun`;
         }
 
-        function markAttendance(studentId, date, status) {
-            // O'tgan kunlarni tahrirlashni oldini olish
-            if (isPastDate(date)) {
-                console.log('⛔ O\'tgan kunlarni tahrirlash mumkin emas:', date);
-                alert('O\'tgan kunlarni tahrirlash mumkin emas!');
+        async function markAttendance(studentId, date, status) {
+            if (!isEditableDate(date)) {
+                alert('Bu kunni tahrirlash mumkin emas!');
                 return;
             }
             
             const key = `${studentId}-${date}`;
             attendance[key] = status;
+            
+            // Buttonlarni yopish
+            document.querySelectorAll('.attendance-cell').forEach(cell => {
+                cell.classList.remove('active');
+            });
+            
             renderTable();
-            updateStats();
-            saveSingleAttendance(studentId, date, status);
-        }
-        
-        async function saveSingleAttendance(studentId, date, status) {
+            
             try {
-                const response = await fetch("/manager/api/attendance/save/", {
-                    method: "POST",
+                const res = await fetch('/manager/api/attendance/save/', {
+                    method: 'POST',
                     headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": getCookie("csrftoken")
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
                     },
-                    body: JSON.stringify({ 
+                    body: JSON.stringify({
                         attendance: [{
                             student: parseInt(studentId),
                             group: groupId,
@@ -441,237 +552,153 @@
                         }]
                     })
                 });
-
-                const result = await response.json();
                 
-                if (response.ok) {
-                    console.log(`✅ Saqlandi: Student ${studentId}, ${date}, ${status ? 'Bor' : 'Yo\'q'}`);
+                const data = await res.json();
+                if (!data.success) {
+                    alert(data.error);
+                    await loadExistingAttendance();
+                    renderTable();
                 } else {
-                    console.error("❌ Xatolik:", result);
-                    if (result.error && result.error.includes('O\'tgan kunlarni')) {
-                        alert('O\'tgan kunlarni tahrirlash mumkin emas!');
-                        // Ma'lumotlarni qayta yuklash
-                        await loadExistingAttendance();
-                        renderTable();
-                    }
+                    console.log('✅ Saqlandi');
                 }
-            } catch (error) {
-                console.error("❌ Serverga ulanishda xatolik:", error);
+            } catch (e) {
+                console.error(e);
+                alert('Xatolik yuz berdi');
             }
+        }
+        
+        function toggleButtons(cellElement) {
+            // Oldingi ochiq buttonlarni yopish
+            document.querySelectorAll('.attendance-cell').forEach(cell => {
+                if (cell !== cellElement) {
+                    cell.classList.remove('active');
+                }
+            });
+            
+            // Hozirgi cellni toggle
+            cellElement.classList.toggle('active');
         }
 
         function getAttendanceStats(studentId) {
             const student = students.find(s => s.id === studentId);
-            if (!student) return { present: 0, absent: 0, total: 0, percentage: 0 };
+            if (!student) return { present: 0, total: 0, percentage: 0 };
             
             const studentJoinDate = new Date(student.joinDate);
             
-            const studentAttendance = Object.entries(attendance)
-                .filter(([key]) => key.startsWith(`${studentId}-`))
-                .filter(([key, value]) => {
-                    const dateFromKey = key.split('-').slice(1).join('-');
-                    const lessonDate = new Date(dateFromKey);
+            // HAMMA katakchalar (yopiq ham, ochiq ham)
+            const allAttendance = lessonDates
+                .filter(d => {
+                    const lessonDate = new Date(d.date);
                     return lessonDate >= studentJoinDate;
                 })
-                .map(([, value]) => value);
+                .map(d => {
+                    const key = `${studentId}-${d.date}`;
+                    return attendance[key];
+                })
+                .filter(val => val === true || val === false); // faqat belgilangan
             
-            const present = studentAttendance.filter(a => a === true).length;
-            const absent = studentAttendance.filter(a => a === false).length;
-            const total = present + absent;
+            const present = allAttendance.filter(v => v === true).length;
+            const total = allAttendance.length;
             
-            return { 
-                present, 
-                absent, 
-                total, 
-                percentage: total > 0 ? Math.round((present / total) * 100) : 0 
+            return {
+                present,
+                total,
+                percentage: total > 0 ? Math.round((present / total) * 100) : 0
             };
         }
 
         function renderTable() {
-            const tableContent = document.getElementById('table-content');
+            const content = document.getElementById('table-content');
             
-            if (students.length === 0) {
-                tableContent.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="empty-title">Hozircha o'quvchilar yo'q</h3>
-                        <p class="empty-description">Bu guruhda talabalar mavjud emas</p>
+            let html = `<table><thead><tr><th style="min-width:200px;">O'quvchi</th>`;
+            lessonDates.forEach(d => {
+                html += `<th>${d.display}</th>`;
+            });
+            html += `<th>%</th></tr></thead><tbody>`;
+            
+            students.forEach((s, idx) => {
+                const stats = getAttendanceStats(s.id);
+                html += `<tr style="background:${idx%2===0?'#fff':'#f9fafb'}">
+                    <td><div class="student-name">${s.name}</div></td>`;
+                
+                lessonDates.forEach(d => {
+                    const key = `${s.id}-${d.date}`;
+                    const val = attendance[key];
+                    const isLocked = d.isLocked;
+                    const isPast = d.isPast;
+                    const isEditable = d.isEditable;
+                    
+                    const cellClass = isLocked ? 'locked' : isPast ? 'past-date' : '';
+                    const cellId = `cell-${s.id}-${d.date}`;
+                    
+                    html += `<td class="attendance-cell ${cellClass}" id="${cellId}" onclick="toggleButtons(this)">`;
+                    
+                    // Qulf (keyingi dars kunlari) - markazda
+                    if (isLocked) {
+                        html += `<svg xmlns="http://www.w3.org/2000/svg" class="lock-icon" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
+                        </svg>`;
+                        html += `<div class="tooltip">Bu kunga hali kelmadi</div>`;
+                    }
+                    
+                    // Attendance button
+                    html += `<div class="attendance-button ${val===true?'present':val===false?'absent':'empty'}">`;
+                    if (val === true) {
+                        html += `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+                    } else if (val === false) {
+                        html += `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`;
+                    }
+                    html += `</div>`;
+                    
+                    // Click buttons (faqat edit qilish mumkin bo'lgan kunlar)
+                    if (isEditable && !isPast && !isLocked) {
+                        html += `<div class="click-buttons">
+                            <button class="hover-btn present" onclick="event.stopPropagation(); markAttendance(${s.id},'${d.date}',true)">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </button>
+                            <button class="hover-btn absent" onclick="event.stopPropagation(); markAttendance(${s.id},'${d.date}',false)">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                            <button class="hover-btn clear" onclick="event.stopPropagation(); markAttendance(${s.id},'${d.date}',null)">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                            </button>
+                        </div>`;
+                    }
+                    
+                    html += `</td>`;
+                });
+                
+                html += `<td style="text-align:center;">
+                    <div class="percentage-badge ${stats.percentage>=80?'high':stats.percentage>=60?'medium':'low'}">
+                        ${stats.percentage}%
                     </div>
-                `;
-                return;
-            }
-
-            let tableHTML = `
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="min-width: 200px;">O'quvchi</th>
-                                ${lessonDates.map(dateObj => `
-                                    <th style="text-align: center; min-width: 80px;">
-                                        <div style="font-size: 0.875rem; font-weight: 500;">${dateObj.display}</div>
-                                    </th>
-                                `).join('')}
-                                <th style="text-align: center; min-width: 100px;">%</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${students.map((student, index) => {
-                                const stats = getAttendanceStats(student.id);
-                                return `
-                                    <tr style="background-color: ${index % 2 === 0 ? 'white' : '#fafafa'};">
-                                        <td>
-                                            <div class="student-name">${student.name}</div>
-                                            <div class="join-date">${new Date(student.joinDate).toLocaleDateString('uz-UZ')} dan</div>
-                                        </td>
-                                        ${lessonDates.map(dateObj => {
-                                            const key = `${student.id}-${dateObj.date}`;
-                                            const status = attendance[key];
-                                            const studentJoinDate = new Date(student.joinDate);
-                                            const lessonDate = new Date(dateObj.date);
-                                            const isBeforeJoinDate = lessonDate < studentJoinDate;
-                                            const isPast = dateObj.isPast;
-                                            
-                                            if (isBeforeJoinDate) {
-                                                return `
-                                                    <td class="attendance-cell">
-                                                        <div class="attendance-button disabled">
-                                                            <span style="color: #9ca3af;">-</span>
-                                                        </div>
-                                                    </td>
-                                                `;
-                                            }
-                                            
-                                            return `
-                                                <td class="attendance-cell ${isPast ? 'past-date' : ''}" style="position: relative;" data-date="${dateObj.date}" data-ispast="${isPast}">
-                                                    <div class="attendance-button ${status === true ? 'present' : status === false ? 'absent' : 'empty'}">
-                                                        ${status === true ? `
-                                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                            </svg>
-                                                        ` : status === false ? `
-                                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                            </svg>
-                                                        ` : ''}
-                                                    </div>
-                                                    ${!isPast ? `
-                                                    <div class="hover-buttons" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); gap: 4px; z-index: 10;">
-                                                        <button class="hover-btn present" onclick="markAttendance(${student.id}, '${dateObj.date}', true)" title="Bor" style="padding: 4px;">
-                                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                            </svg>
-                                                        </button>
-                                                        <button class="hover-btn absent" onclick="markAttendance(${student.id}, '${dateObj.date}', false)" title="Yo'q" style="padding: 4px;">
-                                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                    ` : ''}
-                                                </td>
-                                            `;
-                                        }).join('')}
-                                        <td style="text-align: center;">
-                                            <div class="percentage-badge ${stats.percentage >= 80 ? 'high' : stats.percentage >= 60 ? 'medium' : 'low'}">
-                                                ${stats.percentage}%
-                                            </div>
-                                            <div class="percentage-details">
-                                                ${stats.present}/${stats.total}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                `;
-                            }).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
+                    <div class="percentage-details">${stats.present}/${stats.total}</div>
+                </td></tr>`;
+            });
             
-            tableContent.innerHTML = tableHTML;
-        }
-
-        function updateStats() {
-            document.getElementById('student-count').textContent = `${students.length} o'quvchi`;
-            document.getElementById('lesson-count').textContent = `${lessonDates.length} kun`;
+            html += `</tbody></table>`;
+            content.innerHTML = html;
         }
 
         function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+            let val = null;
+            if (document.cookie) {
+                document.cookie.split(';').forEach(c => {
+                    const cookie = c.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        val = decodeURIComponent(cookie.substring(name.length + 1));
                     }
-                }
+                });
             }
-            return cookieValue;
-        }
-
-        // Mobile touch interactions
-        let touchTimeout;
-        
-        function handleTouchStart(element) {
-            const isPast = element.dataset.ispast === 'true';
-            if (!isPast) {
-                touchTimeout = setTimeout(() => {
-                    const buttons = element.querySelector('.hover-buttons');
-                    if (buttons) {
-                        buttons.style.display = 'flex';
-                    }
-                }, 300);
-            }
+            return val;
         }
         
-        function handleTouchEnd(element) {
-            clearTimeout(touchTimeout);
-            setTimeout(() => {
-                const buttons = element.querySelector('.hover-buttons');
-                if (buttons) {
-                    buttons.style.display = 'none';
-                }
-            }, 2000);
-        }
-
-        document.addEventListener('touchstart', function(e) {
-            const cell = e.target.closest('.attendance-cell');
-            if (cell && !cell.classList.contains('past-date')) {
-                handleTouchStart(cell);
-            }
-        });
-
-        document.addEventListener('touchend', function(e) {
-            const cell = e.target.closest('.attendance-cell');
-            if (cell && !cell.classList.contains('past-date')) {
-                handleTouchEnd(cell);
-            }
-        });
-
-        // Hover orqali tugmalarni ko'rsatish (faqat bugungi va kelajak kunlar uchun)
-        document.addEventListener('mouseover', function(e) {
-            const cell = e.target.closest('.attendance-cell');
-            if (cell && !cell.querySelector('.disabled') && !cell.classList.contains('past-date')) {
-                const buttons = cell.querySelector('.hover-buttons');
-                if (buttons) {
-                    buttons.style.display = 'flex';
-                }
-            }
-        });
-
-        document.addEventListener('mouseout', function(e) {
-            const cell = e.target.closest('.attendance-cell');
-            if (cell && !cell.classList.contains('past-date')) {
-                const buttons = cell.querySelector('.hover-buttons');
-                if (buttons && !e.relatedTarget?.closest('.attendance-cell')) {
-                    buttons.style.display = 'none';
-                }
+        // Tashqariga bosish - buttonlarni yopish
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.attendance-cell')) {
+                document.querySelectorAll('.attendance-cell').forEach(cell => {
+                    cell.classList.remove('active');
+                });
             }
         });
     </script>
